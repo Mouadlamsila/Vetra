@@ -2,6 +2,7 @@ import { AlignJustify, Languages, Search, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from "../i18n/i18n";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export default function Header() {
@@ -21,7 +22,7 @@ export default function Header() {
     }, [currentLang]);
 
     return (
-        <header className={`${menu ? "h-screen flex-col" : "items-center h-[80px] flex-row"} duration-300 transition-all ease-in-out bg-[#1e3a8a]  fixed z-[99] text-[#FFFFFF] flex  w-full justify-between py-4 px-4 sm:px-28`}>
+        <header className={`${menu ? "h-screen flex-col" : "items-center h-[80px] flex-row"} duration-300 select-none transition-all ease-in-out bg-[#1e3a8a]  fixed z-[99] text-[#FFFFFF] flex  w-full justify-between py-4 px-4 sm:px-28`}>
             <div className={`flex ${menu ? "flex justify-between w-full" : ""}  items-center w-full gap-16`}>
                 <img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden " />
                 <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden " />
@@ -51,16 +52,26 @@ export default function Header() {
                 <div className={`flex justify-center ${menu ? "hidden" : ""}`}>
                     <div onClick={() => setShow(!Show)} className="flex cursor-pointer relative items-center bg-[#c8c2fd] p-2 h-10 justify-center font-medium text-[#6D28D9] w-10  text-xl rounded-xl">
 
-                        {langue === 'ar' ? 'ع' : langue
-                        }
+                        {langue === 'ar' ? 'ع' : langue}
                     </div>
-                    <div className={`absolute ${Show ? "opacity-100 top-20" : "opacity-0 top-24"} transition-all duration-300 ease-in-out w-[100px] rounded-b-md bg-[#1e3a8a] text-black grid z-[99] items-center`}>
-                        <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
-                        <div className="w-full bg-[#c8c2fd] h-[1.5px]"></div>
-                        <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
-                        <div className="w-full bg-[#c8c2fd] h-[1.5px] "></div>
-                        <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
-                    </div>
+                    {/* menu langue */}
+                    <AnimatePresence>
+                        {Show && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="absolute top-20 w-[100px] rounded-b-md bg-[#1e3a8a] text-black grid z-[99] items-center"
+                            >
+                                <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
+                                <div className="w-full bg-[#c8c2fd] h-[1.5px]"></div>
+                                <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
+                                <div className="w-full bg-[#c8c2fd] h-[1.5px] "></div>
+                                <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
                 <div class="sm:flex hidden  items-center justify-center ">
                     <div class="relative  group bg-[#6D28D9] rounded-xl hover:bg-transparent ">
@@ -81,24 +92,54 @@ export default function Header() {
 
                 <AlignJustify className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] w-full rounded-xl`} onClick={() => setMenu(!menu)} />
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>
-                    <ul className={`${menu ? "" : "hidden"} w-full h-screen flex flex-col justify-center items-center gap-8`}>
-                        <li className="  flex justify-center  p-3 text-[#E5E7EB] items-center ">
-
-                            <p className=" z-50 -hover:text-[#6D28D9]  transition-all duration-500 ease-in-out text-2xl font-medium">{t('Features')}</p>
-                        </li>
-                        <li className="  flex justify-center  p-3 text-[#E5E7EB] items-center ">
-
-                            <p className=" z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out  text-2xl font-medium">{t('AboutUs')}</p>
-                        </li>
-                        <li className="  flex justify-center  p-3 text-[#E5E7EB] items-center ">
-
-                            <p className=" z-50 -hover:text-[#6D28D9]  transition-all duration-500 ease-in-out text-2xl font-medium">{t('Services')}</p>
-                        </li>
-                        <li className="  flex justify-center  p-3 text-[#E5E7EB] items-center ">
-
-                            <p className=" z-50 group-hover:text-[#6D28D9] transition-all duration-500 ease-in-out  text-2xl font-medium">{t('Contact')}</p>
-                        </li>
-                    </ul>
+                    <AnimatePresence>
+                        {menu && (
+                            <motion.ul 
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className={`w-full h-screen flex flex-col justify-center items-center gap-8`}
+                            >
+                                <motion.li 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.1 }}
+                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                >
+                                    <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Features')}</p>
+                                </motion.li>
+                                <motion.li 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.2 }}
+                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                >
+                                    <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('AboutUs')}</p>
+                                </motion.li>
+                                <motion.li 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.3 }}
+                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                >
+                                    <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Services')}</p>
+                                </motion.li>
+                                <motion.li 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.4 }}
+                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                >
+                                    <p className="z-50 group-hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Contact')}</p>
+                                </motion.li>
+                            </motion.ul>
+                        )}
+                    </AnimatePresence>
                 </div>
 
 

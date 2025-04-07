@@ -62,7 +62,21 @@ const resources = {
       featureSecure: "آمن وموثوق",
       featureSecureDesc: "بياناتك محمية بتدابير أمنية عالية المستوى ونسخ احتياطية منتظمة.",
       featureAnalytics: "التحليلات والرؤى",
-      featureAnalyticsDesc: "احصل على تحليلات مفصلة ورؤى لاتخاذ قرارات مدروسة لعملك."
+      featureAnalyticsDesc: "احصل على تحليلات مفصلة ورؤى لاتخاذ قرارات مدروسة لعملك.",
+      swiperTitle1: "تصميم عصري",
+      swiperDesc1: "إنشاء واجهات جذابة بصرياً وسهلة الاستخدام تجذب جمهورك.",
+      swiperTitle2: "تصميم متجاوب",
+      swiperDesc2: "تجربة سلسة عبر جميع الأجهزة مع تنفيذ تصميم متجاوب بالكامل.",
+      swiperTitle3: "أداء محسن",
+      swiperDesc3: "أوقات تحميل سريعة وأداء سلس لتجربة مستخدم أفضل.",
+      swiperTitle4: "صديق لمحركات البحث",
+      swiperDesc4: "مبني وفق أفضل الممارسات لضمان رؤية عالية في نتائج محركات البحث.",
+      swiperTitle5: "آمن وموثوق",
+      swiperDesc5: "إجراءات أمنية على مستوى المؤسسات لحماية بياناتك ومستخدميك.",
+      swiperTitle6: "إدارة سهلة",
+      swiperDesc6: "نظام إدارة محتوى بديهي لتحديثات الموقع بدون جهد.",
+      swiperTitle7: "تكامل التحليلات",
+      swiperDesc7: "تحليلات شاملة لتتبع وتحسين أداء موقعك الإلكتروني.",
     }
   },
   fr: {
@@ -124,7 +138,21 @@ const resources = {
       featureSecure: "Sécurisé et Fiable",
       featureSecureDesc: "Vos données sont protégées par des mesures de sécurité de niveau entreprise et des sauvegardes régulières.",
       featureAnalytics: "Analyses et Insights",
-      featureAnalyticsDesc: "Obtenez des analyses détaillées et des insights pour prendre des décisions éclairées pour votre entreprise."
+      featureAnalyticsDesc: "Obtenez des analyses détaillées et des insights pour prendre des décisions éclairées pour votre entreprise.",
+      swiperTitle1: "Design Moderne",
+      swiperDesc1: "Création d'interfaces visuellement époustouflantes et conviviales qui captivent votre public.",
+      swiperTitle2: "Mise en Page Adaptative",
+      swiperDesc2: "Expérience fluide sur tous les appareils grâce à une conception entièrement responsive.",
+      swiperTitle3: "Performance Optimisée",
+      swiperDesc3: "Temps de chargement ultra-rapides et performances fluides pour une meilleure expérience utilisateur.",
+      swiperTitle4: "Optimisé pour le SEO",
+      swiperDesc4: "Conçu selon les meilleures pratiques pour assurer une visibilité maximale dans les résultats de recherche.",
+      swiperTitle5: "Sécurisé & Fiable",
+      swiperDesc5: "Mesures de sécurité de niveau entreprise pour protéger vos données et vos utilisateurs.",
+      swiperTitle6: "Gestion Facile",
+      swiperDesc6: "Système de gestion de contenu intuitif pour des mises à jour de site sans effort.",
+      swiperTitle7: "Intégration d'Analytiques",
+      swiperDesc7: "Analytiques complètes pour suivre et optimiser les performances de votre site web.",
     }
   },
   en: {
@@ -186,7 +214,21 @@ const resources = {
       featureSecure: "Secure & Reliable",
       featureSecureDesc: "Your data is protected with enterprise-grade security measures and regular backups.",
       featureAnalytics: "Analytics & Insights",
-      featureAnalyticsDesc: "Get detailed analytics and insights to make data-driven decisions for your business."
+      featureAnalyticsDesc: "Get detailed analytics and insights to make data-driven decisions for your business.",
+      swiperTitle1: "Modern Design",
+      swiperDesc1: "Crafting visually stunning and user-friendly interfaces that captivate your audience.",
+      swiperTitle2: "Responsive Layout",
+      swiperDesc2: "Seamless experience across all devices with fully responsive design implementation.",
+      swiperTitle3: "Performance Optimized",
+      swiperDesc3: "Lightning-fast loading times and smooth performance for better user experience.",
+      swiperTitle4: "SEO Friendly",
+      swiperDesc4: "Built with best practices to ensure high visibility in search engine results.",
+      swiperTitle5: "Secure & Reliable",
+      swiperDesc5: "Enterprise-grade security measures to protect your data and users.",
+      swiperTitle6: "Easy Management",
+      swiperDesc6: "Intuitive content management system for effortless website updates.",
+      swiperTitle7: "Analytics Integration",
+      swiperDesc7: "Comprehensive analytics to track and optimize your website's performance.",
     }
   }
 };
