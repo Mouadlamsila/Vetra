@@ -1,5 +1,5 @@
-import Features from "../components/feautures";
 import GridMotion from "../blocks/Backgrounds/GridMotion/GridMotion";
+import Steps from "../components/Steps";
 
 
 export default function Home() {
@@ -9,7 +9,7 @@ export default function Home() {
             <div className="sm:block hidden">
                 <GridMotion />
             </div>
-            <Features />
+            <Steps />
         </div>
     )
 }

@@ -1,11 +1,11 @@
 import { Store } from "lucide-react";
-import Step1 from "../Features/Step1";
-import Step2 from "../Features/Step2";
-import Step3 from "../Features/Step3";
+import Step1 from "../Steps/Step1";
+import Step2 from "../Steps/Step2";
+import Step3 from "../Steps/Step3";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { useTranslation } from "react-i18next";
 
-export default function Features() {
+export default function Steps() {
     const { t } = useTranslation();
     
     return (
