@@ -55,7 +55,14 @@ const resources = {
       howItWorks: "كيف يعمل",
       createYourOnlineStore: "أنشئ متجرك الإلكتروني",
       platformDescription: "تتيح لك منصتنا إنشاء وإدارة متجرك الإلكتروني بسهولة",
-      startNow: "ابدأ الآن"
+      startNow: "ابدأ الآن",
+      // Features translations
+      featureLightningFast: "سريع كالبرق",
+      featureLightningDesc: "استمتع بأداء فائق السرعة مع بنيتنا التحتية المحسنة وتقنياتنا المتطورة.",
+      featureSecure: "آمن وموثوق",
+      featureSecureDesc: "بياناتك محمية بتدابير أمنية عالية المستوى ونسخ احتياطية منتظمة.",
+      featureAnalytics: "التحليلات والرؤى",
+      featureAnalyticsDesc: "احصل على تحليلات مفصلة ورؤى لاتخاذ قرارات مدروسة لعملك."
     }
   },
   fr: {
@@ -110,7 +117,14 @@ const resources = {
       howItWorks: "Comment ça fonctionne",
       createYourOnlineStore: "Créez votre boutique en ligne",
       platformDescription: "Notre plateforme vous permet de créer et gérer facilement votre boutique en ligne",
-      startNow: "Commencer maintenant"
+      startNow: "Commencer maintenant",
+      // Features translations
+      featureLightningFast: "Ultra Rapide",
+      featureLightningDesc: "Bénéficiez de performances ultra-rapides grâce à notre infrastructure optimisée et notre technologie de pointe.",
+      featureSecure: "Sécurisé et Fiable",
+      featureSecureDesc: "Vos données sont protégées par des mesures de sécurité de niveau entreprise et des sauvegardes régulières.",
+      featureAnalytics: "Analyses et Insights",
+      featureAnalyticsDesc: "Obtenez des analyses détaillées et des insights pour prendre des décisions éclairées pour votre entreprise."
     }
   },
   en: {
@@ -165,7 +179,14 @@ const resources = {
       howItWorks: "How it works",
       createYourOnlineStore: "Create your online store",
       platformDescription: "Our platform allows you to easily create and manage your online store",
-      startNow: "Start now"
+      startNow: "Start now",
+      // Features translations
+      featureLightningFast: "Lightning Fast",
+      featureLightningDesc: "Experience blazing fast performance with our optimized infrastructure and cutting-edge technology stack.",
+      featureSecure: "Secure & Reliable",
+      featureSecureDesc: "Your data is protected with enterprise-grade security measures and regular backups.",
+      featureAnalytics: "Analytics & Insights",
+      featureAnalyticsDesc: "Get detailed analytics and insights to make data-driven decisions for your business."
     }
   }
 };

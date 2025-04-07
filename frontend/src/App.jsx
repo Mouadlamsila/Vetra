@@ -1,5 +1,5 @@
 
-import Header from "./components/Header";
+import Header from "./Home/Header";
 import Home from "./page/Home";
 
 
