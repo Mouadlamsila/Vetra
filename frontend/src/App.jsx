@@ -1,14 +1,13 @@
-import GridMotion from "./blocks/Backgrounds/GridMotion/GridMotion";
+
 import Header from "./components/Header";
+import Home from "./page/Home";
 
 
 function App() {
   return (
     <div>
       <Header/>
-      <div className="sm:block hidden">
-             <GridMotion  />
-      </div>
+      <Home/>
     </div>
   );
 }
