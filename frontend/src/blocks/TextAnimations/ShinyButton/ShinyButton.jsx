@@ -2,13 +2,13 @@
 
 import React from "react"
 
-const ShinyButton = ({ children, disabled = false, speed = 5, className = "", onClick }) => {
+const ShinyButton = ({ children, disabled = false, speed = 5, rounded = false,className = "", onClick }) => {
   // Styles CSS en ligne
   const styles = {
     button: {
       position: "relative",
       overflow: "hidden",
-      borderRadius: "6px",
+      borderRadius: rounded ? "6px" : "0px",
       padding: "12px 24px",
       fontWeight: "500",
       color: "white",

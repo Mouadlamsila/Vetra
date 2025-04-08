@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 import {
   Mail,
   Phone,
@@ -19,10 +20,14 @@ import {
   HelpCircle,
   Building,
   Users,
+  Contact2,
 } from "lucide-react"
-import EnhancedShinyButton from "./EnhancedShinyButton"
+import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
+import { MdSupportAgent } from "react-icons/md";
 
 const Contact = () => {
+  const { t } = useTranslation()
+  const langue = localStorage.getItem('lang');
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -83,65 +88,31 @@ const Contact = () => {
     },
   }
 
-  const contactInfo = [
-    {
-      icon: <Mail className="h-5 w-5 text-[#6D28D9]" />,
-      title: "Email",
-      details: "contact@votreentreprise.com",
-      action: "mailto:contact@votreentreprise.com",
-    },
-    {
-      icon: <Phone className="h-5 w-5 text-[#6D28D9]" />,
-      title: "Téléphone",
-      details: "+33 1 23 45 67 89",
-      action: "tel:+33123456789",
-    },
-    {
-      icon: <MapPin className="h-5 w-5 text-[#6D28D9]" />,
-      title: "Adresse",
-      details: "123 Avenue des Champs-Élysées, 75008 Paris, France",
-      action: "https://maps.google.com/?q=123+Avenue+des+Champs-Élysées,+75008+Paris,+France",
-    },
-    {
-      icon: <Clock className="h-5 w-5 text-[#6D28D9]" />,
-      title: "Heures d'ouverture",
-      details: "Lun-Ven: 9h-18h | Sam: 10h-15h",
-    },
-  ]
-
-  const socialLinks = [
-    { icon: <Linkedin className="h-5 w-5" />, url: "https://linkedin.com", name: "LinkedIn" },
-    { icon: <Twitter className="h-5 w-5" />, url: "https://twitter.com", name: "Twitter" },
-    { icon: <Facebook className="h-5 w-5" />, url: "https://facebook.com", name: "Facebook" },
-    { icon: <Instagram className="h-5 w-5" />, url: "https://instagram.com", name: "Instagram" },
-    { icon: <Youtube className="h-5 w-5" />, url: "https://youtube.com", name: "YouTube" },
-  ]
-
   const contactTabs = [
     {
       id: "contact",
-      label: "Contact général",
+      label: t("contact.general"),
       icon: <MessageSquare className="h-5 w-5" />,
       email: "contact@votreentreprise.com",
       phone: "+33 1 23 45 67 89",
     },
     {
       id: "support",
-      label: "Support technique",
+      label: t("contact.support"),
       icon: <HelpCircle className="h-5 w-5" />,
       email: "support@votreentreprise.com",
       phone: "+33 1 23 45 67 90",
     },
     {
       id: "sales",
-      label: "Ventes",
+      label: t("contact.sales"),
       icon: <Building className="h-5 w-5" />,
       email: "sales@votreentreprise.com",
       phone: "+33 1 23 45 67 91",
     },
     {
       id: "careers",
-      label: "Carrières",
+      label: t("contact.careers"),
       icon: <Users className="h-5 w-5" />,
       email: "careers@votreentreprise.com",
       phone: "+33 1 23 45 67 92",
@@ -151,7 +122,7 @@ const Contact = () => {
   const activeTabData = contactTabs.find((tab) => tab.id === activeTab)
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-white to-[#f9f7ff]">
+    <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-white to-[#f9f7ff]">
       <div className="max-w-7xl mx-auto">
         {/* En-tête de la section */}
         <motion.div
@@ -159,94 +130,90 @@ const Contact = () => {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
           <motion.div variants={itemVariants} className="inline-block">
-            <span className="bg-[#c8c2fd]/30 text-[#6D28D9] text-sm font-medium px-4 py-1.5 rounded-full">
-              Contactez-nous
-            </span>
+           
+            <div className="bg-[#E5E7EB] gap-1 text-[#6D28D9] flex p-2 rounded-xl items-center">
+              <MdSupportAgent className="w-5 h-5" />
+              <h1 className="text-sm sm:text-base"> {t("contact.title")}</h1>
+            </div>
           </motion.div>
           <motion.h2
             variants={itemVariants}
-            className="mt-6 text-4xl md:text-5xl font-bold text-gray-900 tracking-tight"
+            className="mt-4 md:mt-6 text-3xl md:text-5xl font-bold text-gray-900 tracking-tight"
           >
-            Discutons de votre <span className="text-[#6D28D9]">projet</span>
+            {t("contact.subtitle")} <span className="text-[#6D28D9]">{t("contact.project")}</span>
           </motion.h2>
-          <motion.p variants={itemVariants} className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-            Nous sommes là pour répondre à vos questions et vous aider à transformer vos idées en réalité.
+          <motion.p variants={itemVariants} className="mt-4 md:mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+            {t("contact.description")}
           </motion.p>
         </motion.div>
 
         {/* Onglets de contact */}
-        <div className="mb-12">
+        <div className="mb-8 md:mb-12">
           <div className="flex flex-wrap justify-center gap-2 md:gap-4">
             {contactTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-4 py-3 rounded-full transition-colors ${
-                  activeTab === tab.id ? "bg-[#6D28D9] text-white" : "bg-white text-gray-700 hover:bg-[#c8c2fd]/20"
-                }`}
+                className={`flex items-center px-3 md:px-4 py-2 md:py-3 rounded-full transition-colors text-sm md:text-base ${activeTab === tab.id ? "bg-[#6D28D9] text-white" : "bg-white text-gray-700 hover:bg-[#c8c2fd]/20"
+                  }`}
               >
-                <span className={`mr-2 ${activeTab === tab.id ? "text-white" : "text-[#6D28D9]"}`}>{tab.icon}</span>
+                <span className={` ${langue === "ar" ? "ml-2" : "mr-2"}	 ${activeTab === tab.id ? "text-white" : "text-[#6D28D9]"}`}>{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
           </div>
         </div>
-
         {/* Contenu principal */}
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Formulaire de contact */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            className="bg-white h-full rounded-2xl shadow border border-[#c8c2fd] p-6 md:p-8 "
           >
             <div className="flex items-center mb-6">
               {activeTabData?.icon && (
-                <div className="bg-[#c8c2fd]/20 p-2 rounded-full mr-3">
+                <div className={`bg-[#c8c2fd]/20 p-2 rounded-full ${langue === "ar" ? "ml-3" : "mr-3"}`}>
                   <span className="text-[#6D28D9]">{activeTabData.icon}</span>
                 </div>
               )}
-              <h3 className="text-2xl font-bold text-gray-900">
-                {activeTab === "contact" && "Envoyez-nous un message"}
-                {activeTab === "support" && "Demande de support"}
-                {activeTab === "sales" && "Contact commercial"}
-                {activeTab === "careers" && "Rejoignez notre équipe"}
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+                {activeTab === "contact" && t("contact.form.title")}
+                {activeTab === "support" && t("contact.form.support")}
+                {activeTab === "sales" && t("contact.form.sales")}
+                {activeTab === "careers" && t("contact.form.careers")}
               </h3>
             </div>
 
             {formStatus === "success" ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-green-800 mb-2">Message envoyé avec succès !</h4>
-                <p className="text-green-700 mb-4">
-                  Merci de nous avoir contactés. Notre équipe vous répondra dans les plus brefs délais.
-                </p>
-                <button onClick={() => setFormStatus("idle")} className="text-[#6D28D9] font-medium hover:underline">
-                  Envoyer un autre message
+                <h4 className="text-xl font-semibold text-green-800 mb-2">{t("contact.form.success.title")}</h4>
+                <p className="text-green-700 mb-4">{t("contact.form.success.message")}</p>
+                <button onClick={() => setFormStatus("idle")} className="text-[#6D28D9]  font-medium hover:underline">
+                  {t("contact.form.success.button")}
                 </button>
               </div>
             ) : formStatus === "error" ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-red-800 mb-2">Une erreur est survenue</h4>
-                <p className="text-red-700 mb-4">
-                  Nous n'avons pas pu envoyer votre message. Veuillez réessayer ou nous contacter directement.
-                </p>
+                <h4 className="text-xl font-semibold text-red-800 mb-2">{t("contact.form.error.title")}</h4>
+                <p className="text-red-700 mb-4">{t("contact.form.error.message")}</p>
                 <button onClick={() => setFormStatus("idle")} className="text-[#6D28D9] font-medium hover:underline">
-                  Réessayer
+                  {t("contact.form.error.button")}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Nom complet
+                      {t("contact.form.name")}
                     </label>
                     <input
                       type="text"
@@ -255,13 +222,13 @@ const Contact = () => {
                       value={formState.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-colors"
-                      placeholder="Votre nom"
+                      className="w-full px-4 py-3 outline-none rounded-lg border border-gray-300  focus:border-[#6D28D9] transition-colors"
+                      placeholder={t("contact.form.namePlaceholder")}
                     />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
+                      {t("contact.form.email")}
                     </label>
                     <input
                       type="email"
@@ -270,15 +237,15 @@ const Contact = () => {
                       value={formState.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-colors"
-                      placeholder="votre@email.com"
+                      className="w-full outline-none px-4 py-3 rounded-lg border border-gray-300  focus:border-[#6D28D9] transition-colors"
+                      placeholder={t("contact.form.emailPlaceholder")}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                    Sujet
+                    {t("contact.form.subject")}
                   </label>
                   <select
                     id="subject"
@@ -286,35 +253,35 @@ const Contact = () => {
                     value={formState.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-colors"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300  focus:border-[#6D28D9] outline-0 transition-colors"
                   >
-                    <option value="">Sélectionnez un sujet</option>
+                    <option value="">{t("contact.form.subjectPlaceholder")}</option>
                     {activeTab === "contact" && (
                       <>
-                        <option value="information">Demande d'information</option>
-                        <option value="devis">Demande de devis</option>
-                        <option value="autre">Autre</option>
+                        <option value="information">{t("contact.form.subjects.information")}</option>
+                        <option value="devis">{t("contact.form.subjects.quote")}</option>
+                        <option value="autre">{t("contact.form.subjects.other")}</option>
                       </>
                     )}
                     {activeTab === "support" && (
                       <>
-                        <option value="bug">Signaler un bug</option>
-                        <option value="question">Question technique</option>
-                        <option value="compte">Problème de compte</option>
+                        <option value="bug">{t("contact.form.subjects.bug")}</option>
+                        <option value="question">{t("contact.form.subjects.question")}</option>
+                        <option value="compte">{t("contact.form.subjects.account")}</option>
                       </>
                     )}
                     {activeTab === "sales" && (
                       <>
-                        <option value="demo">Demande de démonstration</option>
-                        <option value="tarifs">Informations tarifaires</option>
-                        <option value="enterprise">Solutions entreprise</option>
+                        <option value="demo">{t("contact.form.subjects.demo")}</option>
+                        <option value="tarifs">{t("contact.form.subjects.pricing")}</option>
+                        <option value="enterprise">{t("contact.form.subjects.enterprise")}</option>
                       </>
                     )}
                     {activeTab === "careers" && (
                       <>
-                        <option value="emploi">Offre d'emploi</option>
-                        <option value="stage">Stage</option>
-                        <option value="spontanee">Candidature spontanée</option>
+                        <option value="emploi">{t("contact.form.subjects.job")}</option>
+                        <option value="stage">{t("contact.form.subjects.internship")}</option>
+                        <option value="spontanee">{t("contact.form.subjects.spontaneous")}</option>
                       </>
                     )}
                   </select>
@@ -322,7 +289,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    Message
+                    {t("contact.form.message")}
                   </label>
                   <textarea
                     id="message"
@@ -331,27 +298,22 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-colors"
+                    className="w-full px-4 py-3 overflow-hidden resize-none rounded-lg border border-gray-300  focus:border-[#6D28D9] outline-none transition-colors"
                     placeholder={
                       activeTab === "support"
-                        ? "Décrivez votre problème en détail..."
+                        ? t("contact.form.messagePlaceholder.support")
                         : activeTab === "careers"
-                          ? "Parlez-nous de vous et de vos motivations..."
-                          : "Comment pouvons-nous vous aider ?"
+                          ? t("contact.form.messagePlaceholder.careers")
+                          : t("contact.form.messagePlaceholder.default")
                     }
                   ></textarea>
                 </div>
 
                 <div className="pt-2">
-                  <EnhancedShinyButton
-                    type="submit"
-                    fullWidth
-                    loading={formStatus === "loading"}
-                    disabled={formStatus === "loading"}
-                  >
-                    {formStatus === "loading" ? "Envoi en cours..." : "Envoyer le message"}
+                  <ShinyButton rounded={true} className="w-full sm:w-auto">
+                    {formStatus === "loading" ? t("contact.form.sending") : t("contact.form.send")}
                     <Send className="ml-2 h-4 w-4" />
-                  </EnhancedShinyButton>
+                  </ShinyButton>
                 </div>
               </form>
             )}
@@ -363,17 +325,17 @@ const Contact = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="space-y-8"
+            className="space-y-6 md:space-y-8"
           >
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Nos coordonnées</h3>
-              <div className="space-y-6">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">{t("contact.info.title")}</h3>
+              <div className="space-y-4 md:space-y-6">
                 <div className="flex items-start">
-                  <div className="bg-[#c8c2fd]/20 p-3 rounded-full mr-4 flex-shrink-0">
+                  <div className={`bg-[#c8c2fd]/20 p-3 rounded-full ${langue === "ar" ? "ml-4" : "mr-4"}  flex-shrink-0`}>
                     <Mail className="h-5 w-5 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Email</h4>
+                    <h4 className="font-medium text-gray-900">{t("contact.info.email")}</h4>
                     <a
                       href={`mailto:${activeTabData?.email}`}
                       className="text-gray-600 hover:text-[#6D28D9] transition-colors"
@@ -384,11 +346,11 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#c8c2fd]/20 p-3 rounded-full mr-4 flex-shrink-0">
+                  <div className={`bg-[#c8c2fd]/20 p-3 rounded-full ${langue === "ar" ? "ml-4" : "mr-4"} flex-shrink-0`}>
                     <Phone className="h-5 w-5 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Téléphone</h4>
+                    <h4 className="font-medium text-gray-900">{t("contact.info.phone")}</h4>
                     <a
                       href={`tel:${activeTabData?.phone?.replace(/\s/g, "")}`}
                       className="text-gray-600 hover:text-[#6D28D9] transition-colors"
@@ -399,84 +361,62 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#c8c2fd]/20 p-3 rounded-full mr-4 flex-shrink-0">
+                  <div className={`bg-[#c8c2fd]/20 p-3 rounded-full ${langue === "ar" ? "ml-4" : "mr-4"} flex-shrink-0`}>
                     <MapPin className="h-5 w-5 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Adresse</h4>
+                    <h4 className="font-medium text-gray-900">{t("contact.info.address")}</h4>
                     <a
                       href="https://maps.google.com/?q=123+Avenue+des+Champs-Élysées,+75008+Paris,+France"
                       target="_blank"
                       rel="noreferrer"
                       className="text-gray-600 hover:text-[#6D28D9] transition-colors"
                     >
-                      123 Avenue des Champs-Élysées, 75008 Paris, France
+                      {t("contact.info.addressValue")}
                     </a>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#c8c2fd]/20 p-3 rounded-full mr-4 flex-shrink-0">
+                  <div className={`bg-[#c8c2fd]/20 p-3 rounded-full ${langue === "ar" ? "ml-4" : "mr-4"} flex-shrink-0`}>
                     <Clock className="h-5 w-5 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Heures d'ouverture</h4>
-                    <p className="text-gray-600">Lun-Ven: 9h-18h | Sam: 10h-15h</p>
+                    <h4 className="font-medium text-gray-900">{t("contact.info.hours")}</h4>
+                    <p className="text-gray-600">{t("contact.info.hoursValue")}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Carte */}
-            <div className="rounded-xl overflow-hidden shadow-lg h-64 relative">
-              <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                <div className="text-center p-4">
-                  <MapPin className="h-8 w-8 text-[#6D28D9] mx-auto mb-2" />
-                  <p className="text-gray-600">Carte interactive disponible sur votre site web</p>
-                </div>
-              </div>
-            </div>
+            <div className="w-full grid gap-2  ">
+              {/* Réseaux sociaux */}
 
-            {/* Réseaux sociaux */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Suivez-nous</h3>
-              <div className="flex flex-wrap gap-3">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bg-white p-3 rounded-full shadow-sm hover:shadow-md transition-shadow hover:bg-[#c8c2fd]/10"
-                    aria-label={`Visitez notre page ${social.name}`}
-                  >
-                    {social.icon}
+              {/* FAQ rapide */}
+              <div className="bg-white rounded-xl w-full p-6 shadow border border-[#c8c2fd]">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4">{t("contact.faq.title")}</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-[#6D28D9]">{t("contact.faq.responseTime")}</h4>
+                    <p className="text-sm text-gray-600">{t("contact.faq.responseTimeValue")}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-[#6D28D9]">{t("contact.faq.demo")}</h4>
+                    <p className="text-sm text-gray-600">{t("contact.faq.demoValue")}</p>
+                  </div>
+                  <a href="#" className="text-sm font-medium text-[#6D28D9] hover:underline inline-block mt-2">
+                    {t("contact.faq.seeAll")}
                   </a>
-                ))}
+                </div>
               </div>
+
             </div>
 
-            {/* FAQ rapide */}
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Questions fréquentes</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-[#6D28D9]">Quel est le délai de réponse ?</h4>
-                  <p className="text-sm text-gray-600">Nous répondons généralement dans les 24 heures ouvrables.</p>
-                </div>
-                <div>
-                  <h4 className="font-medium text-[#6D28D9]">Proposez-vous des démonstrations ?</h4>
-                  <p className="text-sm text-gray-600">
-                    Oui, nous proposons des démonstrations personnalisées de nos solutions.
-                  </p>
-                </div>
-                <a href="#" className="text-sm font-medium text-[#6D28D9] hover:underline inline-block mt-2">
-                  Voir toutes les FAQ
-                </a>
-              </div>
-            </div>
           </motion.div>
         </div>
+
+
+
 
         {/* Bannière newsletter */}
         <motion.div
@@ -484,27 +424,25 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="mt-20 bg-gradient-to-r from-[#6D28D9] to-[#5b21b6] rounded-2xl p-8 md:p-12 text-white"
+          className="mt-12 md:mt-20 bg-gradient-to-r from-[#6D28D9] to-[#5b21b6] rounded-2xl p-6 md:p-12 text-white"
         >
           <div className="md:flex items-center justify-between">
             <div className="mb-6 md:mb-0 md:mr-8">
-              <h3 className="text-2xl font-bold mb-2">Restez informé</h3>
-              <p className="text-white/80">
-                Abonnez-vous à notre newsletter pour recevoir nos dernières actualités et offres spéciales.
-              </p>
+              <h3 className="text-xl md:text-2xl font-bold mb-2">{t("contact.newsletter.title")}</h3>
+              <p className="text-white/80">{t("contact.newsletter.description")}</p>
             </div>
             <div className="flex-shrink-0 w-full md:w-auto">
               <form className="flex">
                 <input
                   type="email"
-                  placeholder="Votre adresse email"
-                  className="px-4 py-3 rounded-l-lg w-full md:w-64 focus:outline-none text-gray-800"
+                  placeholder={t("contact.newsletter.placeholder")}
+                  className={`${langue === "ar" ? "rounded-r-lg" : "rounded-l-lg"} px-4 py-3 bg-white  w-full md:w-64 focus:outline-none text-gray-800`}
                 />
                 <button
                   type="submit"
-                  className="bg-[#4C1D95] hover:bg-[#3b1a74] px-4 py-3 rounded-r-lg text-white font-medium transition-colors"
+                  className={`${langue === "ar" ? "rounded-l-lg" : "rounded-r-lg"} px-4 py-3 bg-[#4C1D95] hover:bg-[#3b1a74] text-white font-medium transition-colors`}
                 >
-                  S'abonner
+                  {t("contact.newsletter.button")}
                 </button>
               </form>
             </div>

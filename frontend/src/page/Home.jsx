@@ -5,7 +5,9 @@ import Steps from "../Home/Steps";
 import Swip from "../Home/Swiper";
 import ScrollVelocity from "../blocks/TextAnimations/ScrollVelocity/ScrollVelocity";
 import AboutSection from "../Home/AboutSection";
-
+import Contact from "../Home/Contact";
+import Threads from "../blocks/Backgrounds/Threads/Threads";
+import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 
 export default function Home() {
     const containerVariants = {
@@ -53,9 +55,15 @@ export default function Home() {
             <motion.div variants={sectionVariants}>
                 <Steps />
             </motion.div>
-           {/*  <motion.div variants={sectionVariants}>
+            <div className="w-full h-[10px] flex justify-center pt-4">
+                <ShinyButton className="w-full">
+                  
+                </ShinyButton>
+            </div>
+            <motion.div variants={sectionVariants}>
                 <Contact />
-            </motion.div> */}
+            </motion.div>
+
         </motion.div>
     );
 }

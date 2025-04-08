@@ -133,7 +133,89 @@ const resources = {
       testimonialsDescription: "اكتشف لماذا يثق بنا عملاؤنا وكيف حولت حلولنا أعمالهم.",
       testimonial1: "لقد غير هذا الحل طريقة عملنا تماماً. الواجهة بديهية والميزات هي بالضبط ما كنا نحتاجه.",
       testimonial2: "خدمة عملاء استثنائية ومنتج يتجاوز توقعاتنا. لقد زادت إنتاجيتنا بنسبة 40٪ منذ أن بدأنا استخدامه.",
-      testimonial3: "أفضل قرار اتخذناه هذا العام. كان التنفيذ سريعاً والنتائج مذهلة."
+      testimonial3: "أفضل قرار اتخذناه هذا العام. كان التنفيذ سريعاً والنتائج مذهلة.",
+      contact: {
+        title: "اتصل بنا",
+        subtitle: "دعنا نتحدث عن",
+        project: "مشروعك",
+        description: "نحن هنا للإجابة على أسئلتك ومساعدتك في تحويل أفكارك إلى واقع.",
+        general: "اتصال عام",
+        support: "الدعم الفني",
+        sales: "المبيعات",
+        careers: "الوظائف",
+        form: {
+          title: "أرسل لنا رسالة",
+          support: "طلب دعم",
+          sales: "اتصال تجاري",
+          careers: "انضم إلى فريقنا",
+          name: "الاسم الكامل",
+          namePlaceholder: "اسمك",
+          email: "البريد الإلكتروني",
+          emailPlaceholder: "بريدك الإلكتروني",
+          subject: "الموضوع",
+          subjectPlaceholder: "اختر موضوعاً",
+          message: "الرسالة",
+          messagePlaceholder: {
+            default: "كيف يمكننا مساعدتك؟",
+            support: "صف مشكلتك بالتفصيل...",
+            careers: "أخبرنا عن نفسك ودوافعك..."
+          },
+          subjects: {
+            information: "طلب معلومات",
+            quote: "طلب عرض سعر",
+            other: "أخرى",
+            bug: "الإبلاغ عن خطأ",
+            question: "سؤال فني",
+            account: "مشكلة في الحساب",
+            demo: "طلب عرض توضيحي",
+            pricing: "معلومات الأسعار",
+            enterprise: "حلول المؤسسات",
+            job: "عرض عمل",
+            internship: "تدريب",
+            spontaneous: "ترشح تلقائي"
+          },
+          sending: "جاري الإرسال...",
+          send: "إرسال الرسالة",
+          success: {
+            title: "تم إرسال الرسالة بنجاح!",
+            message: "شكراً لتواصلك معنا. سيقوم فريقنا بالرد عليك في أقرب وقت ممكن.",
+            button: "إرسال رسالة أخرى"
+          },
+          error: {
+            title: "حدث خطأ",
+            message: "لم نتمكن من إرسال رسالتك. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.",
+            button: "إعادة المحاولة"
+          }
+        },
+        info: {
+          title: "معلومات الاتصال",
+          email: "البريد الإلكتروني",
+          phone: "الهاتف",
+          address: "العنوان",
+          addressValue: "123 شارع الشانزليزيه، 75008 باريس، فرنسا",
+          hours: "ساعات العمل",
+          hoursValue: "الاثنين-الجمعة: 9:00-18:00 | السبت: 10:00-15:00"
+        },
+        map: "خريطة تفاعلية متاحة على موقع الويب الخاص بك",
+        social: {
+          title: "تابعنا",
+          visit: "قم بزيارة صفحتنا على"
+        },
+        faq: {
+          title: "الأسئلة الشائعة",
+          responseTime: "ما هو وقت الاستجابة؟",
+          responseTimeValue: "نحن نرد عادةً خلال 24 ساعة عمل.",
+          demo: "هل تقدمون عروضاً توضيحية؟",
+          demoValue: "نعم، نقدم عروضاً توضيحية مخصصة لحلولنا.",
+          seeAll: "عرض جميع الأسئلة الشائعة"
+        },
+        newsletter: {
+          title: "ابق على اطلاع",
+          description: "اشترك في نشرتنا الإخبارية لتلقي آخر أخبارنا وعروضنا الخاصة.",
+          placeholder: "عنوان بريدك الإلكتروني",
+          button: "اشتراك"
+        }
+      }
     }
   },
   fr: {
@@ -266,7 +348,89 @@ const resources = {
       testimonialsDescription: "Découvrez pourquoi nos clients nous font confiance et comment nos solutions ont transformé leur activité.",
       testimonial1: "Cette solution a complètement transformé notre façon de travailler. L'interface est intuitive et les fonctionnalités sont exactement ce dont nous avions besoin.",
       testimonial2: "Un service client exceptionnel et un produit qui dépasse nos attentes. Nous avons augmenté notre productivité de 40% depuis que nous l'utilisons.",
-      testimonial3: "La meilleure décision que nous ayons prise cette année. L'implémentation a été rapide et les résultats sont impressionnants."
+      testimonial3: "La meilleure décision que nous ayons prise cette année. L'implémentation a été rapide et les résultats sont impressionnants.",
+      contact: {
+        title: "Contactez-nous",
+        subtitle: "Discutons de votre",
+        project: "projet",
+        description: "Nous sommes là pour répondre à vos questions et vous aider à transformer vos idées en réalité.",
+        general: "Contact général",
+        support: "Support technique",
+        sales: "Ventes",
+        careers: "Carrières",
+        form: {
+          title: "Envoyez-nous un message",
+          support: "Demande de support",
+          sales: "Contact commercial",
+          careers: "Rejoignez notre équipe",
+          name: "Nom complet",
+          namePlaceholder: "Votre nom",
+          email: "Email",
+          emailPlaceholder: "Votre email",
+          subject: "Sujet",
+          subjectPlaceholder: "Sélectionnez un sujet",
+          message: "Message",
+          messagePlaceholder: {
+            default: "Comment pouvons-nous vous aider ?",
+            support: "Décrivez votre problème en détail...",
+            careers: "Parlez-nous de vous et de vos motivations..."
+          },
+          subjects: {
+            information: "Demande d'information",
+            quote: "Demande de devis",
+            other: "Autre",
+            bug: "Signaler un bug",
+            question: "Question technique",
+            account: "Problème de compte",
+            demo: "Demande de démonstration",
+            pricing: "Informations tarifaires",
+            enterprise: "Solutions entreprise",
+            job: "Offre d'emploi",
+            internship: "Stage",
+            spontaneous: "Candidature spontanée"
+          },
+          sending: "Envoi en cours...",
+          send: "Envoyer le message",
+          success: {
+            title: "Message envoyé avec succès !",
+            message: "Merci de nous avoir contactés. Notre équipe vous répondra dans les plus brefs délais.",
+            button: "Envoyer un autre message"
+          },
+          error: {
+            title: "Une erreur est survenue",
+            message: "Nous n'avons pas pu envoyer votre message. Veuillez réessayer ou nous contacter directement.",
+            button: "Réessayer"
+          }
+        },
+        info: {
+          title: "Nos coordonnées",
+          email: "Email",
+          phone: "Téléphone",
+          address: "Adresse",
+          addressValue: "123 Avenue des Champs-Élysées, 75008 Paris, France",
+          hours: "Heures d'ouverture",
+          hoursValue: "Lun-Ven: 9h-18h | Sam: 10h-15h"
+        },
+        map: "Carte interactive disponible sur votre site web",
+        social: {
+          title: "Suivez-nous",
+          visit: "Visitez notre page"
+        },
+        faq: {
+          title: "Questions fréquentes",
+          responseTime: "Quel est le délai de réponse ?",
+          responseTimeValue: "Nous répondons généralement dans les 24 heures ouvrables.",
+          demo: "Proposez-vous des démonstrations ?",
+          demoValue: "Oui, nous proposons des démonstrations personnalisées de nos solutions.",
+          seeAll: "Voir toutes les FAQ"
+        },
+        newsletter: {
+          title: "Restez informé",
+          description: "Abonnez-vous à notre newsletter pour recevoir nos dernières actualités et offres spéciales.",
+          placeholder: "Votre adresse email",
+          button: "S'abonner"
+        }
+      }
     }
   },
   en: {
@@ -399,7 +563,89 @@ const resources = {
       testimonialsDescription: "Discover why our clients trust us and how our solutions have transformed their business.",
       testimonial1: "This solution has completely transformed our way of working. The interface is intuitive and the features are exactly what we needed.",
       testimonial2: "Exceptional customer service and a product that exceeds our expectations. We've increased our productivity by 40% since using it.",
-      testimonial3: "The best decision we made this year. Implementation was quick and the results are impressive."
+      testimonial3: "The best decision we made this year. Implementation was quick and the results are impressive.",
+      contact: {
+        title: "Contact Us",
+        subtitle: "Let's talk about your",
+        project: "project",
+        description: "We're here to answer your questions and help you transform your ideas into reality.",
+        general: "General Contact",
+        support: "Technical Support",
+        sales: "Sales",
+        careers: "Careers",
+        form: {
+          title: "Send us a message",
+          support: "Support Request",
+          sales: "Sales Contact",
+          careers: "Join our team",
+          name: "Full Name",
+          namePlaceholder: "Your name",
+          email: "Email",
+          emailPlaceholder: "Your email",
+          subject: "Subject",
+          subjectPlaceholder: "Select a subject",
+          message: "Message",
+          messagePlaceholder: {
+            default: "How can we help you?",
+            support: "Describe your issue in detail...",
+            careers: "Tell us about yourself and your motivations..."
+          },
+          subjects: {
+            information: "Information Request",
+            quote: "Quote Request",
+            other: "Other",
+            bug: "Report a Bug",
+            question: "Technical Question",
+            account: "Account Issue",
+            demo: "Request a Demo",
+            pricing: "Pricing Information",
+            enterprise: "Enterprise Solutions",
+            job: "Job Offer",
+            internship: "Internship",
+            spontaneous: "Spontaneous Application"
+          },
+          sending: "Sending...",
+          send: "Send Message",
+          success: {
+            title: "Message sent successfully!",
+            message: "Thank you for contacting us. Our team will get back to you as soon as possible.",
+            button: "Send another message"
+          },
+          error: {
+            title: "An error occurred",
+            message: "We couldn't send your message. Please try again or contact us directly.",
+            button: "Try again"
+          }
+        },
+        info: {
+          title: "Our Contact Information",
+          email: "Email",
+          phone: "Phone",
+          address: "Address",
+          addressValue: "123 Champs-Élysées Avenue, 75008 Paris, France",
+          hours: "Opening Hours",
+          hoursValue: "Mon-Fri: 9am-6pm | Sat: 10am-3pm"
+        },
+        map: "Interactive map available on your website",
+        social: {
+          title: "Follow Us",
+          visit: "Visit our"
+        },
+        faq: {
+          title: "Frequently Asked Questions",
+          responseTime: "What is the response time?",
+          responseTimeValue: "We typically respond within 24 business hours.",
+          demo: "Do you offer demonstrations?",
+          demoValue: "Yes, we offer customized demonstrations of our solutions.",
+          seeAll: "See all FAQs"
+        },
+        newsletter: {
+          title: "Stay Updated",
+          description: "Subscribe to our newsletter to receive our latest news and special offers.",
+          placeholder: "Your email address",
+          button: "Subscribe"
+        }
+      }
     }
   }
 };
