@@ -44,7 +44,7 @@ export default function Step1() {
                     </div>
                 </div>
                 <div className="flex w-full justify-center items-center">
-                    <div className="bg-white shadow-2xl p-4 sm:p-6 rounded-xl w-full max-w-md">
+                    <div className="bg-white border border-[#c8c2fd] shadow p-4 sm:p-6 rounded-xl w-full max-w-md">
                         <div className="flex w-full justify-between pb-4">
                             <h1 className="text-xl sm:text-2xl font-medium">{t('controlPanel')}</h1>
                             <p className="bg-[#c8c2fd] px-2 py-0.5 text-[#6D28D9] rounded-lg text-sm sm:text-base">{t('step1')}</p>
