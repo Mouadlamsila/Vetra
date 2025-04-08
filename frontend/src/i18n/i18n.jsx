@@ -10,6 +10,14 @@ const resources = {
       Services: "الخدمات",
       Contact: "اتصل",
       Login: "تسجيل الدخول",
+      welcomeBack: "مرحباً بعودتك",
+      emailPlaceholder: "البريد الإلكتروني",
+      passwordPlaceholder: "كلمة المرور",
+      rememberMe: "تذكرني",
+      forgotPassword: "نسيت كلمة المرور؟",
+      orContinueWith: "أو تابع باستخدام",
+      dontHaveAccount: "ليس لديك حساب؟",
+      createAccount: "إنشاء حساب",
       // Step 1 translations
       step1Title: "سجل وقم بإنشاء متجرك",
       step1Description: "ابدأ بإنشاء حسابك وقم بإعداد متجرك الإلكتروني في دقائق قليلة.",
@@ -21,7 +29,6 @@ const resources = {
       basicSettingsDesc: "قم بتكوين المعلومات الأساسية لمتجرك",
       controlPanel: "لوحة التحكم",
       step1: "الخطوة 1",
-      createAccount: "إنشاء حساب",
       configureStore: "تكوين المتجر",
       chooseDomain: "اختيار نطاق",
       // Step 2 translations
@@ -151,7 +158,7 @@ const resources = {
           name: "الاسم الكامل",
           namePlaceholder: "اسمك",
           email: "البريد الإلكتروني",
-          emailPlaceholder: "بريدك الإلكتروني",
+          emailPlaceholder: "البريد الإلكتروني",
           subject: "الموضوع",
           subjectPlaceholder: "اختر موضوعاً",
           message: "الرسالة",
@@ -214,7 +221,14 @@ const resources = {
           description: "اشترك في نشرتنا الإخبارية لتلقي آخر أخبارنا وعروضنا الخاصة.",
           placeholder: "عنوان بريدك الإلكتروني",
           button: "اشتراك"
-        }
+        },
+        welcomeBack: "مرحباً بعودتك",
+        passwordPlaceholder: "كلمة المرور",
+        rememberMe: "تذكرني",
+        forgotPassword: "نسيت كلمة المرور؟",
+        orContinueWith: "أو تابع باستخدام",
+        dontHaveAccount: "ليس لديك حساب؟",
+        createAccount: "إنشاء حساب"
       }
     }
   },
@@ -224,7 +238,15 @@ const resources = {
       AboutUs: "À propos de nous",
       Services: "Services",
       Contact: "Contact",
-      Login: "Connecter",
+      Login: "Connexion",
+      welcomeBack: "Bienvenue de retour",
+      emailPlaceholder: "Email",
+      passwordPlaceholder: "Mot de passe",
+      rememberMe: "Se souvenir de moi",
+      forgotPassword: "Mot de passe oublié ?",
+      orContinueWith: "Ou continuer avec",
+      dontHaveAccount: "Vous n'avez pas de compte ?",
+      createAccount: "Créer un compte",
       // Step 1 translations
       step1Title: "Inscrivez-vous et créez votre boutique",
       step1Description: "Commencez par créer votre compte et configurez votre boutique en ligne en quelques minutes.",
@@ -366,7 +388,7 @@ const resources = {
           name: "Nom complet",
           namePlaceholder: "Votre nom",
           email: "Email",
-          emailPlaceholder: "Votre email",
+          emailPlaceholder: "Email",
           subject: "Sujet",
           subjectPlaceholder: "Sélectionnez un sujet",
           message: "Message",
@@ -429,7 +451,14 @@ const resources = {
           description: "Abonnez-vous à notre newsletter pour recevoir nos dernières actualités et offres spéciales.",
           placeholder: "Votre adresse email",
           button: "S'abonner"
-        }
+        },
+        welcomeBack: "Bienvenue de retour",
+        passwordPlaceholder: "Mot de passe",
+        rememberMe: "Se souvenir de moi",
+        forgotPassword: "Mot de passe oublié ?",
+        orContinueWith: "Ou continuer avec",
+        dontHaveAccount: "Vous n'avez pas de compte ?",
+        createAccount: "Créer un compte"
       }
     }
   },
@@ -440,6 +469,14 @@ const resources = {
       Services: "Services",
       Contact: "Contact",
       Login: "Login",
+      welcomeBack: "Welcome back",
+      emailPlaceholder: "Email",
+      passwordPlaceholder: "Password",
+      rememberMe: "Remember me",
+      forgotPassword: "Forgot password?",
+      orContinueWith: "Or continue with",
+      dontHaveAccount: "Don't have an account?",
+      createAccount: "Create account",
       // Step 1 translations
       step1Title: "Sign up and create your store",
       step1Description: "Start by creating your account and set up your online store in minutes.",
@@ -581,7 +618,7 @@ const resources = {
           name: "Full Name",
           namePlaceholder: "Your name",
           email: "Email",
-          emailPlaceholder: "Your email",
+          emailPlaceholder: "Email",
           subject: "Subject",
           subjectPlaceholder: "Select a subject",
           message: "Message",
@@ -644,7 +681,14 @@ const resources = {
           description: "Subscribe to our newsletter to receive our latest news and special offers.",
           placeholder: "Your email address",
           button: "Subscribe"
-        }
+        },
+        welcomeBack: "Welcome back",
+        passwordPlaceholder: "Password",
+        rememberMe: "Remember me",
+        forgotPassword: "Forgot password?",
+        orContinueWith: "Or continue with",
+        dontHaveAccount: "Don't have an account?",
+        createAccount: "Create account"
       }
     }
   }

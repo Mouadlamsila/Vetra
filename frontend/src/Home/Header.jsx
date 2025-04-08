@@ -1,9 +1,9 @@
-import { AlignJustify, Languages, Search, User, X } from "lucide-react";
+import { AlignJustify, Languages, Link, Search, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from "../i18n/i18n";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { Link  as LinkDom } from "react-router-dom";
 
 export default function Header() {
     const { t, i18n } = useTranslation();
@@ -24,8 +24,8 @@ export default function Header() {
     return (
         <header className={`${menu ? "h-screen flex-col" : "items-center h-[80px] flex-row"} duration-300 select-none transition-all ease-in-out bg-[#1e3a8a]  fixed z-[99] text-[#FFFFFF] flex  w-full justify-between py-4 px-4 sm:px-28`}>
             <div className={`flex ${menu ? "flex justify-between w-full" : ""}  items-center w-full gap-16`}>
-                <img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden " />
-                <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden " />
+                <LinkDom to={'/'} className="sm:block hidden" ><img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden " /></LinkDom>
+                <LinkDom to={'/'}  className="block sm:hidden"><img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden " /></LinkDom>
                 <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl`} onClick={() => setMenu(!menu)} />
                 <ul className="sm:flex hidden items-center gap-8">
                     <li className="group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out">
@@ -84,9 +84,9 @@ export default function Header() {
 
                         <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl"></div>
 
-                        <button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-white z-10 bg-transparent">
+                        <LinkDom to={'/login'} ><button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-white z-10 bg-transparent">
                             {t('Login')}
-                        </button>
+                        </button></LinkDom>
                     </div>
                 </div>
 

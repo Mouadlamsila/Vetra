@@ -1,127 +1,142 @@
-import { useTranslation } from 'react-i18next';
-import { Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
+import { Link } from "react-router-dom"
+import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram, ChevronRight, Heart } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
-export default function Footer() {
-    const { t } = useTranslation();
 
-    const currentYear = new Date().getFullYear();
+const Footer = () => {
+    const { t } = useTranslation()
+    const currentYear = new Date().getFullYear()
 
     return (
-        <footer className="bg-[#1e3a8a] text-[#c8c2fd]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* Company Info */}
-                    <div className="space-y-4">
-                        <h3 className="text-xl font-bold">{t('Company')}</h3>
-                        <p className="text-[#c8c2fd]/80">
-                            {t('footerDescription')}
+        <footer className="bg-[#1e3a8a] text-white pt-16 pb-8">
+            <div className="container mx-auto px-4">
+                {/* Section principale du footer */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-16">
+                    {/* Colonne 1: À propos */}
+                    <div className="max-w-xs">
+                        <div className="mb-4">
+                            <img src="/img/logo/logo.png" alt="" className="h-12" />
+                        </div>
+                        <p className="text-gray-300 mb-6">
+                            {t('companyVision')}
                         </p>
                         <div className="flex space-x-4">
-                            <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                <Facebook className="h-6 w-6" />
-                            </a>
-                            <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                <Twitter className="h-6 w-6" />
-                            </a>
-                            <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                <Instagram className="h-6 w-6" />
-                            </a>
-                            <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                <Linkedin className="h-6 w-6" />
-                            </a>
-                            <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                <Github className="h-6 w-6" />
-                            </a>
+                            {[
+                                { icon: <Linkedin className="h-5 w-5" />, url: "https://linkedin.com", name: "LinkedIn" },
+                                { icon: <Twitter className="h-5 w-5" />, url: "https://twitter.com", name: "Twitter" },
+                                { icon: <Facebook className="h-5 w-5" />, url: "https://facebook.com", name: "Facebook" },
+                                { icon: <Instagram className="h-5 w-5" />, url: "https://instagram.com", name: "Instagram" },
+                            ].map((social, index) => (
+                                <a
+                                    key={index}
+                                    href={social.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="bg-[#2e4a9a] p-2 rounded-full hover:bg-[#c8c2fd] hover:text-[#1e3a8a] transition-colors text-white"
+                                    aria-label={`${t('contact.social.visit')} ${social.name}`}
+                                >
+                                    {social.icon}
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Colonne 2: Liens rapides */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">{t('Quick Links')}</h3>
-                        <ul className="space-y-2">
-                            <li>
-                                <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Home')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#features" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Features')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#about" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('AboutUs')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#contact" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Contact')}
-                                </a>
-                            </li>
+                        <h3 className="text-lg font-semibold text-white mb-6">{t('Features')}</h3>
+                        <ul className="space-y-3">
+                            {[
+                                { name: t('step1'), url: "/" },
+                                { name: t('AboutUs'), url: "/about" },
+                                { name: t('Services'), url: "/services" },
+                                { name: t('step2'), url: "/products" },
+                                { name: t('step3'), url: "/pricing" },
+                                { name: t('testimonials'), url: "/blog" },
+                                { name: t('Contact'), url: "/contact" },
+                            ].map((link, index) => (
+                                <li key={index}>
+                                    <Link
+                                        to={link.url}
+                                        className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center"
+                                    >
+                                        <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Services */}
+                    {/* Colonne 3: Services */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">{t('Services')}</h3>
-                        <ul className="space-y-2">
-                            <li>
-                                <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Web Development')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Mobile Development')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('UI/UX Design')}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-[#6D28D9] transition duration-300">
-                                    {t('Digital Marketing')}
-                                </a>
-                            </li>
+                        <h3 className="text-lg font-semibold text-white mb-6">{t('Services')}</h3>
+                        <ul className="space-y-3">
+                            {[
+                                { name: t('swiperTitle1'), url: "/services/web-development" },
+                                { name: t('swiperTitle2'), url: "/services/mobile-apps" },
+                                { name: t('swiperTitle3'), url: "/services/ux-ui-design" },
+                                { name: t('swiperTitle4'), url: "/services/digital-marketing" },
+                                { name: t('swiperTitle5'), url: "/services/consulting" },
+                                { name: t('swiperTitle6'), url: "/services/technical-support" },
+                            ].map((service, index) => (
+                                <li key={index}>
+                                    <Link
+                                        to={service.url}
+                                        className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center"
+                                    >
+                                        <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
+                                        {service.name}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-4">{t('Contact Info')}</h3>
-                        <ul className="space-y-2">
-                            <li className="flex items-start">
-                                <span className="mr-2">📍</span>
-                                <span className="text-[#c8c2fd]/80">
-                                    123 Business Street, City, Country
-                                </span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="mr-2">📧</span>
-                                <span className="text-[#c8c2fd]/80">
-                                    contact@example.com
-                                </span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="mr-2">📞</span>
-                                <span className="text-[#c8c2fd]/80">
-                                    +1 234 567 890
-                                </span>
-                            </li>
-                        </ul>
+                    {/* Colonne 4: Contact */}
+                    <div className="w-full  ">
+                        <h3 className="text-lg font-semibold text-white mb-6">{t('readyToTransform')}</h3>
+                        <p className="text-gray-300 mb-6">{t('joinUsers')}</p>
+                        {/* Séparateur */}
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
+                                onClick={() => window.location.href = '/login'}
+                            >
+                                {t('Login')}
+                            </button>
+                            <button
+                                className="bg-[#6D28D9] hover:bg-[#6D28D9]/90 hover:text-[#c8c2fd] transition-all ease-in-out duration-300 px-6 py-2 rounded-lg text-[#c8c2fd] font-medium w-full sm:w-auto"
+                                onClick={() => window.location.href = '/register'}
+                            >
+                                {t('createAccount')}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Copyright */}
-                <div className="border-t border-[#6D28D9]/20 mt-12 pt-8 text-center">
-                    <p className="text-[#c8c2fd]/80">
-                        © {currentYear} {t('Company')}. {t('All rights reserved')}
-                    </p>
+
+                <div className="border-t border-[#2e4a9a] pt-8 mt-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="text-gray-400 text-sm">
+                            © {currentYear} {t('companyName')}. {t('allRightsReserved')}
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-4 text-sm">
+                            <Link to="/privacy" className="text-gray-400 hover:text-[#c8c2fd] transition-colors">
+                                {t('privacyPolicy')}
+                            </Link>
+                            <Link to="/terms" className="text-gray-400 hover:text-[#c8c2fd] transition-colors">
+                                {t('termsOfService')}
+                            </Link>
+                            <Link to="/cookies" className="text-gray-400 hover:text-[#c8c2fd] transition-colors">
+                                {t('cookiePolicy')}
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </footer>
-    );
-} 
+    )
+}
+
+export default Footer
