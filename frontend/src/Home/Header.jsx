@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from "../i18n/i18n";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link  as LinkDom } from "react-router-dom";
+import { Link as LinkDom, useNavigate } from "react-router-dom";
+import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 
 export default function Header() {
     const { t, i18n } = useTranslation();
@@ -11,6 +12,7 @@ export default function Header() {
     const [langue, setLangue] = useState('');
     const [Show, setShow] = useState(false);
     const [menu, setMenu] = useState(false);
+    const navigate = useNavigate();
 
 
     // const language = localStorage.getItem('lang')
@@ -24,7 +26,7 @@ export default function Header() {
         <header className={`${menu ? "h-screen flex-col" : "items-center h-[80px] flex-row"} duration-300 select-none transition-all ease-in-out bg-[#1e3a8a]  fixed z-[99] text-[#FFFFFF] flex  w-full justify-between py-4 px-4 sm:px-28`}>
             <div className={`flex ${menu ? "flex justify-between w-full" : ""}  items-center w-full gap-16`}>
                 <LinkDom to={'/'} className="sm:block hidden" ><img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden " /></LinkDom>
-                <LinkDom to={'/'}  className="block sm:hidden"><img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden " /></LinkDom>
+                <LinkDom to={'/'} className="block sm:hidden" onClick={() => setMenu(false)}><img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden " /></LinkDom>
                 <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl`} onClick={() => setMenu(!menu)} />
                 <ul className="sm:flex hidden items-center gap-8">
                     <li className="group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out">
@@ -56,7 +58,7 @@ export default function Header() {
                     {/* menu langue */}
                     <AnimatePresence>
                         {Show && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
@@ -73,7 +75,7 @@ export default function Header() {
                     </AnimatePresence>
                 </div>
                 <div class="sm:flex hidden  items-center justify-center ">
-                    <div class="relative  group bg-[#6D28D9] rounded-xl hover:bg-transparent ">
+                    <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
 
                         <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl"></div>
 
@@ -83,9 +85,11 @@ export default function Header() {
 
                         <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl"></div>
 
-                        <LinkDom to={'/login'} ><button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-white z-10 bg-transparent">
-                            {t('Login')}
-                        </button></LinkDom>
+                        <LinkDom to={'/login'} >
+                            <button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-[#c8c2fd] z-10 bg-transparent">
+                                {t('Login')}
+                            </button>
+                        </LinkDom>
                     </div>
                 </div>
 
@@ -93,48 +97,74 @@ export default function Header() {
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>
                     <AnimatePresence>
                         {menu && (
-                            <motion.ul 
+                            <motion.ul
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
                                 className={`w-full h-screen flex flex-col justify-center items-center gap-8`}
                             >
-                                <motion.li 
+                                <motion.li
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     transition={{ duration: 0.3, delay: 0.1 }}
                                     className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                    onClick={() => {
+                                        navigate('/features');setMenu(false)
+                                    }}
                                 >
                                     <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Features')}</p>
                                 </motion.li>
-                                <motion.li 
+                                <motion.li
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     transition={{ duration: 0.3, delay: 0.2 }}
                                     className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                    onClick={() => {
+                                        navigate('/about');setMenu(false)
+                                    }}
                                 >
                                     <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('AboutUs')}</p>
                                 </motion.li>
-                                <motion.li 
+                                <motion.li
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     transition={{ duration: 0.3, delay: 0.3 }}
                                     className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                    onClick={() => {
+                                        navigate('/services');setMenu(false)
+                                    }}
                                 >
                                     <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Services')}</p>
                                 </motion.li>
-                                <motion.li 
+                                <motion.li
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     transition={{ duration: 0.3, delay: 0.4 }}
                                     className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                    onClick={() => {
+                                        navigate('/contact');setMenu(false)
+                                    }}
                                 >
                                     <p className="z-50 group-hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Contact')}</p>
+                                </motion.li>
+                                <motion.li
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.4 }}
+                                    className="flex justify-center p-3 w-full text-[#E5E7EB] items-center"
+                                    onClick={() => {
+                                        navigate('/login');setMenu(false)
+                                    }}  
+                                >
+                                    <ShinyButton rounded={true} className="w-full">
+                                        {t('Login')}
+                                    </ShinyButton>
                                 </motion.li>
                             </motion.ul>
                         )}

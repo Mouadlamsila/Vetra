@@ -58,8 +58,12 @@ export default function Register() {
         }))
     }
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     return (
-        <div className="min-h-screen pt-12 w-full bg-gradient-to-br from-[#1e3a8a] to-[#6D28D9] flex items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen pt-12 w-full bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
             <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 

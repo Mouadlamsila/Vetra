@@ -8,6 +8,7 @@ import AboutSection from "../Home/AboutSection";
 import Contact from "../Home/Contact";
 import Threads from "../blocks/Backgrounds/Threads/Threads";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
+import { useEffect } from "react";
 
 export default function Home() {
     const containerVariants = {
@@ -32,6 +33,10 @@ export default function Home() {
             },
         },
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
 
     return (
         <motion.div

@@ -116,7 +116,7 @@ const Footer = () => {
 
 
                 <div className="border-t border-[#2e4a9a] pt-8 mt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div dir="ltr" className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-gray-400 text-sm">
                             © {currentYear} {t('companyName')}. {t('allRightsReserved')}
                         </div>
