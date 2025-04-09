@@ -8,4 +8,5 @@ export default defineConfig({
     host: true, // Or set to '0.0.0.0'
     port: 5173, // Optional: fix a port
   },
+  
 })

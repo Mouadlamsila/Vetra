@@ -110,6 +110,11 @@ const resources = {
       globalImpactDesc: "نفكر على نطاق عالمي بينما نعمل محلياً.",
       readyToTransform: "هل أنت مستعد لتحويل عملك؟",
       joinUsers: "انضم إلى أكثر من 100,000 مستخدم راضٍ واكتشف كيف يمكن لحلولنا مساعدتك في تحقيق أهدافك.",
+      experienceFuture: "اختبر مستقبل التفاعل الرقمي مع منصتنا المتطورة",
+      seamlessIntegration: "تكامل سلس مع جميع أدواتك المفضلة",
+      advancedSecurity: "أمان متقدم مع تشفير من طرف إلى طرف",
+      realtimeCollaboration: "تعاون فوري عبر جميع الأجهزة",
+      clickAndHold: "انقر واضغط في أي مكان لتسريع الحركة",
       // Team translations
       teamDescription: "فريقنا هو قوتنا. كل عضو يجلب خبرة فريدة وشغفاً مشتركاً للتميز والابتكار.",
       founderCEO: "المؤسس والرئيس التنفيذي",
@@ -229,7 +234,13 @@ const resources = {
         orContinueWith: "أو تابع باستخدام",
         dontHaveAccount: "ليس لديك حساب؟",
         createAccount: "إنشاء حساب"
-      }
+      },
+      // Register translations
+      namePlaceholder: "الاسم الكامل",
+      confirmPasswordPlaceholder: "تأكيد كلمة المرور",
+      passwordsDontMatch: "كلمات المرور غير متطابقة",
+      joinOurCommunity: "انضم إلى مجتمعنا",
+      alreadyHaveAccount: "لديك حساب بالفعل؟"
     }
   },
   fr: {
@@ -258,7 +269,6 @@ const resources = {
       basicSettingsDesc: "Configurez les informations essentielles de votre boutique",
       controlPanel: "Panneau de contrôle",
       step1: "Étape 1",
-      createAccount: "Créer un compte",
       configureStore: "Configurer la boutique",
       chooseDomain: "Choisir un domaine",
       // Step 2 translations
@@ -340,6 +350,11 @@ const resources = {
       globalImpactDesc: "Nous pensons à l'échelle mondiale tout en agissant localement.",
       readyToTransform: "Prêt à transformer votre entreprise ?",
       joinUsers: "Rejoignez plus de 100 000 utilisateurs satisfaits et découvrez comment nos solutions peuvent vous aider à atteindre vos objectifs.",
+      experienceFuture: "Découvrez l'avenir de l'interaction numérique avec notre plateforme de pointe",
+      seamlessIntegration: "Intégration transparente avec tous vos outils préférés",
+      advancedSecurity: "Sécurité avancée avec chiffrement de bout en bout",
+      realtimeCollaboration: "Collaboration en temps réel sur tous les appareils",
+      clickAndHold: "Cliquez et maintenez pour accélérer l'animation",
       // Team translations
       teamDescription: "Notre force réside dans notre équipe diversifiée de talents exceptionnels. Chaque membre apporte une expertise unique et une passion partagée pour l'excellence et l'innovation.",
       founderCEO: "Fondatrice & CEO",
@@ -459,7 +474,13 @@ const resources = {
         orContinueWith: "Ou continuer avec",
         dontHaveAccount: "Vous n'avez pas de compte ?",
         createAccount: "Créer un compte"
-      }
+      },
+      // Register translations
+      namePlaceholder: "Nom complet",
+      confirmPasswordPlaceholder: "Confirmer le mot de passe",
+      passwordsDontMatch: "Les mots de passe ne correspondent pas",
+      joinOurCommunity: "Rejoignez notre communauté",
+      alreadyHaveAccount: "Vous avez déjà un compte ?"
     }
   },
   en: {
@@ -488,7 +509,6 @@ const resources = {
       basicSettingsDesc: "Configure the essential information of your store",
       controlPanel: "Control Panel",
       step1: "Step 1",
-      createAccount: "Create account",
       configureStore: "Configure store",
       chooseDomain: "Choose domain",
       // Step 2 translations
@@ -570,6 +590,11 @@ const resources = {
       globalImpactDesc: "We think globally while acting locally.",
       readyToTransform: "Ready to transform your business?",
       joinUsers: "Join over 100,000 satisfied users and discover how our solutions can help you achieve your goals.",
+      experienceFuture: "Experience the future of digital interaction with our cutting-edge platform",
+      seamlessIntegration: "Seamless integration with all your favorite tools",
+      advancedSecurity: "Advanced security with end-to-end encryption",
+      realtimeCollaboration: "Real-time collaboration across all devices",
+      clickAndHold: "Click and hold anywhere to accelerate the animation",
       // Team translations
       teamDescription: "Our strength lies in our diverse team of exceptional talents. Each member brings unique expertise and a shared passion for excellence and innovation.",
       founderCEO: "Founder & CEO",
@@ -689,7 +714,13 @@ const resources = {
         orContinueWith: "Or continue with",
         dontHaveAccount: "Don't have an account?",
         createAccount: "Create account"
-      }
+      },
+      // Register translations
+      namePlaceholder: "Full name",
+      confirmPasswordPlaceholder: "Confirm password",
+      passwordsDontMatch: "Passwords don't match",
+      joinOurCommunity: "Join our community",
+      alreadyHaveAccount: "Already have an account?"
     }
   }
 };

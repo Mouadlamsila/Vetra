@@ -10,7 +10,6 @@ export default function Header() {
     const currentLang = i18n.language;
     const [langue, setLangue] = useState('');
     const [Show, setShow] = useState(false);
-    console.log(Show)
     const [menu, setMenu] = useState(false);
 
 

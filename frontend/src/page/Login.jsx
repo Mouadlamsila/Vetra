@@ -1,198 +1,232 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+"use client"
+
+import { useEffect, useState } from "react"
+import { Mail, Lock, Eye, EyeOff, Facebook, Twitter, Github, ArrowRight, ArrowLeft } from "lucide-react"
+
 import { useTranslation } from "react-i18next"
-import { Mail, Lock, Eye, EyeOff, Facebook, Twitter, Github } from "lucide-react"
-import Hyperspeed from "../blocks/Backgrounds/Hyperspeed/Hyperspeed"
+import { Link } from "react-router-dom"
+import { motion } from "framer-motion"
 
 export default function Login() {
-    const { t } = useTranslation()
-    const [showPassword, setShowPassword] = useState(false)
-    const [formData, setFormData] = useState({
-        email: "",
-        password: ""
-    })
+  const { t } = useTranslation()
+  const [showPassword, setShowPassword] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+  const language = localStorage.getItem("lang")
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
+  /* Animation */
+  const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  useEffect(() => {
+    const animationTimer = setInterval(() => {
+      setIsAnimating(true)
+      setTimeout(() => setIsAnimating(false), 1000)
+      setActiveFeatureIndex((prev) => (prev + 1) % features.length)
+    }, 3000)
+    return () => clearInterval(animationTimer)
+  }, [])
 
-        console.log("Login form submitted:", formData)
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      console.log("Login form submitted:", formData)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
-    console.log(formData)
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
 
-    return (
-        <div className="">
-            <div className="min-h-screen bg-gradient-to-br sm:pt-20 from-[#1e3a8a] to-[#6D28D9] flex items-center justify-center p-4">
-                <div className="w-full max-w-md">
-                    <div className="bg-white rounded-2xl shadow-xl p-8">
-                        <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('Login')}</h1>
-                            <p className="text-gray-600">{t('welcomeBack')}</p>
-                        </div>
+  return (
+    <div className="min-h-screen  pt-12 w-full bg-gradient-to-br from-[#1e3a8a] to-[#6D28D9] flex items-center justify-center relative overflow-hidden">
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-4">
-                                <div className="relative">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className={`peer w-full pl-10 pr-4 py-3 text-gray-700 border ${formData.email ? "ring-[#6D28D9] ring-2 border-0" : "border-gray-300 outline-none"} focus:outline-none  rounded-lg  focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent transition-all duration-200`}
-                                        placeholder={t('emailPlaceholder')}
-                                        required
-                                    />
-                                    <div className={`absolute peer-focus:text-[#6D28D9] transition-all duration-200 ${formData.email ? "text-[#6D28D9]" : "text-gray-400"} inset-y-0 left-0 pl-3 flex items-center pointer-events-none`}>
-                                        <Mail className="h-5 w-5  " />
-                                    </div>
-                                </div>
+      {/* Content Container */}
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left Side - Headline */}
+          <div className="text-white text-center space-y-3 lg:text-left">
+            <h1 className={`${language === "ar" ? "text-start" : ""}  text-4xl sm:text-5xl font-bold   text-white`}>
+              {t('welcomeBack')}
+            </h1>
+            <p className={`${language === "ar" ? "text-start" : ""} text-lg  sm:text-xl text-purple-100 max-w-lg mx-auto lg:mx-0`}>
+              {t('experienceFuture')}
+            </p>
 
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        className={`peer w-full pl-10 pr-4 py-3 text-gray-700 border ${formData.password ? "ring-[#6D28D9] ring-2 border-0" : "border-gray-300 outline-none"} focus:outline-none  rounded-lg  focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent transition-all duration-200`}
-                                        placeholder={t('passwordPlaceholder')}
-                                        required
-                                    />
-                                    <div className={`absolute peer-focus:text-[#6D28D9] transition-all duration-200 ${formData.password ? "text-[#6D28D9]" : "text-gray-400"} inset-y-0 left-0 pl-3 flex items-center pointer-events-none`}>
-                                        <Lock className="h-5 w-5 " />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className={`absolute peer-focus:text-[#6D28D9] transition-all duration-200 ${formData.password ? "text-[#6D28D9]" : "text-gray-400"} inset-y-0 right-0 pr-3 flex items-center`}
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="h-5 w-5" />
-                                        ) : (
-                                            <Eye className="h-5 w-5" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <div className="flex space-x-2 items-center">
-                                    <input
-                                        type="checkbox"
-                                        id="remember"
-                                        className=" h-4 w-4 text-[#6D28D9] focus:ring-[#6D28D9] border-gray-300 rounded"
-                                    />
-                                    <label htmlFor="remember" className=" block text-sm text-gray-700">
-                                        {t('rememberMe')}
-                                    </label>
-                                </div>
-                                <Link
-                                    to="/forgot-password"
-                                    className="text-sm font-medium text-[#6D28D9] hover:text-[#5b21b6]"
-                                >
-                                    {t('forgotPassword')}
-                                </Link>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full bg-[#6D28D9] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#5b21b6] transition-colors"
-                            >
-                                {t('Login')}
-                            </button>
-
-                            <div className="relative my-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-300"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-500">
-                                        {t('orContinueWith')}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3">
-                                <button
-                                    type="button"
-                                    className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    <Facebook className="h-5 w-5 text-[#1877F2]" />
-                                </button>
-                                <button
-                                    type="button"
-                                    className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    <Twitter className="h-5 w-5 text-[#1DA1F2]" />
-                                </button>
-                                <button
-                                    type="button"
-                                    className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    <Github className="h-5 w-5 text-gray-900" />
-                                </button>
-                            </div>
-
-                            <div className="text-center text-sm">
-                                <span className="text-gray-600">{t('dontHaveAccount')}</span>{" "}
-                                <Link
-                                    to="/register"
-                                    className="font-medium text-[#6D28D9] hover:text-[#5b21b6]"
-                                >
-                                    {t('createAccount')}
-                                </Link>
-                            </div>
-                        </form>
+            {/* Features List */}
+            <div className="mt-8 space-y-4 hidden lg:block">
+              <div className="mt-8 space-y-6 hidden lg:block">
+                {features.map((feature, index) => (
+                  <div
+                    key={feature}
+                    className={`flex items-center space-x-3 transition-all duration-500 ease-in-out transform
+                    ${index === activeFeatureIndex ? 'opacity-100 translate-x-0' : 'opacity-50 -translate-x-2'}`}
+                  >
+                    <div className={`bg-purple-500/20 p-2 rounded-full transition-all duration-500`}
+                    >
+                      {language === 'ar' ? (
+                        <ArrowLeft className="h-5 w-5 text-purple-300" />
+                      ) : (
+                        <ArrowRight className="h-5 w-5 text-purple-300" />
+                      )}
                     </div>
+                    <p className="text-purple-100 text-lg font-medium">{t(feature)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Login Form */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow p-8 border border-white/20 transform transition-all duration-300  hover:border-purple-300/30">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2 animate-fade-in">{t('Login')}</h2>
+              <p className="text-purple-100 animate-fade-in-delayed">{t('welcomeBack')}</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                {/* Email */}
+                <div className="relative group">
+                  <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                    <Mail className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
+                    placeholder={t('emailPlaceholder')}
+                    required
+                  />
                 </div>
-            </div>
-            <div className="">
-                <Hyperspeed
-                    effectOptions={{
-                        onSpeedUp: () => { },
-                        onSlowDown: () => { },
-                        distortion: 'turbulentDistortion',
-                        length: 400,
-                        roadWidth: 10,
-                        islandWidth: 2,
-                        lanesPerRoad: 4,
-                        fov: 90,
-                        fovSpeedUp: 150,
-                        speedUp: 2,
-                        carLightsFade: 0.4,
-                        totalSideLightSticks: 20,
-                        lightPairsPerRoadWay: 40,
-                        shoulderLinesWidthPercentage: 0.05,
-                        brokenLinesWidthPercentage: 0.1,
-                        brokenLinesLengthPercentage: 0.5,
-                        lightStickWidth: [0.12, 0.5],
-                        lightStickHeight: [1.3, 1.7],
-                        movingAwaySpeed: [60, 80],
-                        movingCloserSpeed: [-120, -160],
-                        carLightsLength: [400 * 0.03, 400 * 0.2],
-                        carLightsRadius: [0.05, 0.14],
-                        carWidthPercentage: [0.3, 0.5],
-                        carShiftX: [-0.8, 0.8],
-                        carFloorSeparation: [0, 5],
-                        colors: {
-                            roadColor: 0x080808,
-                            islandColor: 0x0a0a0a,
-                            background: 0x000000,
-                            shoulderLines: 0xFFFFFF,
-                            brokenLines: 0xFFFFFF,
-                            leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
-                            rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
-                            sticks: 0x03B3C3,
-                        }
-                    }}
-                />
-            </div>
+
+                {/* Password */}
+                <div className="relative group">
+                  <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                    <Lock className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
+                    placeholder={t('passwordPlaceholder')}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-purple-300 hover:text-purple-500 transition-colors duration-300`}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    className="h-4 w-4 text-purple-500 focus:ring-purple-500 border-purple-300/20 rounded bg-white/5 transition-colors duration-300"
+                  />
+                  <label htmlFor="remember" className={`${language === "ar" ? "mr-2" : "ml-2"} block text-sm text-purple-100`}>
+                    {t('rememberMe')}
+                  </label>
+                </div>
+                <a
+                  href="#"
+                  className="text-sm font-medium text-purple-300 hover:text-white transition-colors duration-300"
+                >
+                  {t('forgotPassword')}
+                </a>
+              </div>
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      {t('Login')}
+                      {language === "ar" ? (
+                        <ArrowLeft className={`mr-2 h-5 w-5 transition-transform duration-300 ${isHovering ? "-translate-x-1" : ""}`} />
+                      ) : (
+                        <ArrowRight className={`ml-2 h-5 w-5 transition-transform duration-300 ${isHovering ? "translate-x-1" : ""}`} />
+                      )}
+                    </>
+                  )}
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              </button>
+
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-purple-300/20"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-transparent text-purple-200 animate-fade-in">{t('orContinueWith')}</span>
+                </div>
+              </div>
+
+              {/* Social Login Buttons */}
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  className="flex items-center justify-center py-2 px-4 border border-purple-300/20 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+                >
+                  <Facebook className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center justify-center py-2 px-4 border border-purple-300/20 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+                >
+                  <Twitter className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center justify-center py-2 px-4 border border-purple-300/20 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+                >
+                  <Github className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                </button>
+              </div>
+
+              {/* Sign Up Link */}
+              <div className="text-center text-sm mt-6">
+                <span className="text-purple-100">{t('dontHaveAccount')}</span>{" "}
+                <Link to="/register" className="font-medium text-purple-300 hover:text-white transition-colors duration-300">
+                  {t('createAccount')}
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
-    )
-}  
+      </div>
+    </div>
+  )
+}
