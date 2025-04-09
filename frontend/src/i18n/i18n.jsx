@@ -5,9 +5,9 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   ar: {
     translation: {
-      Features: "الميزات",
+      Features: "الرئيسية",
       AboutUs: "معلومات عنا",
-      Services: "الخدمات",
+      Services: "خطوات",
       Contact: "اتصل",
       Login: "تسجيل الدخول",
       welcomeBack: "مرحباً بعودتك",
@@ -245,7 +245,7 @@ const resources = {
   },
   fr: {
     translation: {
-      Features: "Fonctionnalités",
+      Features: "Accueil",
       AboutUs: "À propos de nous",
       Services: "Services",
       Contact: "Contact",
@@ -485,7 +485,7 @@ const resources = {
   },
   en: {
     translation: {
-      Features: "Features",
+      Features: "Home",
       AboutUs: "About Us",
       Services: "Services",
       Contact: "Contact",

@@ -45,19 +45,19 @@ export default function Home() {
             variants={containerVariants}
             className="overflow-hidden"
         >
-            <motion.div variants={sectionVariants} className="sm:block hidden">
+            <motion.div id="home" variants={sectionVariants} className="sm:block hidden">
                 <GridMotion />
             </motion.div>
-            <motion.div variants={sectionVariants} className="block sm:hidden">
+            <motion.div id="home" variants={sectionVariants} className="block sm:hidden">
                 <Swip />
             </motion.div>
-            <motion.div variants={sectionVariants}>
+            <motion.div id="features" variants={sectionVariants}>
                 <Features />
             </motion.div>
-            <motion.div variants={sectionVariants}>
+            <motion.div id="about" variants={sectionVariants}>
                 <AboutSection />
             </motion.div>
-            <motion.div variants={sectionVariants}>
+            <motion.div id="steps" variants={sectionVariants}>
                 <Steps />
             </motion.div>
             <div className="w-full h-[10px] flex justify-center pt-4">
@@ -65,7 +65,7 @@ export default function Home() {
                   
                 </ShinyButton>
             </div>
-            <motion.div variants={sectionVariants}>
+            <motion.div id="contact" variants={sectionVariants}>
                 <Contact />
             </motion.div>
 

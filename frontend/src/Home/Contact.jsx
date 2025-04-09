@@ -122,7 +122,7 @@ const Contact = () => {
   const activeTabData = contactTabs.find((tab) => tab.id === activeTab)
 
   return (
-    <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-white to-[#f9f7ff]">
+    <section  className="py-12 md:py-20 px-4 bg-gradient-to-b from-white to-[#f9f7ff]">
       <div className="max-w-7xl mx-auto">
         {/* En-tête de la section */}
         <motion.div

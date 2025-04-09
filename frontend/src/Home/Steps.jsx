@@ -38,6 +38,7 @@ const Steps = () => {
             viewport={{ once: true, amount: 0.2 }}
             variants={containerVariants}
             className="py-16 px-4 bg-white"
+            
         >
             <motion.div variants={itemVariants} className="text-center mb-12">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('howItWorks')}</h2>
