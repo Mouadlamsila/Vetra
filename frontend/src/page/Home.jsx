@@ -48,7 +48,7 @@ export default function Home() {
             <motion.div id="home" variants={sectionVariants} className="sm:block hidden">
                 <GridMotion />
             </motion.div>
-            <motion.div id="home" variants={sectionVariants} className="block sm:hidden">
+            <motion.div id="home2" variants={sectionVariants} className="block sm:hidden">
                 <Swip />
             </motion.div>
             <motion.div id="features" variants={sectionVariants}>

@@ -16,6 +16,7 @@ export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const [makeStyle, setMakeStyle] = useState(localStorage.getItem("location"));
+    const userID = localStorage.getItem("user");
 
     useEffect(() => {
       localStorage.setItem("location",makeStyle);  
@@ -42,11 +43,11 @@ export default function Header() {
                     </LinkDom>
                 )}
                 {location.pathname === '/' ? (
-                    <ScrollLink to="home" spy={true} smooth={true} offset={-100} className="block sm:hidden">
+                    <ScrollLink to="home2" spy={true} smooth={true} offset={-100} className="block sm:hidden" onClick={()=> setMenu(false)}>
                         <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
                     </ScrollLink>
                 ) : (
-                    <LinkDom to="/" className="block sm:hidden">
+                    <LinkDom to="/" className="block sm:hidden" onClick={()=> setMenu(false)}>
                         <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
                     </LinkDom>
                 )}
@@ -115,7 +116,8 @@ export default function Header() {
                         )}
                     </AnimatePresence>
                 </div>
-                <div class="sm:flex hidden  items-center justify-center ">
+                {userID ? (<User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} />):(
+                <div class="sm:flex hidden  items-center  justify-center ">
                     <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
 
                         <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
@@ -133,7 +135,7 @@ export default function Header() {
                         </LinkDom>
                     </div>
                 </div>
-
+)}
                 <AlignJustify className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] w-full rounded-xl`} onClick={() => setMenu(!menu)} />
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>
                     <AnimatePresence>
@@ -145,57 +147,149 @@ export default function Header() {
                                 transition={{ duration: 0.3 }}
                                 className={`w-full h-screen flex flex-col justify-center items-center gap-8`}
                             >
-                                <motion.li
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3, delay: 0.1 }}
-                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
-                                    onClick={() => {
-                                        navigate('/'); setMenu(false)
-                                    }}
-                                >
-                                    <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Features')}</p>
-                                </motion.li>
-                                <motion.li
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3, delay: 0.2 }}
-                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
-                                    onClick={() => {
-                                        navigate('/about'); setMenu(false)
-                                    }}
-                                >
-                                    <p className="z-50 -hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('AboutUs')}</p>
-                                </motion.li>
+                                {location.pathname === '/' ? (
+                                    <ScrollLink
+                                        to="home2"
+                                        spy={true}
+                                        smooth={true}
+                                        offset={-100}
+                                        onClick={() => {
+                                            setMakeStyle("home");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.1 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "home" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Features')}</p>
+                                        </motion.li>
+                                    </ScrollLink>
+                                ) : (
+                                    <LinkDom
+                                        to="/"
+                                        onClick={() => {
+                                            setMakeStyle("home");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.1 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "home" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Features')}</p>
+                                        </motion.li>
+                                    </LinkDom>
+                                )}
 
-                                <motion.li
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3, delay: 0.4 }}
-                                    className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                {location.pathname === '/' ? (
+                                    <ScrollLink
+                                        to="about"
+                                        spy={true}
+                                        smooth={true}
+                                        offset={-100}
+                                        onClick={() => {
+                                            setMakeStyle("about");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.2 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('AboutUs')}</p>
+                                        </motion.li>
+                                    </ScrollLink>
+                                ) : (
+                                    <LinkDom
+                                        to="/"
+                                        onClick={() => {
+                                            setMakeStyle("about");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.2 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('AboutUs')}</p>
+                                        </motion.li>
+                                    </LinkDom>
+                                )}
+
+                                {location.pathname === '/' ? (
+                                    <ScrollLink
+                                        to="contact"
+                                        spy={true}
+                                        smooth={true}
+                                        offset={-100}
+                                        onClick={() => {
+                                            setMakeStyle("contact");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.3 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Contact')}</p>
+                                        </motion.li>
+                                    </ScrollLink>
+                                ) : (
+                                    <LinkDom
+                                        to="/"
+                                        onClick={() => {
+                                            setMakeStyle("contact");
+                                            setMenu(false);
+                                        }}
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.3 }}
+                                            className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                        >
+                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Contact')}</p>
+                                        </motion.li>
+                                    </LinkDom>
+                                )}
+
+                                <LinkDom
+                                    to="/login"
                                     onClick={() => {
-                                        navigate('/contact'); setMenu(false)
+                                        setMakeStyle("login");
+                                        setMenu(false);
                                     }}
+                                    className="w-full"
                                 >
-                                    <p className="z-50 group-hover:text-[#6D28D9] transition-all duration-500 ease-in-out text-2xl font-medium">{t('Contact')}</p>
-                                </motion.li>
-                                <motion.li
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3, delay: 0.4 }}
-                                    className="flex justify-center p-3 w-full text-[#E5E7EB] items-center"
-                                    onClick={() => {
-                                        navigate('/login'); setMenu(false)
-                                    }}
-                                >
-                                    <ShinyButton rounded={true} className="w-full">
-                                        {t('Login')}
-                                    </ShinyButton>
-                                </motion.li>
+                                    <motion.li
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3, delay: 0.4 }}
+                                        className="flex justify-center p-3 w-full text-[#E5E7EB] items-center"
+                                    >
+                                        <ShinyButton rounded={true} className="w-full">
+                                            {t('Login')}
+                                        </ShinyButton>
+                                    </motion.li>
+                                </LinkDom>
                             </motion.ul>
                         )}
                     </AnimatePresence>

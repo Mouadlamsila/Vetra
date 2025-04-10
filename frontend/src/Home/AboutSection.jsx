@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Star, ChevronRight, Users, Award, Clock, Globe, CheckCircle, Brain, Rocket, Sparkles, TrendingUp, Lightbulb, Target } from "lucide-react"
+import { Star, ChevronRight, Users, Award, Clock, Globe, CheckCircle, Brain, Rocket, Sparkles, TrendingUp, Lightbulb, Target, ChevronLeft } from "lucide-react"
 import { useTranslation } from 'react-i18next';
 
 const AboutSection = () => {
@@ -98,6 +98,7 @@ const AboutSection = () => {
       },
     },
   }
+  const language = localStorage.getItem("lang");
 
   return (
     <section  className="py-20 px-4  bg-white ">
@@ -195,7 +196,7 @@ const AboutSection = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-[#c8c2fd]/10 p-4 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <Users className="h-5 w-5 text-[#6D28D9] mr-2" />
+                          <Users className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9]`}  />
                           <h4 className="font-medium text-gray-900">{t('humanCentered')}</h4>
                         </div>
                         <p className="text-sm text-gray-600">
@@ -204,7 +205,7 @@ const AboutSection = () => {
                       </div>
                       <div className="bg-[#c8c2fd]/10 p-4 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <Award className="h-5 w-5 text-[#6D28D9] mr-2" />
+                          <Award className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9] `} />
                           <h4 className="font-medium text-gray-900">{t('premiumQuality')}</h4>
                         </div>
                         <p className="text-sm text-gray-600">
@@ -213,7 +214,7 @@ const AboutSection = () => {
                       </div>
                       <div className="bg-[#c8c2fd]/10 p-4 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <Clock className="h-5 w-5 text-[#6D28D9] mr-2" />
+                          <Clock className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9] `} />
                           <h4 className="font-medium text-gray-900">{t('agility')}</h4>
                         </div>
                         <p className="text-sm text-gray-600">
@@ -222,7 +223,7 @@ const AboutSection = () => {
                       </div>
                       <div className="bg-[#c8c2fd]/10 p-4 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <Globe className="h-5 w-5 text-[#6D28D9] mr-2" />
+                          <Globe className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9] `} />
                           <h4 className="font-medium text-gray-900">{t('globalImpact')}</h4>
                         </div>
                         <p className="text-sm text-gray-600">
@@ -349,13 +350,14 @@ const AboutSection = () => {
                       variants={itemVariants}
                       className="bg-white p-6 rounded-xl shadow-md relative"
                     >
-                      <div className="absolute top-6 right-6 text-[#c8c2fd] text-4xl font-serif">"</div>
+                      
+                      <div className={`absolute top-6 ${language === "ar" ? "left-3" : "right-3"}  text-[#c8c2fd] text-4xl font-serif`}>"</div>
                       <p className="text-gray-700 mb-6 relative z-10">{testimonial.quote}</p>
                       <div className="flex items-center">
                         <div className="h-12 w-12 rounded-full bg-[#c8c2fd]/30 flex items-center justify-center text-[#6D28D9] font-bold">
                           {testimonial.author.charAt(0)}
                         </div>
-                        <div className="ml-4">
+                        <div className={`${language === "ar" ? "mr-4" : "ml-4"}`}>
                           <p className="font-medium text-gray-900">{testimonial.author}</p>
                           <p className="text-sm text-gray-500">{testimonial.company}</p>
                           <div className="flex mt-1">
@@ -385,7 +387,7 @@ const AboutSection = () => {
           variants={containerVariants}
           className="bg-gradient-to-r from-[#6D28D9] to-[#5b21b6] rounded-2xl p-8 md:p-12 text-center text-white mt-16"
         >
-          <motion.h3 variants={itemVariants} className="text-2xl md:text-3xl font-bold mb-4">
+          <motion.h3 variants={itemVariants} className="text-2xl md:text-3xl  font-bold mb-4">
             {t('readyToTransform')}
           </motion.h3>
           <motion.p variants={itemVariants} className="text-white/80 max-w-2xl mx-auto mb-8">
@@ -393,7 +395,7 @@ const AboutSection = () => {
           </motion.p>
           <motion.div variants={itemVariants}>
             <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
-              {t('startNow')} <ChevronRight className="ml-2 h-5 w-5 inline" />
+              {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
             </button>
           </motion.div>
         </motion.div>

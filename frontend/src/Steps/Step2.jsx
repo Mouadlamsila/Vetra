@@ -1,15 +1,16 @@
-import { Check, ChevronRight, Earth, Globe, Package, Settings, ShoppingBag, Store, Truck, User, UserPlus } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Earth, Globe, Package, Settings, ShoppingBag, Store, Truck, User, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function Step2() {
     const { t } = useTranslation();
+    const language = localStorage.getItem("lang");
     
     return (
-        <div className="p-4 sm:p-6">
+        <div id="step2" className="p-4 sm:p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 sm:px-5">
                 <div className="space-y-3 max-w-2xl mx-auto lg:mx-0">
                     <div className="flex items-center gap-4">
-                        <h1 className="bg-[#6D28D9] w-10 h-10 sm:w-12 sm:h-12 rounded-[50%] text-white items-center flex justify-center text-lg sm:text-xl">2</h1>
+                        <h1 className="sm:bg-[#6D28D9] flex  w-8 h-8 sm:w-12 sm:h-12 sm:rounded-[50%] text-[#6D28D9] sm:text-white items-center  justify-center text-4xl sm:text-xl">2</h1>
                         <p className="text-[#6D28D9] text-2xl sm:text-3xl font-medium">{t('step2Title')}</p>
                     </div>
                     <p className="text-gray-500 text-base sm:text-lg">{t('step2Description')}</p>
@@ -62,14 +63,14 @@ export default function Step2() {
                                     <ShoppingBag className="text-[#6D28D9] w-4 h-4 sm:w-5 sm:h-5" />
                                     <p className="text-sm sm:text-base">{t('manageCategories')}</p>
                                 </div>
-                                <ChevronRight className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                                {language === "ar" ? <ChevronLeft className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronRight className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />}
                             </div>
                             <div className="flex justify-between border-1 border-gray-400 rounded-lg px-3 py-2 sm:px-4 sm:py-3">
                                 <div className="flex gap-2 sm:gap-2.5 items-center">
                                     <Truck className="text-[#6D28D9] w-4 h-4 sm:w-5 sm:h-5" />
                                     <p className="text-sm sm:text-base">{t('deliveryOptions')}</p>
                                 </div>
-                                <ChevronRight className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                                {language === "ar" ? <ChevronLeft className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronRight className="text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />}
                             </div>
                         </div>
                     </div>

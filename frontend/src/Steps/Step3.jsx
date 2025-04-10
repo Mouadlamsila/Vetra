@@ -5,11 +5,11 @@ export default function Step3() {
     const { t } = useTranslation();
     
     return (
-        <div className="p-4 sm:p-6">
+        <div id="step3" className="p-4 sm:p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 sm:px-5">
                 <div className="space-y-3 max-w-2xl mx-auto lg:mx-0">
-                    <div className="flex items-center gap-4">
-                        <h1 className="bg-[#6D28D9] w-10 h-10 sm:w-12 sm:h-12 rounded-[50%] text-white items-center flex justify-center text-lg sm:text-xl">3</h1>
+                    <div className="flex items-center gap-4  ">
+                        <h1 className="sm:bg-[#6D28D9] flex  w-8 h-8 sm:w-12 sm:h-12 sm:rounded-[50%] text-[#6D28D9] sm:text-white items-center  justify-center text-4xl sm:text-xl">3</h1>
                         <p className="text-[#6D28D9] text-2xl sm:text-3xl font-medium">{t('step3Title')}</p>
                     </div>
                     <p className="text-gray-500 text-base sm:text-lg">{t('step3Description')}</p>

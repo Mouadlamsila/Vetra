@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { Mail, Lock, Eye, EyeOff, Facebook, Twitter, Github, ArrowRight, ArrowLeft } from "lucide-react"
-
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
+import axios from "axios"
 
 export default function Login() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   })
   const language = localStorage.getItem("lang")
@@ -33,11 +36,46 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log("Login form submitted:", formData)
+      // Basic validation
+      if (!formData.identifier || !formData.password) {
+        throw new Error(t('allFieldsRequired'))
+      }
+
+      const response = await axios.post(
+        'http://localhost:1337/api/auth/local',
+        {
+          identifier: formData.identifier,
+          password: formData.password
+        }
+      )
+
+      // Store authentication data
+      localStorage.setItem('token', response.data.jwt)
+      localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
+
+      // Redirect to dashboard
+      navigate('/dashboard')
+      
+    } catch (error) {
+      let errorMessage = t('loginFailed')
+      
+      if (error.response) {
+        if (error.response.status === 400) {
+          errorMessage = t('invalidCredentials')
+        } else if (error.response.data?.error?.message) {
+          errorMessage = error.response.data.error.message
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      setError(errorMessage)
+      console.error('Login error:', error)
+      
     } finally {
       setIsLoading(false)
     }
@@ -56,50 +94,57 @@ export default function Login() {
   }, [])
 
   return (
-    <div className="min-h-screen  pt-12 w-full bg-gradient-to-br bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
-
+    <div className="min-h-screen pt-12 w-full bg-gradient-to-br bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
       {/* Content Container */}
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left Side - Headline */}
           <div className="text-white text-center space-y-3 lg:text-left">
-            <h1 className={`${language === "ar" ? "text-start" : ""}  text-4xl sm:text-5xl font-bold   text-white`}>
+            <h1 className={`${language === "ar" ? "text-start" : ""} text-4xl sm:text-5xl font-bold text-white`}>
               {t('welcomeBack')}
             </h1>
-            <p className={`${language === "ar" ? "text-start" : ""} text-lg  sm:text-xl text-purple-100 max-w-lg mx-auto lg:mx-0`}>
+            <p className={`${language === "ar" ? "text-start" : ""} text-lg sm:text-xl text-purple-100 max-w-lg mx-auto lg:mx-0`}>
               {t('experienceFuture')}
             </p>
 
             {/* Features List */}
             <div className="mt-8 space-y-4 hidden lg:block">
-              <div className="mt-8 space-y-6 hidden lg:block">
-                {features.map((feature, index) => (
-                  <div
-                    key={feature}
-                    className={`flex items-center space-x-3 transition-all duration-500 ease-in-out transform
-                    ${index === activeFeatureIndex ? 'opacity-100 translate-x-0' : 'opacity-50 -translate-x-2'}`}
-                  >
-                    <div className={`bg-purple-500/20 p-2 rounded-full transition-all duration-500`}
-                    >
-                      {language === 'ar' ? (
-                        <ArrowLeft className="h-5 w-5 text-purple-300" />
-                      ) : (
-                        <ArrowRight className="h-5 w-5 text-purple-300" />
-                      )}
-                    </div>
-                    <p className="text-purple-100 text-lg font-medium">{t(feature)}</p>
+              {features.map((feature, index) => (
+                <div
+                  key={feature}
+                  className={`flex items-center space-x-3 transition-all duration-500 ease-in-out transform
+                  ${index === activeFeatureIndex ? 'opacity-100 translate-x-0' : 'opacity-50 -translate-x-2'}`}
+                >
+                  <div className={`bg-purple-500/20 p-2 rounded-full transition-all duration-500`}>
+                    {language === 'ar' ? (
+                      <ArrowLeft className="h-5 w-5 text-purple-300" />
+                    ) : (
+                      <ArrowRight className="h-5 w-5 text-purple-300" />
+                    )}
                   </div>
-                ))}
-              </div>
+                  <p className="text-purple-100 text-lg font-medium">{t(feature)}</p>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Right Side - Login Form */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow p-8 border border-white/20 transform transition-all duration-300  hover:border-purple-300/30">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow p-8 border border-white/20 transform transition-all duration-300 hover:border-purple-300/30">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2 animate-fade-in">{t('Login')}</h2>
+              <h2 className="text-3xl font-bold text-white mb-2 animate-pulse">{t('Login')}</h2>
               <p className="text-purple-100 animate-fade-in-delayed">{t('welcomeBack')}</p>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 mb-4 text-red-400 bg-red-900/20 rounded-lg text-center"
+              >
+                {error}
+              </motion.div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
@@ -109,9 +154,9 @@ export default function Login() {
                     <Mail className="h-5 w-5 text-purple-200" />
                   </div>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="identifier"
+                    value={formData.identifier}
                     onChange={handleChange}
                     className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
                     placeholder={t('emailPlaceholder')}
@@ -155,12 +200,12 @@ export default function Login() {
                     {t('rememberMe')}
                   </label>
                 </div>
-                <a
-                  href="#"
+                <Link
+                  to="/forgot-password"
                   className="text-sm font-medium text-purple-300 hover:text-white transition-colors duration-300"
                 >
                   {t('forgotPassword')}
-                </a>
+                </Link>
               </div>
 
               {/* Login Button */}
@@ -231,6 +276,13 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      )}
     </div>
   )
 }

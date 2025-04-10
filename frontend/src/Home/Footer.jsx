@@ -1,11 +1,16 @@
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram, ChevronRight, Heart } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
+import { Link as ScrollLink } from "react-scroll"
 
 const Footer = () => {
     const { t } = useTranslation()
     const currentYear = new Date().getFullYear()
+    const location = useLocation();
+    const language = localStorage.getItem("lang");
+
+
+
 
     return (
         <footer className="bg-[#1e3a8a] text-white pt-16 pb-8">
@@ -46,24 +51,37 @@ const Footer = () => {
                         <h3 className="text-lg font-semibold text-white mb-6">{t('Features')}</h3>
                         <ul className="space-y-3">
                             {[
-                                { name: t('step1'), url: "/" },
-                                { name: t('AboutUs'), url: "/about" },
-                                { name: t('Services'), url: "/services" },
-                                { name: t('step2'), url: "/products" },
-                                { name: t('step3'), url: "/pricing" },
-                                { name: t('testimonials'), url: "/blog" },
-                                { name: t('Contact'), url: "/contact" },
-                            ].map((link, index) => (
-                                <li key={index}>
-                                    <Link
-                                        to={link.url}
-                                        className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center"
-                                    >
-                                        <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
-                                        {link.name}
-                                    </Link>
+                                { name: t('Features'), url: location.pathname === "/" ? "home" : "/" },
+                                { name: t('AboutUs'), url: location.pathname === "/" ? "about" : "/" },
+                                { name: t('step1'), url: location.pathname === "/" ? "steps" : "/" },
+                                { name: t('step2'), url: location.pathname === "/" ? "step2" : "/" },
+                                { name: t('step3'), url: location.pathname === "/" ? "step3" : "/" },
+                                { name: t('Contact'), url: location.pathname === "/" ? "contact" : "/" },
+                            ].map((link, index) =>
+                                <li key={index} className="cursor-pointer">
+                                    {location.pathname === '/' ?
+                                        <ScrollLink
+                                            to={link.url}
+                                            spy={true}
+                                            smooth={true}
+                                            offset={-100}
+                                            className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center "
+                                        >
+                                             <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
+                                             {link.name}
+                                        </ScrollLink> 
+                                        :
+                                        <Link
+                                            to={link.url}
+                                            className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center "
+                                        >
+                                            <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
+                                            {link.name}
+                                        </Link>
+                                    }
+
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
 
@@ -100,13 +118,13 @@ const Footer = () => {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button
                                 className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
-                                onClick={() => window.location.href = '/login'}
+                                onClick={() => {window.location.href = '/login' ; localStorage.setItem("location", "login")}}
                             >
                                 {t('Login')}
                             </button>
                             <button
                                 className="bg-[#6D28D9] hover:bg-[#6D28D9]/90 hover:text-[#c8c2fd] transition-all ease-in-out duration-300 px-6 py-2 rounded-lg text-[#c8c2fd] font-medium w-full sm:w-auto"
-                                onClick={() => window.location.href = '/register'}
+                                onClick={() => {window.location.href = '/register' ; localStorage.setItem("location", "login")}}
                             >
                                 {t('createAccount')}
                             </button>

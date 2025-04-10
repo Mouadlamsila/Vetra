@@ -6,6 +6,8 @@ import {
     Facebook, Twitter, Github, ArrowRight, ArrowLeft
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import axios from "axios"
+import { Link } from "react-router-dom"
 
 export default function Register() {
     const { t } = useTranslation()
@@ -14,12 +16,10 @@ export default function Register() {
     const [isHovering, setIsHovering] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState({
-        name: "",
+        username: "",
         email: "",
-        password: "",
-        confirmPassword: "",
+        password : ""
     })
-
     const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
@@ -36,14 +36,13 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (formData.password !== formData.confirmPassword) {
-            alert(t('passwordsDontMatch'))
-            return
-        }
-        setIsLoading(true)
+       
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500))
+            await axios.post('http://localhost:1337/api/auth/local/register', {
+                username: formData.username,
+                email: formData.email,
+                password: formData.password
+            });
             console.log("Register form submitted:", formData)
         } finally {
             setIsLoading(false)
@@ -114,8 +113,8 @@ export default function Register() {
                                     </div>
                                     <input
                                         type="text"
-                                        name="name"
-                                        value={formData.name}
+                                        name="username"
+                                        value={formData.username}
                                         onChange={handleChange}
                                         className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
                                         placeholder={t('namePlaceholder')}
@@ -123,7 +122,7 @@ export default function Register() {
                                     />
                                 </div>
 
-                                {/* Email */}
+                                {/* email */}
                                 <div className="relative group">
                                     <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
                                         <Mail className="h-5 w-5 text-purple-200" />
@@ -151,7 +150,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('passwordPlaceholder')}
-                                        required
+                                        
                                     />
                                     <button
                                         type="button"
@@ -174,7 +173,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('confirmPasswordPlaceholder')}
-                                        required
+                                        
                                     />
                                     <button
                                         type="button"
@@ -246,9 +245,9 @@ export default function Register() {
                             {/* Login link */}
                             <div className="text-center text-sm mt-6">
                                 <span className="text-purple-100">{t('alreadyHaveAccount')}</span>{" "}
-                                <a href="/login" className="font-medium text-purple-300 hover:text-white transition-colors duration-300">
+                                <Link to="/login" className="font-medium text-purple-300 hover:text-white transition-colors duration-300">
                                     {t('Login')}
-                                </a>
+                                </Link>
                             </div>
                         </form>
                     </div>
