@@ -116,7 +116,7 @@ export default function Header() {
                         )}
                     </AnimatePresence>
                 </div>
-                {userID ? (<User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} />):(
+                {userID ? (<LinkDom to="/controll/"> <User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} /> </LinkDom    >):(
                 <div class="sm:flex hidden  items-center  justify-center ">
                     <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
 
