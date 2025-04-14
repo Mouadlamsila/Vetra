@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link as LinkDom, useLocation, useNavigate } from "react-router-dom";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { Link as ScrollLink } from 'react-scroll'
+import BTN1 from "../blocks/Buttons/BTN1";
 
 export default function Header() {
     const { t, i18n } = useTranslation();
@@ -19,9 +20,9 @@ export default function Header() {
     const userID = localStorage.getItem("user");
 
     useEffect(() => {
-      localStorage.setItem("location",makeStyle);  
-    },[location.pathname,makeStyle]);
-    
+        localStorage.setItem("location", makeStyle);
+    }, [location.pathname, makeStyle]);
+
 
     // const language = localStorage.getItem('lang')
     useEffect(() => {
@@ -43,11 +44,11 @@ export default function Header() {
                     </LinkDom>
                 )}
                 {location.pathname === '/' ? (
-                    <ScrollLink to="home2" spy={true} smooth={true} offset={-100} className="block sm:hidden" onClick={()=> setMenu(false)}>
+                    <ScrollLink to="home2" spy={true} smooth={true} offset={-100} className="block sm:hidden" onClick={() => setMenu(false)}>
                         <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
                     </ScrollLink>
                 ) : (
-                    <LinkDom to="/" className="block sm:hidden" onClick={()=> setMenu(false)}>
+                    <LinkDom to="/" className="block sm:hidden" onClick={() => setMenu(false)}>
                         <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
                     </LinkDom>
                 )}
@@ -59,7 +60,7 @@ export default function Header() {
                             <div className={`${makeStyle === "home" ? "w-full" : "w-[4px]"}  h-0.5  group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
                         </ScrollLink>
                     ) : (
-                        <LinkDom to="/"  onClick={() => setMakeStyle("home")} className={`${makeStyle === "home" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
+                        <LinkDom to="/" onClick={() => setMakeStyle("home")} className={`${makeStyle === "home" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
                             {t('Features')}
                             <div className={`${makeStyle === "home" ? "w-full" : "w-[4px]"}  h-0.5  group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
                         </LinkDom>
@@ -116,26 +117,36 @@ export default function Header() {
                         )}
                     </AnimatePresence>
                 </div>
-                {userID ? (<LinkDom to="/controll/"> <User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} /> </LinkDom    >):(
-                <div class="sm:flex hidden  items-center  justify-center ">
-                    <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
+                {userID ? (
+                    <LinkDom to="/controll/"> <User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} /> </LinkDom    >)
+                    :
+                    (
+                        <div class="sm:flex hidden  items-center  justify-center ">
+                            <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
 
-                        <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
+                                <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
 
-                        <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tr-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
+                                <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tr-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
 
-                        <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-bl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
+                                <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-bl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
 
-                        <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
+                                <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
 
-                        <LinkDom onClick={() => setMakeStyle("login")} to={'/login'} >
-                            <button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-[#c8c2fd] z-10 bg-transparent">
-                                {t('Login')}
-                            </button>
-                        </LinkDom>
-                    </div>
-                </div>
-)}
+                                <LinkDom onClick={() => setMakeStyle("login")} to={'/login'} >
+                                    <button class="relative px-4 py-2 font-medium text-[#c8c2fd] text-lg tracking-widest border-2 border-transparent rounded-md font-roboto transition duration-700 group-hover:text-[#c8c2fd] z-10 bg-transparent">
+                                        {t('Login')}
+                                    </button>
+                                </LinkDom>
+                            </div>
+                        </div>
+                    )}
+                    {userID && (
+                        <BTN1 onClick={() => {
+                            localStorage.removeItem("user");
+                            localStorage.removeItem("token");
+                            navigate("/login");
+                        }} />
+                    )}
                 <AlignJustify className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] w-full rounded-xl`} onClick={() => setMenu(!menu)} />
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>
                     <AnimatePresence>

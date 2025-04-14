@@ -57,8 +57,8 @@ export default function Login() {
       localStorage.setItem('token', response.data.jwt)
       localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
 
-      // Redirect to dashboard
-      navigate('/dashboard')
+     
+      navigate('/')
       
     } catch (error) {
       let errorMessage = t('loginFailed')

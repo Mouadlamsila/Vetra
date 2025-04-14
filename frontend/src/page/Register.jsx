@@ -7,7 +7,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function Register() {
     const { t } = useTranslation()
@@ -18,12 +18,13 @@ export default function Register() {
     const [formData, setFormData] = useState({
         username: "",
         email: "",
-        password : ""
+        password: ""
     })
     const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
     const [isAnimating, setIsAnimating] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const animationTimer = setInterval(() => {
@@ -36,14 +37,14 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-       
+
         try {
             await axios.post('http://localhost:1337/api/auth/local/register', {
                 username: formData.username,
                 email: formData.email,
                 password: formData.password
             });
-            console.log("Register form submitted:", formData)
+            navigate("/login")
         } finally {
             setIsLoading(false)
         }
@@ -150,7 +151,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('passwordPlaceholder')}
-                                        
+
                                     />
                                     <button
                                         type="button"
@@ -173,7 +174,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('confirmPasswordPlaceholder')}
-                                        
+
                                     />
                                     <button
                                         type="button"

@@ -1,0 +1,129 @@
+/* From Uiverse.io by andrew-demchenk0 */ 
+.button {
+    position: relative;
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.button.primary {
+    border: 1px solid #6D28D9;
+    background-color: #6D28D9;
+    color: white;
+}
+
+.button.secondary {
+    border: 1px solid #c8c2fd;
+    background-color: #c8c2fd;
+    color: #6D28D9;
+}
+
+.button.danger {
+    border: 1px solid #DC2626;
+    background-color: #DC2626;
+    color: white;
+}
+
+.button.outline {
+    border: 1px solid #6D28D9;
+    background-color: transparent;
+    color: #6D28D9;
+}
+
+.button, .button__icon, .button__text {
+    transition: all 0.3s;
+}
+
+.button .button__text {
+    transform: translateX(22px);
+    font-size: 14px;
+}
+
+.button .button__icon {
+    position: absolute;
+    transform: translateX(109px);
+    height: 100%;
+    width: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.button.primary:hover {
+    background-color: #5B21B6;
+    border-color: #5B21B6;
+}
+
+.button.secondary:hover {
+    background-color: #b8b0fd;
+    border-color: #b8b0fd;
+}
+
+.button.danger:hover {
+    background-color: #B91C1C;
+    border-color: #B91C1C;
+}
+
+.button.outline:hover {
+    background-color: #6D28D9;
+    color: white;
+}
+
+.button:hover .button__text {
+    color: transparent;
+}
+
+.button:hover .button__icon {
+    width: 148px;
+    transform: translateX(0);
+}
+
+.button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Small variant */
+.button.small {
+    width: 120px;
+    height: 32px;
+    font-size: 12px;
+}
+
+.button.small .button__icon {
+    transform: translateX(89px);
+}
+
+/* Large variant */
+.button.large {
+    width: 180px;
+    height: 48px;
+    font-size: 16px;
+}
+
+.button.large .button__icon {
+    transform: translateX(139px);
+}
