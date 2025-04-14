@@ -2,10 +2,13 @@ import axios from "axios";
 import { Lock, MailIcon, PenBox, PenIcon, SaveAll, Store, Eye, EyeOff, Camera } from "lucide-react";
 import { useEffect, useState } from "react";
 import ShinyButton from "../../../blocks/TextAnimations/ShinyButton/ShinyButton";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
+    const { t } = useTranslation();
     const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(true);
+    const language = localStorage.getItem("lang");
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -27,6 +30,7 @@ export default function Profile() {
         special: false
     });
     const [previewUrl, setPreviewUrl] = useState("");
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         fetchUserData();
@@ -34,8 +38,8 @@ export default function Profile() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.get("http://localhost:1337/api/users/me", {
-            headers: {
+            const response = await axios.get("http://localhost:1337/api/users/me?populate=photo", {
+                headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
@@ -59,14 +63,23 @@ export default function Profile() {
         }
     };
 
+    console.log(user);
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Create preview URL
+            if (!file.type.startsWith('image/')) {
+                setError(t('dashboard.invalidFile'));
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                setError(t('dashboard.fileTooLarge'));
+                return;
+            }
+
             const preview = URL.createObjectURL(file);
             setPreviewUrl(preview);
             
-            // Update form data
             setFormData(prev => ({
                 ...prev,
                 photo: file
@@ -98,7 +111,7 @@ export default function Profile() {
 
     const verifyOldPassword = async () => {
         try {
-            const response = await axios.post(
+            await axios.post(
                 "http://localhost:1337/api/auth/local",
                 {
                     identifier: user.email,
@@ -106,31 +119,32 @@ export default function Profile() {
                 }
             );
             return true;
-        } catch (err) {
+        } catch {
             return false;
         }
     };
 
     const validateForm = async () => {
         if (!formData.oldPassword) {
-            setError("Veuillez saisir votre ancien mot de passe");
+            setError(t('dashboard.oldPasswordRequired'));
             return false;
         }
+
         if (formData.password) {
             const isOldPasswordValid = await verifyOldPassword();
             if (!isOldPasswordValid) {
-                setError("Ancien mot de passe incorrect");
+                setError(t('dashboard.incorrectOldPassword'));
                 return false;
             }
 
             if (formData.password !== formData.confirmPassword) {
-                setError("Les mots de passe ne correspondent pas");
+                setError(t('dashboard.passwordsDontMatch'));
                 return false;
             }
 
             const requirements = Object.values(passwordRequirements);
             if (!requirements.every(req => req)) {
-                setError("Le mot de passe ne respecte pas tous les critères requis");
+                setError(t('dashboard.passwordRequirementsNotMet'));
                 return false;
             }
         }
@@ -140,10 +154,41 @@ export default function Profile() {
     const handleUpdate = async () => {
         setError("");
         setSuccess("");
+        setIsUploading(true);
         
-        if (!await validateForm()) return;
+        if (!await validateForm()) {
+            setIsUploading(false);
+            return;
+        }
 
         try {
+            let photoId = null;
+            
+            // Handle photo upload if a new photo is selected
+            if (formData.photo) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('files', formData.photo);
+                
+                const uploadResponse = await axios.post(
+                    'http://localhost:1337/api/upload',
+                    uploadFormData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+                
+                if (uploadResponse.data && uploadResponse.data[0]) {
+                    photoId = uploadResponse.data[0].id;
+                    console.log("Uploaded photo ID:", photoId);
+                } else {
+                    throw new Error(t('dashboard.uploadFailed'));
+                }
+            }
+
+            // Prepare the update data
             const updateData = {
                 username: formData.username,
                 email: formData.email
@@ -153,66 +198,86 @@ export default function Profile() {
                 updateData.password = formData.password;
             }
 
-            // Handle photo upload if a new photo is selected
-            if (formData.photo) {
-                const formDataPhoto = new FormData();
-                formDataPhoto.append('files', formData.photo);
-                
-                // Upload the photo first
-                const uploadResponse = await axios.post(
-                    'http://localhost:1337/api/upload',
-                    formDataPhoto,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
-                
-                // Add the photo ID to the update data
-                updateData.photo = uploadResponse.data[0].id;
+            if (photoId) {
+                updateData.photo = photoId;
             }
 
+            console.log("Update data:", updateData);
+
+            // Update user data
             const response = await axios.put(
                 `http://localhost:1337/api/users/${user.id}`,
                 updateData,
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        'Content-Type': 'application/json'
                     }
                 }
             );
 
-            setUser(response.data);
-            setIsEditing(true);
-            setSuccess("Profil mis à jour avec succès");
-            setFormData(prev => ({
-                ...prev,
-                password: "",
-                confirmPassword: "",
-                oldPassword: "",
-                photo: null
-            }));
+            console.log("Update response:", response.data);
+
+            if (response.data) {
+                // Fetch updated user data with photo
+                const updatedUserResponse = await axios.get(
+                    "http://localhost:1337/api/users/me?populate=photo",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
+                
+                console.log("Updated user data:", updatedUserResponse.data);
+                
+                setUser(updatedUserResponse.data);
+                setIsEditing(true);
+                setSuccess(t('dashboard.updateSuccess'));
+                setFormData(prev => ({
+                    ...prev,
+                    password: "",
+                    confirmPassword: "",
+                    oldPassword: "",
+                    photo: null
+                }));
+            } else {
+                throw new Error(t('dashboard.updateError'));
+            }
         } catch (err) {
-            setError(err.response?.data?.error?.message || "Échec de la mise à jour du profil");
-            console.error(err);
+            console.error("Update error:", err);
+            console.error("Error response:", err.response?.data);
+            if (err.response) {
+                if (err.response.data?.error?.message) {
+                    setError(err.response.data.error.message);
+                } else if (err.response.data?.error) {
+                    setError(err.response.data.error);
+                } else {
+                    setError(t('dashboard.updateError'));
+                }
+            } else if (err.message) {
+                setError(err.message);
+            } else {
+                setError(t('dashboard.unexpectedError'));
+            }
+        } finally {
+            setIsUploading(false);
         }
     };
 
     return (
         <div className="py-10 px-10">
-            <h1 className="text-3xl font-bold">Mon Profil</h1>
-            <p className="text-sm text-gray-500">Gérez vos informations personnelles</p>
+            <h1 className="text-3xl font-bold">{t('dashboard.profile')}</h1>
+            <p className="text-sm text-gray-500">{t('dashboard.personalInfo')}</p>
             <div className="pt-5 w-auto">
                 <p className="py-1 w-30 text-center bg-gray-100 px-2 hover:bg-white rounded-sm text-gray-500 hover:text-black transition-all duration-300 ease-in-out cursor-pointer">
-                    Informations
+                    {t('dashboard.personalInfo')}
                 </p>
             </div>
             <div className="border mt-5 space-y-4 px-10 py-5 rounded-lg shadow border-[#c8c2fd]">
                 <div>
-                    <h1 className="text-2xl font-bold">Informations personnelles</h1>
-                    <p className="text-sm text-gray-500">Mettez à jour vos informations personnelles</p>
+                    <h1 className="text-2xl font-bold">{t('dashboard.personalInfo')}</h1>
+                    <p className="text-sm text-gray-500">{t('dashboard.updateInfo')}</p>
                 </div>
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -229,7 +294,7 @@ export default function Profile() {
                         <div className="w-20 h-20 rounded-full overflow-hidden">
                             <img 
                                 src={previewUrl} 
-                                alt="Profile" 
+                                alt={t('dashboard.profilePhoto')} 
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -260,7 +325,7 @@ export default function Profile() {
                                 value={formData.username}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder="Nom"
+                                placeholder={t('dashboard.name')}
                             />
                         </div>
                         <div className="flex items-center gap-2">
@@ -272,7 +337,7 @@ export default function Profile() {
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder="Email"
+                                placeholder={t('dashboard.email')}
                             />
                         </div>
                         <div className="flex items-center gap-2 relative">
@@ -284,11 +349,11 @@ export default function Profile() {
                                 value={formData.oldPassword}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder="Ancien mot de passe"
+                                placeholder={t('dashboard.oldPassword')}
                             />
                             <button
                                 onClick={() => setShowOldPassword(!showOldPassword)}
-                                className="absolute right-2 text-gray-500 hover:text-[#c8c2fd]"
+                                className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
                             >
                                 {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -302,11 +367,11 @@ export default function Profile() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder="Nouveau mot de passe"
+                                placeholder={t('dashboard.newPassword')}
                             />
                             <button
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-2 text-gray-500 hover:text-[#c8c2fd]"
+                                className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -320,11 +385,11 @@ export default function Profile() {
                                 value={formData.confirmPassword}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder="Confirmation du mot de passe"
+                                placeholder={t('dashboard.confirmPassword')}
                             />
                             <button
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-2 text-gray-500 hover:text-[#c8c2fd]"
+                                className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
                             >
                                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -334,27 +399,27 @@ export default function Profile() {
 
                 {!isEditing && formData.password && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <h3 className="text-sm font-semibold mb-2">Exigences du mot de passe :</h3>
+                        <h3 className="text-sm font-semibold mb-2">{t('dashboard.passwordRequirements')}:</h3>
                         <ul className="space-y-1 text-sm">
                             <li className={`flex items-center ${passwordRequirements.length ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.length ? '✓' : '•'}</span>
-                                Au moins 8 caractères
+                                {t('dashboard.minLength')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.uppercase ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.uppercase ? '✓' : '•'}</span>
-                                Au moins une lettre majuscule
+                                {t('dashboard.uppercase')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.lowercase ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.lowercase ? '✓' : '•'}</span>
-                                Au moins une lettre minuscule
+                                {t('dashboard.lowercase')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.number ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.number ? '✓' : '•'}</span>
-                                Au moins un chiffre
+                                {t('dashboard.number')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.special ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.special ? '✓' : '•'}</span>
-                                Au moins un caractère spécial (!@#$%^&*)
+                                {t('dashboard.special')}
                             </li>
                         </ul>
                     </div>
@@ -363,14 +428,20 @@ export default function Profile() {
                 {isEditing ? (
                     <div onClick={() => setIsEditing(false)} className="w-full flex select-none justify-end pt-4">
                         <ShinyButton rounded={true} className="w-full sm:w-auto">
-                            <p className="text-sm sm:text-base">Mettre à jour</p>
+                            <p className="text-sm sm:text-base">{t('dashboard.update')}</p>
                             <PenBox className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>
                     </div>
                 ) : (
                     <div onClick={handleUpdate} className="w-full flex select-none justify-end pt-4">
-                        <ShinyButton rounded={true} className="w-full sm:w-auto">
-                            <p className="text-sm sm:text-base">Enregistrer</p>
+                        <ShinyButton 
+                            rounded={true} 
+                            className={`w-full sm:w-auto ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isUploading}
+                        >
+                            <p className="text-sm sm:text-base">
+                                {isUploading ? t('dashboard.uploading') : t('dashboard.save')}
+                            </p>
                             <SaveAll className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>
                     </div>

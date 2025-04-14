@@ -1,29 +1,31 @@
 import { ChartColumn, DollarSign, Package, ShoppingBag, Store } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"   
+import { useTranslation } from "react-i18next";
 
 export default function BoardTable() {
+    const { t } = useTranslation();
     const card = [
         {
-            title: 'Boutiques',
-            description: '2 actives, 1 en attente',
+            title: t('dashboard.stores'),
+            description: t('dashboard.storesDescription'),
             value: 3,
             icon: <Store />
         },
         {
-            title: 'Produits',
-            description: '+2 cette semaine',
+            title: t('dashboard.products'),
+            description: t('dashboard.productsDescription'),
             value: 24,
             icon: <Package />
         },
         {
-            title: 'Commandes',
-            description: '3 en attentes',
+            title: t('dashboard.orders'),
+            description: t('dashboard.ordersDescription'),
             value: 12,
             icon: <ShoppingBag />
         },
         {
-            title: 'Ventes',
-            description: '+18% ce mois',
+            title: t('dashboard.sales'),
+            description: t('dashboard.salesDescription'),
             value: "€1,250",
             icon: <ChartColumn />
         }
@@ -58,8 +60,8 @@ export default function BoardTable() {
     return (
         <div className="p-5 space-y-5">
             <div className="space-y-1">
-                <h1 className="text-4xl font-bold">Tableau de bord</h1>
-                <p className="text-sm  text-gray-500">Bienvenue sur votre tableau de bord e-commerce</p>
+                <h1 className="text-4xl font-bold">{t('dashboard.title')}</h1>
+                <p className="text-sm  text-gray-500">{t('dashboard.welcome')}</p>
             </div>
             <div className="flex justify-center ">
                 <div className="grid gap-2  w-[100%] grid-cols-4">
@@ -81,8 +83,8 @@ export default function BoardTable() {
             <div className="grid w-full grid-cols-[59.5%_39.5%] gap-[1%]">
                 <div className="bg-white border border-[#c8c2fd]  shadow rounded-lg ">
                     <div className="p-5">
-                        <h1 className="text-2xl font-bold">Aperçu des ventes</h1>
-                        <p className="text-sm text-gray-500">Ventes des 30 derniers jours</p>
+                        <h1 className="text-2xl font-bold">{t('dashboard.salesOverview')}</h1>
+                        <p className="text-sm text-gray-500">{t('dashboard.last30Days')}</p>
                     </div>
                     <div className="h-[1px] bg-[#c8c2fd] w-full"></div>
                     <div className="h-[300px] w-full">
@@ -150,7 +152,7 @@ export default function BoardTable() {
                                             borderRadius: "0.375rem",
                                             boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
                                         }}
-                                        formatter={(value) => [`€${value}`, "Ventes"]}
+                                        formatter={(value) => [`€${value}`, t('dashboard.sales')]}
                                         labelStyle={{ fontWeight: "bold" }}
                                     />
                                     <Area
@@ -170,8 +172,8 @@ export default function BoardTable() {
                 </div>
                 <div className="bg-white border border-[#c8c2fd]  shadow rounded-lg ">
                     <div className="p-5">
-                        <h1 className="text-2xl font-bold">Commandes récentes</h1>
-                        <p className="text-sm text-gray-500">Les 5 dernières commandes</p>
+                        <h1 className="text-2xl font-bold">{t('dashboard.recentOrders')}</h1>
+                        <p className="text-sm text-gray-500">{t('dashboard.last5Orders')}</p>
                     </div>
                     <div className="h-[1px] bg-[#c8c2fd] w-full"></div>
                     <div className="h-[300px] grid gap-1 px-4 py-2 w-full">
@@ -181,8 +183,8 @@ export default function BoardTable() {
                                     <div className="w-8 h-8 bg-[#c8c2fd]/30 text-[#6D28D9] rounded-full flex items-center justify-center"><ShoppingBag className="size-4" /></div>
 
                                     <div className="">
-                                        <p className="text-sm font-medium">Commande #{item.numCommand}</p>
-                                        <p className="text-sm text-gray-500">Il y a {item.heures} heure</p>
+                                        <p className="text-sm font-medium">{t('dashboard.order')} #{item.numCommand}</p>
+                                        <p className="text-sm text-gray-500">{t('dashboard.hoursAgo', { hours: item.heures })}</p>
                                     </div>
 
                                 </div>
