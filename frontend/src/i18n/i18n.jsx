@@ -233,7 +233,8 @@ const resources = {
         forgotPassword: "نسيت كلمة المرور؟",
         orContinueWith: "أو تابع باستخدام",
         dontHaveAccount: "ليس لديك حساب؟",
-        createAccount: "إنشاء حساب"
+        createAccount: "إنشاء حساب",
+        logout: "تسجيل الخروج"
       },
       // Register translations
       namePlaceholder: "الاسم الكامل",
@@ -532,7 +533,8 @@ const resources = {
         forgotPassword: "Mot de passe oublié ?",
         orContinueWith: "Ou continuer avec",
         dontHaveAccount: "Vous n'avez pas de compte ?",
-        createAccount: "Créer un compte"
+        createAccount: "Créer un compte",
+        logout: "Déconnexion"
       },
       // Register translations
       namePlaceholder: "Nom complet",
@@ -831,7 +833,8 @@ const resources = {
         forgotPassword: "Forgot password?",
         orContinueWith: "Or continue with",
         dontHaveAccount: "Don't have an account?",
-        createAccount: "Create account"
+        createAccount: "Create account",
+        logout: "Logout"
       },
       // Register translations
       namePlaceholder: "Full name",

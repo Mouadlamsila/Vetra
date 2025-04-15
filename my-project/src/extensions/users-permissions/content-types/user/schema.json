@@ -71,6 +71,12 @@
       ],
       "type": "media",
       "multiple": false
+    },
+    "boutiques": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::boutique.boutique",
+      "mappedBy": "user"
     }
   }
 }

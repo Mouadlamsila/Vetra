@@ -20,6 +20,14 @@ function AppContent() {
           <Route index element={<Middle />} />
           <Route path="Profil" element={<Middle />} />
           <Route path="Modification" element={<Middle />} />
+          <Route path="Stores" element={<Middle />} />
+          <Route path="Products" element={<Middle />} />
+          <Route path="Orders" element={<Middle />} />
+          <Route path="Stats" element={<Middle />} />
+          <Route path="Payment" element={<Middle />} />
+          <Route path="Settings" element={<Middle />} />
+          <Route path="Help" element={<Middle />} />
+          <Route path="Security" element={<Middle />} />
         </Route>
       </Routes>
       {!location.pathname.startsWith('/controll') && <Footer />}

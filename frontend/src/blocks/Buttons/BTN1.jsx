@@ -1,14 +1,15 @@
 import { LogOut } from "lucide-react";
 import "./BTN1.css";
+import { useTranslation } from "react-i18next";
 
 export default function BTN1({ 
-    text = "Déconnexion", 
     icon = <LogOut className="icon" />, 
     onClick, 
     variant = "primary",
     className = "",
     disabled = false
 }) {
+    const { t } = useTranslation();
     return (
         <button 
             className={`button ${variant} ${className} ${disabled ? 'disabled' : ''}`} 
@@ -16,7 +17,7 @@ export default function BTN1({
             onClick={onClick}
             disabled={disabled}
         >
-            <span className="button__text">{text}</span>
+            <span className="button__text">{t('dashboard.logout')}</span>
             <span className="button__icon">{icon}</span>
         </button>
     );

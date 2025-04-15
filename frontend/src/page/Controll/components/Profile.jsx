@@ -173,7 +173,7 @@ export default function Profile() {
                     'http://localhost:1337/api/upload',
                     uploadFormData,
                     {
-                        headers: {
+            headers: {
                             Authorization: `Bearer ${localStorage.getItem("token")}`,
                             'Content-Type': 'multipart/form-data'
                         }
@@ -224,7 +224,7 @@ export default function Profile() {
                     "http://localhost:1337/api/users/me?populate=photo",
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                Authorization: `Bearer ${localStorage.getItem("token")}`
                         }
                     }
                 );
@@ -351,12 +351,14 @@ export default function Profile() {
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
                                 placeholder={t('dashboard.oldPassword')}
                             />
-                            <button
-                                onClick={() => setShowOldPassword(!showOldPassword)}
-                                className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
-                            >
-                                {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                    className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
+                                >
+                                    {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 relative">
                             <Lock className={`w-5 h-5 ${!isEditing ? "text-[#c8c2fd]" : "text-gray-500"}`} />
@@ -369,12 +371,14 @@ export default function Profile() {
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
                                 placeholder={t('dashboard.newPassword')}
                             />
-                            <button
-                                onClick={() => setShowPassword(!showPassword)}
-                                className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
-                            >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 relative">
                             <Lock className={`w-5 h-5 ${!isEditing ? "text-[#c8c2fd]" : "text-gray-500"}`} />
@@ -387,12 +391,14 @@ export default function Profile() {
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
                                 placeholder={t('dashboard.confirmPassword')}
                             />
-                            <button
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 className={`absolute  text-gray-500 hover:text-[#c8c2fd] ${language === 'ar' ? 'left-2' : 'right-2'}`}
-                            >
-                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
+                                >
+                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

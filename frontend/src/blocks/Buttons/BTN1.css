@@ -13,6 +13,27 @@
     font-size: 14px;
 }
 
+/* RTL Support */
+[dir="rtl"] .button .button__text {
+    transform: translateX(-22px);
+}
+
+[dir="rtl"] .button .button__icon {
+    transform: translateX(-109px);
+}
+
+[dir="rtl"] .button:hover .button__icon {
+    transform: translateX(0);
+}
+
+[dir="rtl"] .button.small .button__icon {
+    transform: translateX(-89px);
+}
+
+[dir="rtl"] .button.large .button__icon {
+    transform: translateX(-139px);
+}
+
 .button.primary {
     border: 1px solid #6D28D9;
     background-color: #6D28D9;
