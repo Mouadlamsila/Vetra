@@ -253,7 +253,7 @@ export default function AddStorePage() {
                     id="logo" 
                     className="hidden"
                     onChange={(e) => handleFileChange(e, 'logo')}
-                   
+                    accept="image/*"
                   />
                 </div>
               </div>

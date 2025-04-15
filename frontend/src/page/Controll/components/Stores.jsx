@@ -1,44 +1,31 @@
 import { Package, PlusCircle, Pencil, Store, Tag, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Stores() {
-    const stores = [
-        {
-            name: "Boutique 1",
-            description: "Description de la boutique 1",
-            status: "active",
-            products: 10,
-            orders: 100
-        },
-        {
-            name: "Boutique 2",
-            description: "Description de la boutique 2",
-            status: "inactive",
-            products: 10,
-            orders: 100
-        },
-        {
-            name: "Boutique 3",
-            description: "Description de la boutique 3",
-            status: "en attente",
-            products: 10,
-            orders: 100
-        },
-        {
-            name: "Boutique 4",
-            description: "Description de la boutique 4",
-            status: "en attente",
-            products: 10,
-            orders: 100
-        },
-        {
-            name: "Boutique 5",
-            description: "Description de la boutique 5",
-            status: "inactive",
-            products: 10,
-            orders: 100
-        },
-    ]
+    const [stores, setStores] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStores = async () => {
+            try {
+                const response = await axios.get('http://localhost:1337/api/boutiques');
+                setStores(response.data.data);
+                setLoading(false);
+            } catch (error) {
+                setError(`Error fetching stores: ${error.message}`);
+                setLoading(false);
+            }
+        };
+
+        fetchStores();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+
     return (
         <div className="p-5 space-y-5">
             <div className="flex justify-between items-center">
@@ -57,21 +44,21 @@ export default function Stores() {
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-                {stores?.map((store, index) => (
-                    <div key={index} className="bg-white border border-[#c8c2fd] space-y-4 shadow rounded-lg px-5 py-4">
+                 {stores?.map((store, index) => (
+                    <div key={store.id} className="bg-white border border-[#c8c2fd] space-y-4 shadow rounded-lg px-5 py-4">
 
                         <div className="flex justify-between items-start">
                             <div className="">
-                                <h1 className="text-2xl font-bold">{store.name}</h1>
+                                <h1 className="text-2xl font-bold">{store.nom}</h1>
                                 <p className="text-sm text-gray-500">{store.description}</p>
                             </div>
-                            <p className={`text-sm ${store.status === 'active' ? 'text-green-500     bg-green-500/10 px-4 py-0.5 rounded-2xl' : store.status === 'inactive' ? 'text-red-500 bg-red-500/10 px-4 py-0.5 rounded-2xl' : 'text-yellow-500 bg-yellow-500/10 px-4 py-0.5 rounded-2xl'}`}>{store.status}</p>
+                            <p className={`text-sm ${store.situation === 'active' ? 'text-green-500     bg-green-500/10 px-4 py-0.5 rounded-2xl' : store.situation === 'inactive' ? 'text-red-500 bg-red-500/10 px-4 py-0.5 rounded-2xl' : 'text-yellow-500 bg-yellow-500/10 px-4 py-0.5 rounded-2xl'}`}>{store.situation}</p>
                         </div>
 
                         <div className="flex justify-between items-center">
                             <p className="text-sm text-gray-500 flex items-center gap-2"> <Store size={18} /> {index + 1}</p>
-                            <p className="text-sm text-gray-500 flex items-center gap-2"> <Tag size={18} /> produits : {store.products}</p>
-                            <p className="text-sm text-gray-500 flex items-center gap-2"> <Package size={18} /> commandes : {store.orders}</p>
+                            {/* <p className="text-sm text-gray-500 flex items-center gap-2"> <Tag size={18} /> produits : {store.products || 0}</p>
+                            <p className="text-sm text-gray-500 flex items-center gap-2"> <Package size={18} /> commandes : {store.attributes.orders || 0}</p> */}
                         </div>
                         <div className="flex justify-between gap-2">
                             <button className="bg-white border border-gray-300 flex items-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md">
@@ -83,7 +70,7 @@ export default function Stores() {
                         </div>
                     </div>
                 ))}
-            </div>
+             </div>
         </div>
     )
 }

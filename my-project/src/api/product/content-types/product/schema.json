@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "prix": {
+      "type": "decimal",
+      "required": true
+    },
+    "comparePrice": {
+      "type": "decimal"
+    },
+    "cost": {
+      "type": "decimal"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "stock": {
+      "type": "integer"
+    },
+    "lowStockAlert": {
+      "type": "integer"
+    },
+    "weight": {
+      "type": "decimal"
+    },
+    "shippingClass": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "string"
+    },
+    "boutiques": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::boutique.boutique"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "dimensions": {
+      "type": "json"
+    }
+  }
+}

@@ -48,6 +48,11 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "boutiques"
+    },
+    "situation": {
+      "type": "string",
+      "required": true,
+      "default": "En attente"
     }
   }
 }

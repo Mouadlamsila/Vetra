@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import BoardTable from "./components/BoardTable";
 import Profile from "./components/Profile";
-import Stores from "./components/Stores";
+
 import AddStorePage from "./components/AddStore";
 import ProductsPage from "./components/Product";
 import AddProductPage from "./components/AddProduct";
@@ -10,6 +10,7 @@ import StatsPage from "./components/stats";
 import PaymentPage from "./components/Payment";
 import SettingsPage from "./components/Settings";
 import HelpPage from "./components/Help";
+import Stores from "./components/Stores";
 
 export default function Middle() {
     return (
