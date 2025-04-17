@@ -1,37 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { Upload } from "lucide-react";
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function AddProductPage() {
   const [activeTab, setActiveTab] = useState('info');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    category: '',
-    boutiques: null, // Changed from array to single value
+    categories: '',
+    boutique: null,
     tags: '',
-    prix: '', // Changed from price to prix to match your field name
-    comparePrice: '',
-    cost: '',
+    prix: 0,
+    comparePrice: 0,
+    cost: 0,
     sku: '',
-    stock: '',
-    lowStockAlert: '',
-    weight: '',
-    dimensions: {
-      length: '',
-      width: '',
-      height: ''
-    },
+    stock: 0,
+    lowStockAlert: 0,
+    weight: 0,
+    dimensions: [{
+      length: 0,
+      width: 0,
+      height: 0,
+      unit: 'cm'
+    }],
     shippingClass: '',
     images: []
   });
-  const [boutiques, setBoutiques] = useState([]);
+  const [stores, setStores] = useState([]); // Changed from boutiques to stores
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [productId, setProductId] = useState(null);
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
-    // Fetch boutiques when component mounts
-    const fetchBoutiques = async () => {
+    // Fetch stores when component mounts
+    const fetchStores = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -43,38 +52,124 @@ export default function AddProductPage() {
             Authorization: `Bearer ${token}`
           }
         });
-        setBoutiques(response.data.data || []);
+        setStores(response.data.data);
       } catch (err) {
-        setError('Failed to fetch boutiques');
-        console.error('Error fetching boutiques:', err);
+        setError('Failed to fetch stores');
+        console.error('Error fetching stores:', err);
+        toast.error('Erreur lors du chargement des boutiques', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     };
-    fetchBoutiques();
-  }, []);
+    fetchStores();
+
+    // Check if we're in edit mode
+    if (id) {
+      setIsEditMode(true);
+      setProductId(id);
+      fetchProductData(id);
+    }
+  }, [id]);
+
+  const fetchProductData = async (productId) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token non trouvé. Veuillez vous connecter.');
+      }
+
+      const response = await axios.get(`http://localhost:1337/api/products/${productId}?populate=*`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const product = response.data.data;
+      
+      // Map the product data to our form structure
+      setFormData({
+        name: product.attributes.name || '',
+        description: product.attributes.description || '',
+        categories: product.attributes.categories || '',
+        boutique: product.attributes.boutique?.data?.id || null,
+        tags: product.attributes.tags || '',
+        prix: product.attributes.prix || 0,
+        comparePrice: product.attributes.comparePrice || 0,
+        cost: product.attributes.cost || 0,
+        sku: product.attributes.sku || '',
+        stock: product.attributes.stock || 0,
+        lowStockAlert: product.attributes.lowStockAlert || 0,
+        weight: product.attributes.weight || 0,
+        dimensions: product.attributes.dimensions || [{
+          length: 0,
+          width: 0,
+          height: 0,
+          unit: 'cm'
+        }],
+        shippingClass: product.attributes.shippingClass || '',
+        images: product.attributes.images?.data?.map(img => img.id) || []
+      });
+
+      toast.info('Données du produit chargées', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (err) {
+      console.error('Error fetching product:', err);
+      setError('Erreur lors du chargement du produit');
+      toast.error('Erreur lors du chargement du produit', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     if (name.startsWith('dimensions.')) {
       const dimension = name.split('.')[1];
       setFormData(prev => ({
         ...prev,
-        dimensions: {
-          ...prev.dimensions,
-          [dimension]: value
-        }
+        dimensions: [{
+          ...prev.dimensions[0],
+          [dimension]: dimension === 'unit' ? value : Number(value)
+        }]
       }));
-    } else if (name === 'boutiques') {
-      // Handle single boutique selection
+    } else if (name === 'boutique') {
+      // Handle store selection
       const selectedOption = Number(e.target.value);
       setFormData(prev => ({
         ...prev,
-        boutiques: selectedOption
+        boutique: selectedOption
       }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      if (type === 'number') {
+        setFormData(prev => ({
+          ...prev,
+          [name]: Number(value)
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      }
     }
   };
 
@@ -113,9 +208,26 @@ export default function AddProductPage() {
           images: [...prev.images, uploadResponse.data[0].id]
         }));
       }
+
+      toast.success('Image téléchargée avec succès', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (err) {
       setError('Failed to upload image');
       console.error('Error uploading image:', err);
+      toast.error('Erreur lors du téléchargement de l\'image', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -131,7 +243,7 @@ export default function AddProductPage() {
       }
 
       // Validate required fields
-      if (!formData.name || !formData.description || !formData.category || !formData.boutiques) {
+      if (!formData.name || !formData.description || !formData.categories || !formData.boutique) {
         throw new Error('Veuillez remplir tous les champs obligatoires');
       }
 
@@ -144,48 +256,90 @@ export default function AddProductPage() {
           }
         });
         
-        console.log('User info:', formData);
+        console.log('Form data before submission:', formData);
         
-        // Now create the product
-        await axios.post(
-          'http://localhost:1337/api/produits', // Changed from 'products' to 'produits' to match your API
-          {
-            data: {
-              ...formData,
-              // Format boutiques as a single ID for the API
-              boutiques: formData.boutiques
-            }
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+        // Create the product data object
+        const productData = {
+          data: {
+            name: formData.name,
+            description: formData.description,
+            categories: formData.categories,
+            boutique: formData.boutique,
+            tags: formData.tags,
+            prix: Number(formData.prix),
+            comparePrice: Number(formData.comparePrice),
+            cost: Number(formData.cost),
+            sku: formData.sku,
+            stock: Number(formData.stock),
+            lowStockAlert: Number(formData.lowStockAlert),
+            weight: Number(formData.weight),
+            dimensions: formData.dimensions,
+            shippingClass: formData.shippingClass,
+            images: formData.images
           }
-        );
-      
-        // Reset form and show success message
-        setFormData({
-          name: '',
-          description: '',
-          category: '',
-          boutiques: null,
-          tags: '',
-          prix: '',
-          comparePrice: '',
-          cost: '',
-          sku: '',
-          stock: '',
-          lowStockAlert: '',
-          weight: '',
-          dimensions: {
-            length: '',
-            width: '',
-            height: ''
-          },
-          shippingClass: '',
-          images: []
+        };
+        
+        // Log the dimensions to verify they're correct
+        console.log('Dimensions being sent:', productData.data.dimensions);
+        
+        let response;
+        
+        if (isEditMode) {
+          // Update existing product
+          response = await axios.put(
+            `http://localhost:1337/api/products/${productId}`,
+            productData,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          
+          toast.success('Produit mis à jour avec succès', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else {
+          // Create new product
+          response = await axios.post(
+            'http://localhost:1337/api/products',
+            productData,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          
+          toast.success('Produit créé avec succès', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+        
+        console.log('Product created successfully:', response.data);
+        
+        // Show success message with SweetAlert2
+        await Swal.fire({
+          title: isEditMode ? "Produit mis à jour!" : "Produit créé!",
+          text: isEditMode ? "Le produit a été mis à jour avec succès." : "Le produit a été créé avec succès.",
+          icon: "success",
+          confirmButtonText: "OK"
         });
-        alert('Product created successfully!');
+        
+        // Navigate back to products page
+        navigate('/controll/products');
       } catch (apiError) {
         console.error('API Error:', apiError.response?.data || apiError);
         
@@ -198,16 +352,45 @@ export default function AddProductPage() {
     } catch (err) {
       setError(err.message || 'Failed to create product');
       console.error('Error creating product:', err);
+      toast.error(err.message || 'Erreur lors de la création du produit', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (formData.name || formData.description || formData.categories || formData.boutique) {
+      const result = await Swal.fire({
+        title: "Êtes-vous sûr?",
+        text: "Toutes les modifications non enregistrées seront perdues.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Oui, quitter",
+        cancelButtonText: "Annuler"
+      });
+      
+      if (result.isConfirmed) {
+        navigate('/controll/products');
+      }
+    } else {
+      navigate('/controll/products');
     }
   };
 
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Ajouter un Produit</h1>
-        <p className="text-gray-500">Créez un nouveau produit pour votre boutique</p>
+        <h1 className="text-3xl font-bold tracking-tight">{isEditMode ? 'Modifier un Produit' : 'Ajouter un Produit'}</h1>
+        <p className="text-gray-500">{isEditMode ? 'Modifiez les informations de votre produit' : 'Créez un nouveau produit pour votre boutique'}</p>
       </div>
 
       <div className="border-b border-gray-200">
@@ -305,8 +488,8 @@ export default function AddProductPage() {
                   </label>
                   <select
                     id="product-category"
-                    name="category"
-                    value={formData.category}
+                    name="categories"
+                    value={formData.categories}
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
@@ -320,21 +503,21 @@ export default function AddProductPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="product-boutiques" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="product-store" className="block text-sm font-medium text-gray-700">
                     Boutique
                   </label>
                   <select
-                    id="product-boutiques"
-                    name="boutiques"
-                    value={formData.boutiques || ''}
+                    id="product-store"
+                    name="boutique"
+                    value={formData.boutique || ''}
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
                     <option value="">Sélectionnez une boutique</option>
-                    {boutiques && boutiques.length > 0 ? (
-                      boutiques.map(boutique => (
-                        <option key={boutique.id} value={boutique.id}>
-                          {boutique.attributes?.nom || `Boutique ${boutique.id}`}
+                    {stores && stores.length > 0 ? (
+                      stores.map(store => (
+                        <option key={store.id} value={store.id}>
+                          {store.attributes?.nom || `Boutique ${store.id}`}
                         </option>
                       ))
                     ) : (
@@ -580,7 +763,7 @@ export default function AddProductPage() {
                     type="number"
                     placeholder="L"
                     name="dimensions.length"
-                    value={formData.dimensions.length}
+                    value={formData.dimensions[0].length}
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   />
@@ -588,7 +771,7 @@ export default function AddProductPage() {
                     type="number"
                     placeholder="l"
                     name="dimensions.width"
-                    value={formData.dimensions.width}
+                    value={formData.dimensions[0].width}
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   />
@@ -596,10 +779,22 @@ export default function AddProductPage() {
                     type="number"
                     placeholder="H"
                     name="dimensions.height"
-                    value={formData.dimensions.height}
+                    value={formData.dimensions[0].height}
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   />
+                  <select 
+                    name="dimensions.unit" 
+                    value={formData.dimensions[0].unit}
+                    onChange={handleInputChange}
+                    className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
+                  >
+                    <option value="cm">cm</option>
+                    <option value="m">m</option>
+                    <option value="mm">mm</option>
+                    <option value="in">in</option>
+                    <option value="ft">ft</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -618,7 +813,11 @@ export default function AddProductPage() {
                 <option value="">Sélectionnez une classe</option>
                 <option value="standard">Standard</option>
                 <option value="express">Express</option>
-                <option value="economy">Économique</option>
+                <option value="free">Free</option>
+                <option value="local_pickup">Local Pickup</option>
+                <option value="heavy">Heavy</option>
+                <option value="fragile">Fragile</option>
+                <option value="international">International</option>
               </select>
             </div>
           </div>
@@ -628,6 +827,7 @@ export default function AddProductPage() {
       <div className="flex justify-end gap-2">
         <button
           type="button"
+          onClick={handleCancel}
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd]"
         >
           Annuler
@@ -638,7 +838,7 @@ export default function AddProductPage() {
           disabled={loading}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] disabled:opacity-50"
         >
-          {loading ? 'Enregistrement...' : 'Enregistrer le produit'}
+          {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour le produit' : 'Enregistrer le produit'}
         </button>
       </div>
 

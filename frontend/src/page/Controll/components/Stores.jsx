@@ -52,7 +52,7 @@ export default function Stores() {
                                 <h1 className="text-2xl font-bold">{store.nom}</h1>
                                 <p className="text-sm text-gray-500">{store.description}</p>
                             </div>
-                            <p className={`text-sm ${store.situation === 'active' ? 'text-green-500     bg-green-500/10 px-4 py-0.5 rounded-2xl' : store.situation === 'inactive' ? 'text-red-500 bg-red-500/10 px-4 py-0.5 rounded-2xl' : 'text-yellow-500 bg-yellow-500/10 px-4 py-0.5 rounded-2xl'}`}>{store.situation}</p>
+                            <p className={`text-sm ${store.statusBoutique === 'active' ? 'text-green-500     bg-green-500/10 px-4 py-0.5 rounded-2xl' : store.statusBoutique === 'suspended' ? 'text-red-500 bg-red-500/10 px-4 py-0.5 rounded-2xl' : 'text-yellow-500 bg-yellow-500/10 px-4 py-0.5 rounded-2xl'}`}>{store.statusBoutique}</p>
                         </div>
 
                         <div className="flex justify-between items-center">

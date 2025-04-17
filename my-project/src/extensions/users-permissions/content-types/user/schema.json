@@ -66,17 +66,29 @@
       "configurable": false
     },
     "photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
+    },
+    "defaultAddress": {
+      "type": "component",
+      "repeatable": true,
+      "component": "address-line1.components-address-addresses"
     },
     "boutiques": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::boutique.boutique",
-      "mappedBy": "user"
+      "mappedBy": "owner"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "customer"
     }
   }
 }

@@ -1,69 +1,86 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Edit, MoreHorizontal, Package, PlusCircle, Search, Trash } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Edit, MoreHorizontal, Package, PlusCircle, Search, Trash, Image } from "lucide-react";
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function ProductsPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState({});
   const [selectedStore, setSelectedStore] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-  // Données statiques des boutiques
-  const stores = [
-    { id: 1, nom: "Boutique Mode" },
-    { id: 2, nom: "Tech Store" },
-    { id: 3, nom: "Déco Maison" }
-  ];
+  // Fetch products and stores from the backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        if (!token) {
+          navigate('/login');
+          return;
+        }
 
-  // Données statiques des produits
-  const staticProducts = [
-    {
-      id: 1,
-      nom: "T-shirt Premium",
-      prix: 29.99,
-      stock: 45,
-      boutique: { id: 1, nom: "Boutique Mode" },
-      description: "T-shirt en coton premium"
-    },
-    {
-      id: 2,
-      nom: "Écouteurs sans fil",
-      prix: 89.99,
-      stock: 12,
-      boutique: { id: 2, nom: "Tech Store" },
-      description: "Écouteurs bluetooth avec réduction de bruit"
-    },
-    {
-      id: 3,
-      nom: "Vase décoratif",
-      prix: 39.99,
-      stock: 8,
-      boutique: { id: 3, nom: "Déco Maison" },
-      description: "Vase en céramique fait main"
-    },
-    {
-      id: 4,
-      nom: "Montre connectée",
-      prix: 129.99,
-      stock: 0,
-      boutique: { id: 2, nom: "Tech Store" },
-      description: "Montre intelligente avec suivi d'activité"
-    },
-    {
-      id: 5,
-      nom: "Pantalon Chino",
-      prix: 49.99,
-      stock: 23,
-      boutique: { id: 1, nom: "Boutique Mode" },
-      description: "Pantalon chino coupe slim"
-    }
-  ];
+        // Fetch stores first
+        const storesResponse = await axios.get('http://localhost:1337/api/boutiques', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setStores(storesResponse.data.data || []);
 
-  const toggleDropdown = (productId) => {
-    setIsDropdownOpen(prev => ({
-      ...prev,
-      [productId]: !prev[productId]
-    }));
+        // Fetch products with populated boutique data
+        const productsResponse = await axios.get('http://localhost:1337/api/products?populate=*', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setProducts(productsResponse.data.data || []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        if (err.response && err.response.status === 401) {
+          // Unauthorized, redirect to login
+          navigate('/login');
+        } else {
+          setError('Erreur lors du chargement des données. Veuillez réessayer.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [navigate, token]);
+
+  const toggleDropdown = (productId, event) => {
+    // Close all other dropdowns first
+    const newDropdownState = {};
+    newDropdownState[productId] = !isDropdownOpen[productId];
+    setIsDropdownOpen(newDropdownState);
+    
+    // Prevent event from bubbling up
+    event.stopPropagation();
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsDropdownOpen({});
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   const getStatusBadgeClass = (stock) => {
     if (stock > 10) return 'bg-green-100 text-green-800';
@@ -77,14 +94,115 @@ export default function ProductsPage() {
     return 'Épuisé';
   };
 
+  const handleDeleteProduct = async (productId) => {
+    const result = await Swal.fire({
+      title: "Êtes-vous sûr?",
+      text: "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Oui, supprimer!",
+      cancelButtonText: "Annuler"
+    });
+    
+    if (result.isConfirmed) {
+      try {
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        await axios.delete(`http://localhost:1337/api/products/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        // Update the products list after deletion
+        setProducts(prevProducts => prevProducts.filter(product => product.documentId !== productId));
+        setIsDropdownOpen({});
+        
+        // Show success toast
+        toast.success('Produit supprimé avec succès', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        if (err.response && err.response.status === 401) {
+          navigate('/login');
+        } else {
+          toast.error('Erreur lors de la suppression du produit. Veuillez réessayer.', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      }
+    }
+  };
+
+  // Get unique categories from products
+  const getUniqueCategories = () => {
+    const categories = new Set();
+    products.forEach(product => {
+      if (product && product.categories) {
+        categories.add(product.categories);
+      }
+    });
+    return Array.from(categories);
+  };
+
   // Filtrage des produits
-  const filteredProducts = staticProducts.filter(product => {
-    if (selectedStore !== 'all' && product.boutique.id !== parseInt(selectedStore)) {
+  const filteredProducts = products.filter(product => {
+    // Filter by store
+    if (selectedStore !== 'all' && product?.boutique?.id !== parseInt(selectedStore)) {
       return false;
     }
-    return product.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by category
+    if (selectedCategory !== 'all' && product?.categories !== selectedCategory) {
+      return false;
+    }
+    
+    // Filter by search query
+    return (product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+           (product?.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+           (product?.sku?.toLowerCase().includes(searchQuery.toLowerCase()) || false);
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <div className="bg-red-50 text-red-700 p-4 rounded-md">
+          {error}
+        </div>
+        <button 
+          onClick={() => navigate('/login')}
+          className="mt-4 px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors"
+        >
+          Se connecter
+        </button>
+      </div>
+    );
+  }
+  console.log(filteredProducts)
 
   return (
     <div className="space-y-6 p-6">
@@ -120,9 +238,28 @@ export default function ProductsPage() {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent"
           >
             <option value="all">Toutes les boutiques</option>
-            {stores.map(store => (
+            {stores && stores.map(store => (
               <option key={store.id} value={store.id}>
-                {store.nom}
+                {store.attributes?.nom || `Boutique ${store.id}`}
+              </option>
+            ))}
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        <div className="relative w-full md:w-[200px]">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent"
+          >
+            <option value="all">Toutes les catégories</option>
+            {getUniqueCategories().map(category => (
+              <option key={category} value={category}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}
               </option>
             ))}
           </select>
@@ -139,62 +276,95 @@ export default function ProductsPage() {
           Aucun produit trouvé
         </div>
       ) : (
-        <div className="border rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="border border-[#c8c2fd] shadow rounded-lg overflow-x-auto">
+          <table className="min-w-full divide-y  divide-[#c8c2fd]">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produit</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">ID</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Boutique</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Produit</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">ID</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Prix</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">Catégorie</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">Boutique</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Statut</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[#c8c2fd]">
               {filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center">
-                        <Package className="h-4 w-4 text-gray-400" />
+                      {product?.images && product.images.length > 0 ? (
+                        <div className="w-10 h-10 rounded overflow-hidden">  
+                          <img 
+                            src={`http://localhost:1337${product.images[0]?.formats?.thumbnail?.url || product.images[0]?.url}`} 
+                            alt={product?.name || 'Product'}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center">
+                          <Image className="h-5 w-5 text-gray-400" />
+                        </div>
+                      )}
+                      <div>
+                        <span className="font-medium">{product?.name || 'Sans nom'}</span>
+                        <div className="text-xs text-gray-500">SKU: {product?.sku || 'N/A'}</div>
                       </div>
-                      <span className="font-medium">{product.nom}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell text-gray-500">
                     {product.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    {product.prix.toFixed(2)} €
+                    {product?.prix?.toFixed(2) || '0.00'} €
+                    {product?.comparePrice > 0  && (
+                      <div className="text-xs text-gray-500 line-through">
+                        {product.comparePrice.toFixed(2)} €
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    {product.stock}
+                    {product?.stock || 0}
+                    {product?.lowStockAlert && (
+                      <div className="text-xs text-gray-500">
+                        Alerte: {product.lowStockAlert}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                    {product.boutique.nom}
+                    {product?.categories ? (
+                      <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                        {product.categories}
+                      </span>
+                    ) : (
+                      'Non catégorisé'
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                    {product?.boutique?.nom || 'Non assigné'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(product.stock)}`}>
-                      {getStatusText(product.stock)}
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(product?.stock || 0)}`}>
+                      {getStatusText(product?.stock || 0)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="relative">
                       <button
-                        onClick={() => toggleDropdown(product.id)}
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        onClick={(e) => toggleDropdown(product.id, e)}
+                        className="hover:text-[#c8c2fd] text-[#6D28D9] focus:outline-none"
                       >
                         <MoreHorizontal className="h-5 w-5" />
                       </button>
                       {isDropdownOpen[product.id] && (
-                        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                          <div className="py-1">
+                        <div className="absolute right-6 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 " style={{ position: 'fixed', zIndex: 1000 }}>
+                          <div className="pt-1">
                             <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">Actions</div>
-                            <div className="h-px bg-gray-200"></div>
+                            <div className="h-px bg-[#c8c2fd]"></div>
                             <Link
-                              to={`/dashboard/edit-product/${product.id}`}
+                              to={`/controll/edit-product/${product.id}`}
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                             >
                               <Edit className="mr-2 h-4 w-4" />
@@ -210,15 +380,10 @@ export default function ProductsPage() {
                               <Package className="mr-2 h-4 w-4" />
                               Gérer le stock
                             </button>
-                            <div className="h-px bg-gray-200"></div>
+                            <div className="h-px bg-[#c8c2fd]"></div>
                             <button 
-                              className="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
-                              onClick={() => {
-                                if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-                                  // Logique de suppression
-                                  setIsDropdownOpen({});
-                                }
-                              }}
+                              className="w-full rounded-b-md px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                              onClick={() => handleDeleteProduct(product.documentId)}
                             >
                               <Trash className="mr-2 h-4 w-4" />
                               Supprimer

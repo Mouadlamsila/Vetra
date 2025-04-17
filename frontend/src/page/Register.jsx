@@ -18,8 +18,11 @@ export default function Register() {
     const [formData, setFormData] = useState({
         username: "",
         email: "",
-        password: ""
+        password: "",
+        confirmPassword: ""
     })
+    const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
     const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
@@ -37,14 +40,51 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setError("")
+        setSuccess("")
+
+        // Validate password confirmation
+        if (formData.password !== formData.confirmPassword) {
+            setError(t('passwordsDoNotMatch'));
+            return;
+        }
 
         try {
-            await axios.post('http://localhost:1337/api/auth/local/register', {
+            setIsLoading(true)
+            console.log('Sending registration data:', {
                 username: formData.username,
                 email: formData.email,
                 password: formData.password
             });
-            navigate("/login")
+
+            // Register the user
+            const registerResponse = await axios.post('http://localhost:1337/api/auth/local/register', {
+                username: formData.username,
+                email: formData.email,
+                password: formData.password
+            });
+
+            console.log('Registration response:', registerResponse.data);
+            setSuccess(t('registrationSuccess'));
+            
+            // Wait for 2 seconds to show success message before redirecting
+            setTimeout(() => {
+                navigate("/login")
+            }, 2000);
+        } catch (error) {
+            console.error('Registration error:', error);
+            if (error.response) {
+                const errorData = error.response.data?.error;
+                if (errorData?.message?.includes('email')) {
+                    setError(t('emailAlreadyExists'));
+                } else if (errorData?.message?.includes('username')) {
+                    setError(t('usernameAlreadyExists'));
+                } else {
+                    setError(errorData?.message || t('registrationError'));
+                }
+            } else {
+                setError(t('registrationError'));
+            }
         } finally {
             setIsLoading(false)
         }
@@ -151,7 +191,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('passwordPlaceholder')}
-
+                                        required
                                     />
                                     <button
                                         type="button"
@@ -174,7 +214,7 @@ export default function Register() {
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('confirmPasswordPlaceholder')}
-
+                                        required
                                     />
                                     <button
                                         type="button"
@@ -210,6 +250,20 @@ export default function Register() {
                                 </span>
                                 <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                             </button>
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 text-sm">
+                                    {error}
+                                </div>
+                            )}
+
+                            {/* Success Message */}
+                            {success && (
+                                <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-200 text-sm">
+                                    {success}
+                                </div>
+                            )}
 
                             {/* Divider */}
                             <div className="relative my-6">

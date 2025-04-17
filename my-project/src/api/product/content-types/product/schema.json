@@ -42,19 +42,8 @@
     "weight": {
       "type": "decimal"
     },
-    "shippingClass": {
-      "type": "string"
-    },
-    "category": {
-      "type": "string"
-    },
     "tags": {
       "type": "string"
-    },
-    "boutiques": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::boutique.boutique"
     },
     "images": {
       "type": "media",
@@ -64,8 +53,46 @@
         "images"
       ]
     },
+    "categories": {
+      "type": "enumeration",
+      "enum": [
+        "clothing",
+        "electronics",
+        "home",
+        "beauty",
+        "other"
+      ],
+      "required": true,
+      "default": "other"
+    },
+    "boutique": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::boutique.boutique",
+      "inversedBy": "products"
+    },
+    "shippingClass": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "local_pickup",
+        "heavy",
+        "fragile",
+        "international",
+        "standard",
+        "express"
+      ]
+    },
     "dimensions": {
-      "type": "json"
+      "type": "component",
+      "repeatable": true,
+      "component": "address-line1.components-product-dimensions"
+    },
+    "order_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order-item.order-item",
+      "mappedBy": "product"
     }
   }
 }

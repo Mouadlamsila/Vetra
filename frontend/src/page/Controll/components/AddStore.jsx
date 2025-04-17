@@ -68,7 +68,7 @@ export default function AddStorePage() {
           categorie: boutique.categorie,
           emplacement: boutique.emplacement || null,
           // Utilisation du nom de champ correct pour la relation
-          user: userResponse.data.id
+          owner: userResponse.data.documentId
         }
       };
 
