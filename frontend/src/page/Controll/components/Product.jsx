@@ -240,7 +240,7 @@ export default function ProductsPage() {
             <option value="all">Toutes les boutiques</option>
             {stores && stores.map(store => (
               <option key={store.id} value={store.id}>
-                {store.attributes?.nom || `Boutique ${store.id}`}
+                {store?.nom || `Boutique ${store.id}`}
               </option>
             ))}
           </select>
@@ -364,7 +364,7 @@ export default function ProductsPage() {
                             <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">Actions</div>
                             <div className="h-px bg-[#c8c2fd]"></div>
                             <Link
-                              to={`/controll/edit-product/${product.id}`}
+                              to={`/controll/edit-product/${product.documentId}`}
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                             >
                               <Edit className="mr-2 h-4 w-4" />
