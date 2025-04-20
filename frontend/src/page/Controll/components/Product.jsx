@@ -295,10 +295,10 @@ export default function ProductsPage() {
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      {product?.images && product.images.length > 0 ? (
+                      {product?.imgMain  ? (
                         <div className="w-10 h-10 rounded overflow-hidden">  
                           <img 
-                            src={`http://localhost:1337${product.images[0]?.formats?.thumbnail?.url || product.images[0]?.url}`} 
+                            src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`} 
                             alt={product?.name || 'Product'}
                             className="w-full h-full object-cover"
                           />

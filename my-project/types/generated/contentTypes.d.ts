@@ -554,7 +554,9 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'address-line1.components-product-dimensions',
       true
     >;
-    images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    imgMain: Schema.Attribute.Media<'images'>;
+    imgsAdditional: Schema.Attribute.Media<'images', true> &
+      Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

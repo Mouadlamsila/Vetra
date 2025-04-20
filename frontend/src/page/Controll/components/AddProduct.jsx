@@ -28,7 +28,8 @@ export default function AddProductPage() {
       unit: 'cm'
     }],
     shippingClass: '',
-    images: []
+    imgMain: null,
+    imgsAdditional: []
   });
   const [stores, setStores] = useState([]); // Changed from boutiques to stores
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,8 @@ export default function AddProductPage() {
           unit: 'cm'
         }],
         shippingClass: product.attributes.shippingClass || '',
-        images: product.attributes.images?.data?.map(img => img.id) || []
+        imgMain: product.attributes.imgMain || null,
+        imgsAdditional: product.attributes.imgsAdditional || []
       });
 
       toast.info('Données du produit chargées', {
@@ -200,12 +202,12 @@ export default function AddProductPage() {
       if (isMain) {
         setFormData(prev => ({
           ...prev,
-          images: [uploadResponse.data[0].id, ...prev.images]
+          imgMain: uploadResponse.data[0].id
         }));
       } else {
         setFormData(prev => ({
           ...prev,
-          images: [...prev.images, uploadResponse.data[0].id]
+          imgsAdditional: [...prev.imgsAdditional, uploadResponse.data[0].id]
         }));
       }
 
@@ -242,113 +244,64 @@ export default function AddProductPage() {
         throw new Error('Token non trouvé. Veuillez vous connecter.');
       }
 
-      // Validate required fields
       if (!formData.name || !formData.description || !formData.categories || !formData.boutique) {
         throw new Error('Veuillez remplir tous les champs obligatoires');
       }
 
-      // First, check if the user has permission to create products
-      try {
-        // Try to fetch the current user to verify permissions
-        await axios.get('http://localhost:1337/api/users/me', {
+      const productData = {
+        data: {
+          name: formData.name,
+          description: formData.description,
+          categories: formData.categories,
+          boutique: formData.boutique,
+          tags: formData.tags,
+          prix: Number(formData.prix),
+          comparePrice: Number(formData.comparePrice),
+          cost: Number(formData.cost),
+          sku: formData.sku,
+          stock: Number(formData.stock),
+          lowStockAlert: Number(formData.lowStockAlert),
+          weight: Number(formData.weight),
+          dimensions: formData.dimensions.map(dim => ({
+            length: Number(dim.length),
+            width: Number(dim.width),
+            height: Number(dim.height),
+            unit: dim.unit
+          })),
+          shippingClass: formData.shippingClass,
+          imgMain: formData.imgMain,
+          imgsAdditional: formData.imgsAdditional
+        }
+      };
+
+      await axios.post(
+        'http://localhost:1337/api/products',
+        productData,
+        {
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           }
-        });
-        
-        console.log('Form data before submission:', formData);
-        
-        // Create the product data object
-        const productData = {
-          data: {
-            name: formData.name,
-            description: formData.description,
-            categories: formData.categories,
-            boutique: formData.boutique,
-            tags: formData.tags,
-            prix: Number(formData.prix),
-            comparePrice: Number(formData.comparePrice),
-            cost: Number(formData.cost),
-            sku: formData.sku,
-            stock: Number(formData.stock),
-            lowStockAlert: Number(formData.lowStockAlert),
-            weight: Number(formData.weight),
-            dimensions: formData.dimensions,
-            shippingClass: formData.shippingClass,
-            images: formData.images
-          }
-        };
-        
-        // Log the dimensions to verify they're correct
-        console.log('Dimensions being sent:', productData.data.dimensions);
-        
-        let response;
-        
-        if (isEditMode) {
-          // Update existing product
-          response = await axios.put(
-            `http://localhost:1337/api/products/${productId}`,
-            productData,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          
-          toast.success('Produit mis à jour avec succès', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        } else {
-          // Create new product
-          response = await axios.post(
-            'http://localhost:1337/api/products',
-            productData,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          
-          toast.success('Produit créé avec succès', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
         }
-        
-        console.log('Product created successfully:', response.data);
-        
-        // Show success message with SweetAlert2
-        await Swal.fire({
-          title: isEditMode ? "Produit mis à jour!" : "Produit créé!",
-          text: isEditMode ? "Le produit a été mis à jour avec succès." : "Le produit a été créé avec succès.",
-          icon: "success",
-          confirmButtonText: "OK"
-        });
-        
-        // Navigate back to products page
-        navigate('/controll/products');
-      } catch (apiError) {
-        console.error('API Error:', apiError.response?.data || apiError);
-        
-        if (apiError.response?.status === 403) {
-          throw new Error('Vous n\'avez pas les permissions nécessaires pour créer un produit. Veuillez contacter l\'administrateur.');
-        } else {
-          throw new Error(apiError.response?.data?.error?.message || apiError.message || 'Erreur lors de la création du produit');
-        }
-      }
+      );
+
+      toast.success('Produit créé avec succès', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      await Swal.fire({
+        title: "Produit créé!",
+        text: "Le produit a été créé avec succès.",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
+
+      navigate('/controll/products');
     } catch (err) {
       setError(err.message || 'Failed to create product');
       console.error('Error creating product:', err);
@@ -558,6 +511,15 @@ export default function AddProductPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Image principale</label>
                 <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2">
+                  {formData.imgMain && (
+                    <div className="mb-4">
+                      <img 
+                        src={`http://localhost:1337${formData.imgMain?.url}`} 
+                        alt="Main product" 
+                        className="max-h-32 object-contain"
+                      />
+                    </div>
+                  )}
                   <div className="text-center">
                     <p className="text-sm font-medium">Déposez votre image principale ici</p>
                     <p className="text-xs text-gray-500">PNG, JPG (max. 5MB)</p>
@@ -582,30 +544,50 @@ export default function AddProductPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Images supplémentaires</label>
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2"
-                    >
+                  {formData.imgsAdditional.map((img, index) => (
+                    <div key={index} className="relative">
+                      <img 
+                        src={`http://localhost:1337${img?.url}`} 
+                        alt={`Additional ${index + 1}`} 
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            imgsAdditional: prev.imgsAdditional.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {formData.imgsAdditional.length < 3 && (
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2">
                       <div className="text-center">
-                        <p className="text-xs text-gray-500">Image {i}</p>
+                        <p className="text-xs text-gray-500">Image supplémentaire</p>
                       </div>
                       <input
                         type="file"
                         accept="image/*"
                         onChange={(e) => handleImageUpload(e)}
                         className="hidden"
-                        id={`additional-image-${i}`}
+                        id="additional-image"
                       />
                       <label
-                        htmlFor={`additional-image-${i}`}
+                        htmlFor="additional-image"
                         className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer"
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Ajouter
                       </label>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

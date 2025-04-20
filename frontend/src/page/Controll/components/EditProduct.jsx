@@ -156,11 +156,12 @@ export default function EditProduct() {
           }
         }
       );
+     
 
       if (isMain) {
         setFormData(prev => ({
           ...prev,
-          images: [uploadResponse.data[0].id, ...prev.images]
+          images: [uploadResponse.data[0].id]
         }));
       } else {
         setFormData(prev => ({
@@ -190,6 +191,7 @@ export default function EditProduct() {
       });
     }
   };
+  console.log(formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -217,9 +219,7 @@ export default function EditProduct() {
           name: formData.name,
           description: formData.description,
           categories: formData.categories,
-          boutique: {
-            id: selectedStore.id
-          },
+          boutique: selectedStore.id,
           tags: formData.tags,
           prix: Number(formData.prix),
           comparePrice: Number(formData.comparePrice),
@@ -235,12 +235,13 @@ export default function EditProduct() {
             unit: dim.unit
           })),
           shippingClass: formData.shippingClass,
-          images: formData.images.map(imgId => ({
-            id: imgId
-          }))
+          images: formData.images.map(imgId => 
+            imgId
+          )
         }
       };
 
+        
       
 
       await axios.put(
@@ -312,6 +313,7 @@ export default function EditProduct() {
       </div>
     );
   }
+
 
   return (
     <div className="space-y-6 p-6">
@@ -484,8 +486,8 @@ export default function EditProduct() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Image principale</label>
-                <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2">
-                  <div className="text-center">
+                <div className="mt-1 border-2 border-dashed  border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2" style={{ backgroundImage: `url(http://localhost:1337${formData?.images[5]?.url})` }}>
+                  <div className="text-center ">
                     <p className="text-sm font-medium">Déposez votre image principale ici</p>
                     <p className="text-xs text-gray-500">PNG, JPG (max. 5MB)</p>
                   </div>

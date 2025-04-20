@@ -45,7 +45,7 @@
     "tags": {
       "type": "string"
     },
-    "images": {
+    "imgsAdditional": {
       "type": "media",
       "multiple": true,
       "required": true,
@@ -93,6 +93,13 @@
       "relation": "oneToMany",
       "target": "api::order-item.order-item",
       "mappedBy": "product"
+    },
+    "imgMain": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
