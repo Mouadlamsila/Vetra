@@ -38,7 +38,7 @@ export default function AddProductPage() {
   const [productId, setProductId] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const IDUser = localStorage.getItem('IDUser');
   useEffect(() => {
     // Fetch stores when component mounts
     const fetchStores = async () => {
@@ -48,12 +48,12 @@ export default function AddProductPage() {
           throw new Error('Token non trouvé. Veuillez vous connecter.');
         }
 
-        const response = await axios.get('http://localhost:1337/api/boutiques', {
+        const response = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setStores(response.data.data);
+        setStores(response.data.boutiques);
       } catch (err) {
         setError('Failed to fetch stores');
         console.error('Error fetching stores:', err);
@@ -248,60 +248,60 @@ export default function AddProductPage() {
         throw new Error('Veuillez remplir tous les champs obligatoires');
       }
 
-      const productData = {
-        data: {
-          name: formData.name,
-          description: formData.description,
-          categories: formData.categories,
-          boutique: formData.boutique,
-          tags: formData.tags,
-          prix: Number(formData.prix),
-          comparePrice: Number(formData.comparePrice),
-          cost: Number(formData.cost),
-          sku: formData.sku,
-          stock: Number(formData.stock),
-          lowStockAlert: Number(formData.lowStockAlert),
-          weight: Number(formData.weight),
+        const productData = {
+          data: {
+            name: formData.name,
+            description: formData.description,
+            categories: formData.categories,
+            boutique: formData.boutique,
+            tags: formData.tags,
+            prix: Number(formData.prix),
+            comparePrice: Number(formData.comparePrice),
+            cost: Number(formData.cost),
+            sku: formData.sku,
+            stock: Number(formData.stock),
+            lowStockAlert: Number(formData.lowStockAlert),
+            weight: Number(formData.weight),
           dimensions: formData.dimensions.map(dim => ({
             length: Number(dim.length),
             width: Number(dim.width),
             height: Number(dim.height),
             unit: dim.unit
           })),
-          shippingClass: formData.shippingClass,
+            shippingClass: formData.shippingClass,
           imgMain: formData.imgMain,
           imgsAdditional: formData.imgsAdditional
         }
       };
-
+     
       await axios.post(
-        'http://localhost:1337/api/products',
-        productData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      toast.success('Produit créé avec succès', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-
-      await Swal.fire({
+            'http://localhost:1337/api/products',
+            productData,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          
+          toast.success('Produit créé avec succès', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        
+        await Swal.fire({
         title: "Produit créé!",
         text: "Le produit a été créé avec succès.",
-        icon: "success",
-        confirmButtonText: "OK"
-      });
-
-      navigate('/controll/products');
+          icon: "success",
+          confirmButtonText: "OK"
+        });
+        
+        navigate('/controll/products');
     } catch (err) {
       setError(err.message || 'Failed to create product');
       console.error('Error creating product:', err);
@@ -470,7 +470,7 @@ export default function AddProductPage() {
                     {stores && stores.length > 0 ? (
                       stores.map(store => (
                         <option key={store.id} value={store.id}>
-                          {store.attributes?.nom || `Boutique ${store.id}`}
+                          {store.nom || `Boutique ${store.id}`}
                         </option>
                       ))
                     ) : (

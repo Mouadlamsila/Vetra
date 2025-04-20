@@ -129,7 +129,7 @@ export default function AddStorePage() {
         }
 
         console.log('Création de la boutique terminée avec succès');
-        navigate('/dashboard');
+        navigate('/controll/stores');
       }
     } catch (error) {
       console.error('Erreur complète:', error);

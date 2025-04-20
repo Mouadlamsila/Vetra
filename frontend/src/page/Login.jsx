@@ -56,7 +56,7 @@ export default function Login() {
       // Store authentication data
       localStorage.setItem('token', response.data.jwt)
       localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
-
+      localStorage.setItem('IDUser', response.data.user.id)
      
       navigate('/')
       

@@ -28,14 +28,16 @@ export default function EditProduct() {
       unit: 'cm'
     }],
     shippingClass: '',
-    images: []
+    imgMain: null,
+    imgsAdditional: []
   });
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
-  
+  const IDUser = localStorage.getItem('IDUser');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -46,12 +48,12 @@ export default function EditProduct() {
         }
 
         // Fetch stores
-        const storesResponse = await axios.get('http://localhost:1337/api/boutiques', {
+        const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setStores(storesResponse.data.data);
+        setStores(storesResponse.data.boutiques || []);
 
         // Fetch product data
         const productResponse = await axios.get(`http://localhost:1337/api/products/${id}?populate=*`, {
@@ -65,7 +67,7 @@ export default function EditProduct() {
           name: product.name || '',
           description: product.description || '',
           categories: product.categories || '',
-          boutique: product.boutique?.nom || null,
+          boutique: product.boutique?.id || null,
           tags: product.tags || '',
           prix: product.prix || 0,
           comparePrice: product.comparePrice || 0,
@@ -81,7 +83,8 @@ export default function EditProduct() {
             unit: 'cm'
           }],
           shippingClass: product.shippingClass || '',
-          images: product.images?.map(img => img.id) || []
+          imgMain: product.imgMain || null,
+          imgsAdditional  : product.imgsAdditional?.map(img => img.id) || []
         });
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -89,7 +92,7 @@ export default function EditProduct() {
         toast.error('Erreur lors du chargement des données', {
           position: "top-right",
           autoClose: 5000,
-          hideProgressBar: false,
+          hideProgressBar: false, 
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
@@ -100,7 +103,7 @@ export default function EditProduct() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, IDUser]);
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -156,17 +159,16 @@ export default function EditProduct() {
           }
         }
       );
-     
 
       if (isMain) {
         setFormData(prev => ({
           ...prev,
-          images: [uploadResponse.data[0].id]
+          imgMain: uploadResponse.data[0].id
         }));
       } else {
         setFormData(prev => ({
           ...prev,
-          images: [...prev.images, uploadResponse.data[0].id]
+          imgsAdditional: [...prev.imgsAdditional, uploadResponse.data[0].id]
         }));
       }
 
@@ -191,7 +193,6 @@ export default function EditProduct() {
       });
     }
   };
-  console.log(formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,18 +209,12 @@ export default function EditProduct() {
         throw new Error('Veuillez remplir tous les champs obligatoires');
       }
 
-      // Find the selected store object
-      const selectedStore = stores.find(store => store.nom === formData.boutique);
-      if (!selectedStore) {
-        throw new Error('Boutique sélectionnée invalide');
-      }
-
       const productData = {
         data: {
           name: formData.name,
           description: formData.description,
           categories: formData.categories,
-          boutique: selectedStore.id,
+          boutique: formData.boutique,
           tags: formData.tags,
           prix: Number(formData.prix),
           comparePrice: Number(formData.comparePrice),
@@ -235,14 +230,10 @@ export default function EditProduct() {
             unit: dim.unit
           })),
           shippingClass: formData.shippingClass,
-          images: formData.images.map(imgId => 
-            imgId
-          )
+          imgMain: formData.imgMain,
+          imgsAdditional: formData.imgsAdditional
         }
       };
-
-        
-      
 
       await axios.put(
         `http://localhost:1337/api/products/${id}`,
@@ -442,16 +433,12 @@ export default function EditProduct() {
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="store.nom">Sélectionnez une boutique</option>
-                    {stores ? (
-                      stores.map(store => 
-                        <option key={store.id} value={store.nom}>
-                          {store?.nom || `Boutique ${store.nom}`}
-                        </option>
-                      )
-                    ) : (
-                      <option value="" disabled>Aucune boutique disponible</option>
-                    )}
+                    <option value="">Sélectionnez une boutique</option>
+                    {stores.map(store => (
+                      <option key={store.id} value={store.id}>
+                        {store.nom}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -486,8 +473,8 @@ export default function EditProduct() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Image principale</label>
-                <div className="mt-1 border-2 border-dashed  border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2" style={{ backgroundImage: `url(http://localhost:1337${formData?.images[5]?.url})` }}>
-                  <div className="text-center ">
+                <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2">
+                  <div className="text-center">
                     <p className="text-sm font-medium">Déposez votre image principale ici</p>
                     <p className="text-xs text-gray-500">PNG, JPG (max. 5MB)</p>
                   </div>

@@ -7,12 +7,12 @@ export default function Stores() {
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const IDUser = localStorage.getItem('IDUser');
     useEffect(() => {
         const fetchStores = async () => {
             try {
-                const response = await axios.get('http://localhost:1337/api/boutiques');
-                setStores(response.data.data);
+                const response = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`);
+                setStores(response.data.boutiques);
                 setLoading(false);
             } catch (error) {
                 setError(`Error fetching stores: ${error.message}`);
@@ -22,6 +22,7 @@ export default function Stores() {
 
         fetchStores();
     }, []);
+
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;

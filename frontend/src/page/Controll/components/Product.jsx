@@ -17,7 +17,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+  const IDUser = localStorage.getItem('IDUser');
   // Fetch products and stores from the backend
   useEffect(() => {
     const fetchData = async () => {
@@ -29,36 +29,51 @@ export default function ProductsPage() {
           return;
         }
 
-        // Fetch stores first
-        const storesResponse = await axios.get('http://localhost:1337/api/boutiques', {
+        // Fetch user's stores
+        const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setStores(storesResponse.data.data || []);
+        
+        const userStores = storesResponse.data.boutiques || [];
+        setStores(userStores);
 
-        // Fetch products with populated boutique data
-        const productsResponse = await axios.get('http://localhost:1337/api/products?populate=*', {
-          headers: {
-            Authorization: `Bearer ${token}`
+        // Fetch products for each store
+        const allProducts = [];
+        for (const store of userStores) {
+          const productsResponse = await axios.get(`http://localhost:1337/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          
+          if (productsResponse.data.data) {
+            allProducts.push(...productsResponse.data.data);
           }
-        });
-        setProducts(productsResponse.data.data || []);
+        }
+        
+        setProducts(allProducts);
+        
       } catch (err) {
         console.error('Error fetching data:', err);
-        if (err.response && err.response.status === 401) {
-          // Unauthorized, redirect to login
-          navigate('/login');
-        } else {
-          setError('Erreur lors du chargement des données. Veuillez réessayer.');
-        }
+        setError('Erreur lors du chargement des données');
+        toast.error('Erreur lors du chargement des données', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [navigate, token]);
+  }, [navigate, token, IDUser]);
+
 
   const toggleDropdown = (productId, event) => {
     // Close all other dropdowns first
@@ -120,7 +135,7 @@ export default function ProductsPage() {
         });
 
         // Update the products list after deletion
-        setProducts(prevProducts => prevProducts.filter(product => product.documentId !== productId));
+        setProducts(prevProducts => prevProducts?.filter(product => product.documentId !== productId));
         setIsDropdownOpen({});
         
         // Show success toast
@@ -202,7 +217,7 @@ export default function ProductsPage() {
       </div>
     );
   }
-  console.log(filteredProducts)
+  
 
   return (
     <div className="space-y-6 p-6">
