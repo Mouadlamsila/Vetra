@@ -12,6 +12,7 @@ import SettingsPage from "./components/Settings";
 import HelpPage from "./components/Help";
 import Stores from "./components/Stores";
 import EditProduct from "./components/EditProduct";
+import EditStore from "./components/EditStore";
 
 export default function Middle() {
     return (
@@ -29,6 +30,7 @@ export default function Middle() {
                 <Route path="/Settings" element={<SettingsPage />} />
                 <Route path="/Help" element={<HelpPage />} />
                 <Route path="/edit-product/:id" element={<EditProduct />} />
+                <Route path="/edit-store/:id" element={<EditStore />} />
             </Routes>
 
         </div>

@@ -382,7 +382,6 @@ export interface ApiBoutiqueBoutique extends Struct.CollectionTypeSchema {
   };
   attributes: {
     banniere: Schema.Attribute.Media<'images'>;
-    categorie: Schema.Attribute.String & Schema.Attribute.Required;
     category: Schema.Attribute.Enumeration<
       ['fashion', 'electronics', 'home', 'beauty', 'food', 'other']
     > &

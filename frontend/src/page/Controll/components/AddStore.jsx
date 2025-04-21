@@ -9,8 +9,17 @@ export default function AddStorePage() {
   const [boutique, setBoutique] = useState({
     nom: '',
     description: '',
-    categorie: '',
     emplacement: '',
+    category: 'other',
+    statusBoutique: 'pending',
+    location: [{
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      postalCode: '',
+      country: '',
+      isDefault: true
+    }]
   });
   const [logo, setLogo] = useState(null);
   const [banniere, setBanniere] = useState(null);
@@ -19,10 +28,21 @@ export default function AddStorePage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setBoutique(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name.startsWith('location.')) {
+      const field = name.split('.')[1];
+      setBoutique(prev => ({
+        ...prev,
+        location: [{
+          ...prev.location[0],
+          [field]: value
+        }]
+      }));
+    } else {
+      setBoutique(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleFileChange = (e, type) => {
@@ -40,13 +60,11 @@ export default function AddStorePage() {
     setError(null);
 
     try {
-      // 1. Vérification du token
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Token non trouvé. Veuillez vous connecter.');
       }
 
-      // 2. Récupération des informations utilisateur
       console.log('Récupération des informations utilisateur...');
       const userResponse = await axios.get('http://localhost:1337/api/users/me', {
         headers: {
@@ -55,27 +73,24 @@ export default function AddStorePage() {
       });
       console.log('Informations utilisateur:', userResponse.data);
 
-      // 3. Validation des données
-      if (!boutique.nom || !boutique.description || !boutique.categorie) {
+      if (!boutique.nom || !boutique.description || !boutique.category || !boutique.emplacement) {
         throw new Error('Veuillez remplir tous les champs obligatoires');
       }
 
-      // 4. Préparation des données avec la relation utilisateur
       const requestData = {
         data: {
           nom: boutique.nom,
           description: boutique.description,
-          categorie: boutique.categorie,
-          emplacement: boutique.emplacement || null,
-          // Utilisation du nom de champ correct pour la relation
+          emplacement: boutique.emplacement,
+          category: boutique.category,
+          statusBoutique: boutique.statusBoutique,
+          location: boutique.location,
           owner: userResponse.data.documentId
         }
       };
 
       console.log('Données de la requête:', JSON.stringify(requestData, null, 2));
 
-      // 5. Envoi de la requête
-      console.log('Envoi de la requête à Strapi...');
       const response = await axios({
         method: 'POST',
         url: 'http://localhost:1337/api/boutiques',
@@ -88,11 +103,9 @@ export default function AddStorePage() {
 
       console.log('Réponse de Strapi:', response.data);
 
-      // 6. Gestion des fichiers si la création est réussie
       if (response.data.data?.id) {
         const boutiqueId = response.data.data.id;
 
-        // Upload du logo
         if (logo) {
           console.log('Upload du logo...');
           const logoFormData = new FormData();
@@ -110,7 +123,6 @@ export default function AddStorePage() {
           console.log('Logo uploadé:', logoResponse.data);
         }
 
-        // Upload de la bannière
         if (banniere) {
           console.log('Upload de la bannière...');
           const banniereFormData = new FormData();
@@ -169,7 +181,7 @@ export default function AddStorePage() {
         <div className="p-6 space-y-6">
           <div className="space-y-2">
             <label htmlFor="nom" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Nom de la boutique
+              Nom de la boutique *
             </label>
             <input
               id="nom"
@@ -178,12 +190,13 @@ export default function AddStorePage() {
               onChange={handleInputChange}
               placeholder="Ma Boutique"
               className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+              required
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Description
+              Description *
             </label>
             <textarea
               id="description"
@@ -192,21 +205,23 @@ export default function AddStorePage() {
               onChange={handleInputChange}
               placeholder="Décrivez votre boutique en quelques mots..."
               className="w-full min-h-[100px] px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400 resize-none"
+              required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="categorie" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Catégorie
+                <label htmlFor="category" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Catégory *
                 </label>
                 <select
-                  id="categorie"
-                  name="categorie"
-                  value={boutique.categorie}
+                  id="category"
+                  name="category"
+                  value={boutique.category}
                   onChange={handleInputChange}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
+                  required
                 >
                   <option value="">Sélectionnez une catégorie</option>
                   <option value="fashion">Mode et Vêtements</option>
@@ -220,65 +235,138 @@ export default function AddStorePage() {
 
               <div className="space-y-2">
                 <label htmlFor="emplacement" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Emplacement (si boutique physique)
+                  Emplacement *
                 </label>
                 <input
                   id="emplacement"
                   name="emplacement"
                   value={boutique.emplacement}
                   onChange={handleInputChange}
-                  placeholder="Adresse de la boutique (optionnel)"
+                  placeholder="Adresse de la boutique"
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                  required
                 />
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Logo de la boutique
+                <label htmlFor="location.addressLine1" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Adresse ligne 1
                 </label>
-                <div className="border-2 relative border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
-                  <Store className="h-8 w-8 text-gray-400" />
-                  <div className="text-center">
-                    <p className="text-sm font-medium">Déposez votre logo ici</p>
-                    <p className="text-xs text-gray-500">PNG, JPG ou SVG (max. 2MB)</p>
-                  </div>
-                  <label htmlFor="logo" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Télécharger
-                  </label>
-                  <input 
-                    type="file" 
-                    id="logo" 
-                    className="hidden"
-                    onChange={(e) => handleFileChange(e, 'logo')}
-                    accept="image/*"
-                  />
-                </div>
+                <input
+                  id="location.addressLine1"
+                  name="location.addressLine1"
+                  value={boutique.location[0].addressLine1}
+                  onChange={handleInputChange}
+                  placeholder="Adresse ligne 1"
+                  className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Bannière de la boutique
+                <label htmlFor="location.addressLine2" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Adresse ligne 2
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
-                  <div className="text-center">
-                    <p className="text-sm font-medium">Déposez votre bannière ici</p>
-                    <p className="text-xs text-gray-500">1200 x 300 px recommandé (max. 5MB)</p>
-                  </div>
-                  <label htmlFor="banniere" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Télécharger
-                  </label>
-                  <input 
-                    type="file" 
-                    id="banniere" 
-                    className="hidden"
-                    onChange={(e) => handleFileChange(e, 'banniere')}
-                    accept="image/*"
-                  />
+                <input
+                  id="location.addressLine2"
+                  name="location.addressLine2"
+                  value={boutique.location[0].addressLine2}
+                  onChange={handleInputChange}
+                  placeholder="Adresse ligne 2"
+                  className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="location.city" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Ville
+                </label>
+                <input
+                  id="location.city"
+                  name="location.city"
+                  value={boutique.location[0].city}
+                  onChange={handleInputChange}
+                  placeholder="Ville"
+                  className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="location.postalCode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Code postal
+                </label>
+                <input
+                  id="location.postalCode"
+                  name="location.postalCode"
+                  value={boutique.location[0].postalCode}
+                  onChange={handleInputChange}
+                  placeholder="Code postal"
+                  className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="location.country" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Pays
+                </label>
+                <input
+                  id="location.country"
+                  name="location.country"
+                  value={boutique.location[0].country}
+                  onChange={handleInputChange}
+                  placeholder="Pays"
+                  className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Logo de la boutique
+              </label>
+              <div className="border-2 relative border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
+                <Store className="h-8 w-8 text-gray-400" />
+                <div className="text-center">
+                  <p className="text-sm font-medium">Déposez votre logo ici</p>
+                  <p className="text-xs text-gray-500">PNG, JPG ou SVG (max. 2MB)</p>
                 </div>
+                <label htmlFor="logo" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Télécharger
+                </label>
+                <input 
+                  type="file" 
+                  id="logo" 
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, 'logo')}
+                  accept="image/*"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Bannière de la boutique
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
+                <div className="text-center">
+                  <p className="text-sm font-medium">Déposez votre bannière ici</p>
+                  <p className="text-xs text-gray-500">1200 x 300 px recommandé (max. 5MB)</p>
+                </div>
+                <label htmlFor="banniere" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Télécharger
+                </label>
+                <input 
+                  type="file" 
+                  id="banniere" 
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, 'banniere')}
+                  accept="image/*"
+                />
               </div>
             </div>
           </div>

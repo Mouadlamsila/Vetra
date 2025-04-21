@@ -19,10 +19,6 @@
       "type": "string",
       "required": true
     },
-    "categorie": {
-      "type": "string",
-      "required": true
-    },
     "emplacement": {
       "type": "string",
       "required": true
