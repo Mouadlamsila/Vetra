@@ -90,35 +90,40 @@ export default function Header() {
 
                 </ul>
             </div>
-            <div className={`${langue === 'ar' ? ' sm:w-[30%]' : 'sm:w-auto'} flex w-full items-center gap-2`}>
-                <Search className={`${menu ? "hidden" : " w-full h-full"} duration-300 bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} />
-                <User className={`${menu ? "hidden" : " w-full h-full"} duration-300 sm:hidden block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} />
-                <div className={`flex justify-center ${menu ? "hidden" : ""}`}>
-                    <div onClick={() => setShow(!Show)} className="flex cursor-pointer relative items-center bg-[#c8c2fd] p-2 h-10 justify-center font-medium text-[#6D28D9] w-10  text-xl rounded-xl">
-
-                        {langue === 'ar' ? 'ع' : langue}
+            <div className={`${langue === 'ar' ? ' sm:w-[30%]' : 'sm:w-auto'} flex w-full items-center justify-end gap-2`}>
+               
+                    <div className={`${menu ? "hidden" : ""} duration-300 bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9] text-xl rounded-xl`}>
+                        <Search />
                     </div>
-                    {/* menu langue */}
-                    <AnimatePresence>
-                        {Show && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3 }}
-                                className="absolute top-20 w-[100px] rounded-b-md bg-[#1e3a8a] text-black grid z-[99] items-center"
-                            >
-                                <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
-                                <div className="w-full bg-[#c8c2fd] h-[1.5px]"></div>
-                                <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
-                                <div className="w-full bg-[#c8c2fd] h-[1.5px] "></div>
-                                <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                    <div className={`flex justify-center ${menu ? "hidden" : ""}`}>
+                        <div onClick={() => setShow(!Show)} className="flex cursor-pointer relative items-center bg-[#c8c2fd] p-2 h-10 justify-center font-medium text-[#6D28D9] w-10  text-xl rounded-xl">
+
+                            {langue === 'ar' ? 'ع' : langue}
+                        </div>
+                        {/* menu langue */}
+                        <AnimatePresence>
+                            {Show && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="absolute top-20 w-[100px] rounded-b-md bg-[#1e3a8a] text-black grid z-[99] items-center"
+                                >
+                                    <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
+                                    <div className="w-full bg-[#c8c2fd] h-[1.5px]"></div>
+                                    <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
+                                    <div className="w-full bg-[#c8c2fd] h-[1.5px] "></div>
+                                    <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+       
                 {userID ? (
-                    <LinkDom to="/controll/"> <User className={`duration-300  block  bg-[#c8c2fd] p-2 sm:h-10 justify-center font-medium text-[#6D28D9] sm:w-10  text-xl rounded-xl`} /> </LinkDom    >)
+                    <LinkDom to="/controll/" className={`${menu ? "hidden" : ""} duration-300 block bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9]  text-xl rounded-xl`}>
+                        <User />
+                    </LinkDom    >)
                     :
                     (
                         <div class="sm:flex hidden  items-center  justify-center ">
@@ -140,14 +145,18 @@ export default function Header() {
                             </div>
                         </div>
                     )}
-                    {userID && (
+                {userID && (
+                    <div className="hidden sm:block">
                         <BTN1 onClick={() => {
                             localStorage.removeItem("user");
                             localStorage.removeItem("token");
                             navigate("/login");
                         }} />
-                    )}
-                <AlignJustify className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] w-full rounded-xl`} onClick={() => setMenu(!menu)} />
+                    </div>
+                )}
+                <div className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] rounded-xl`} onClick={() => setMenu(!menu)}>
+                    <AlignJustify />
+                </div>
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>
                     <AnimatePresence>
                         {menu && (
@@ -281,14 +290,28 @@ export default function Header() {
                                     </LinkDom>
                                 )}
 
-                                <LinkDom
-                                    to="/login"
-                                    onClick={() => {
-                                        setMakeStyle("login");
-                                        setMenu(false);
-                                    }}
-                                    className="w-full"
-                                >
+                                {!userID ? (
+                                    <LinkDom
+                                        to="/login"
+                                        onClick={() => {
+                                            setMakeStyle("login");
+                                            setMenu(false);
+                                        }}
+                                        className="w-full"
+                                    >
+                                        <motion.li
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            transition={{ duration: 0.3, delay: 0.4 }}
+                                            className="flex justify-center p-3 w-full text-[#E5E7EB] items-center"
+                                        >
+                                            <ShinyButton rounded={true} className="w-full">
+                                                {t('Login')}
+                                            </ShinyButton>
+                                        </motion.li>
+                                    </LinkDom>
+                                ) : (
                                     <motion.li
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -296,11 +319,16 @@ export default function Header() {
                                         transition={{ duration: 0.3, delay: 0.4 }}
                                         className="flex justify-center p-3 w-full text-[#E5E7EB] items-center"
                                     >
-                                        <ShinyButton rounded={true} className="w-full">
-                                            {t('Login')}
+                                        <ShinyButton onClick={() => {
+                                            localStorage.removeItem("user");
+                                            localStorage.removeItem("token");
+                                            navigate("/login");
+                                        }}
+                                            rounded={true} className="w-full">
+                                            {t('contact.logout')}
                                         </ShinyButton>
                                     </motion.li>
-                                </LinkDom>
+                                )}
                             </motion.ul>
                         )}
                     </AnimatePresence>
