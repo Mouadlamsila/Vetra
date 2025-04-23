@@ -10,7 +10,7 @@ export default function DashBoard() {
 
     return (
         <div className="w-full h-full flex justify-center items-center bg-[#1e3a8a]">
-            <div className="h-full bg-[#1e3a8a]  w-[15%] fixed left-0 top-0  pt-4 grid grid-rows-[10%_90%] ">
+            <div className={`${language === 'ar' ? 'right-0' : 'left-0'} h-full bg-[#1e3a8a] w-[15%] fixed top-0  pt-4 grid grid-rows-[10%_90%] `}>
 
                 <Link to={'/'}>
                     <div className="flex justify-start px-4 border-b-[0.1px] border-gray-300  w-full h-full items-start">
