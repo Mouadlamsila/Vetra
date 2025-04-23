@@ -2,9 +2,11 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import resources from './languages';
 
+const savedLang = localStorage.getItem("lang") || "ar";
+
 i18n.use(initReactI18next).init({
   resources,
-  lng: localStorage.getItem("lang") || "ar",
+  lng: savedLang,
   fallbackLng: "ar",
   interpolation: { escapeValue: false }
 });
@@ -34,7 +36,6 @@ export const changeLanguage = (lng) => {
 };
 
 // Apply initial font based on saved language
-const savedLang = localStorage.getItem("lang") || "ar";
 changeLanguage(savedLang);
 
 export default i18n;

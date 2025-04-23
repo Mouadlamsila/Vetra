@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from "lucide-react"
 import { useTranslation } from 'react-i18next';
+import { changeLanguage } from '../../../i18n/i18n';
 
 export default function SettingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('general');
-  const [language, setLanguage] = useState('fr');
+  const [language, setLanguage] = useState(i18n.language);
   const [timezone, setTimezone] = useState('europe-paris');
   const [currency, setCurrency] = useState('eur');
   const [notifications, setNotifications] = useState({
@@ -25,6 +26,11 @@ export default function SettingsPage() {
       ...prev,
       [key]: !prev[key]
     }));
+  };
+
+  const handleLanguageChange = (newLanguage) => {
+    setLanguage(newLanguage);
+    changeLanguage(newLanguage);
   };
 
   return (
@@ -88,7 +94,7 @@ export default function SettingsPage() {
                     name="language"
                     value={code}
                     checked={language === code}
-                    onChange={(e) => setLanguage(e.target.value)}
+                    onChange={(e) => handleLanguageChange(e.target.value)}
                     className="h-4 w-4 text-[#6D28D9] focus:ring-[#6D28D9] border-gray-300"
                   />
                   <label htmlFor={code} className="text-sm font-medium text-gray-700">
