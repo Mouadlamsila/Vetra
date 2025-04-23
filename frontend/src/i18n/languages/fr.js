@@ -4,6 +4,8 @@ import { productFr } from './pages/product';
 import { ordersFr } from './pages/orders';
 import { statsFr } from './pages/stats';
 import { paymentFr } from './pages/payment';
+import { helpFr } from './pages/help';
+import { settingsFr } from './pages/settings';
 const fr = {
   Features: "Fonctionnalités",
   AboutUs: "À propos",
@@ -257,7 +259,9 @@ const fr = {
   product: productFr,
   orders: ordersFr,
   stats: statsFr,
-  payment: paymentFr
+  payment: paymentFr,
+  help: helpFr,
+  settings: settingsFr
 };
 
 export default fr; 

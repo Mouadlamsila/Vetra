@@ -4,6 +4,8 @@ import { productAr } from './pages/product';
 import { ordersAr } from './pages/orders';
 import { statsAr } from './pages/stats';
 import { paymentAr } from './pages/payment';
+import { helpAr } from './pages/help';
+import { settingsAr } from './pages/settings';
 const ar = {
   Features: "الرئيسية",
   AboutUs: "معلومات عنا",
@@ -257,6 +259,8 @@ const ar = {
   product: productAr,
   orders: ordersAr,
   stats: statsAr,
-  payment: paymentAr
+  payment: paymentAr,
+  help: helpAr,
+  settings: settingsAr
 };
 export default ar; 

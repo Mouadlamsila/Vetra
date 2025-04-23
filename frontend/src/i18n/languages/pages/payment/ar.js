@@ -1,36 +1,36 @@
-const paymentAr = {
+export const paymentAr = {
   payment: {
     title: "المدفوعات",
-    subtitle: "إدارة المدفوعات المستلمة والمعلقة",
+    subtitle: "إدارة المدفوعات والمعاملات",
     metrics: {
       totalReceived: {
-        title: "إجمالي المستلم",
-        value: "€4,550.50",
-        description: "هذا الشهر"
+        title: "إجمالي المدفوعات المستلمة",
+        value: "12,450",
+        description: "زيادة بنسبة 12% عن الشهر الماضي"
       },
       pending: {
-        title: "قيد الانتظار",
-        value: "€305.74",
-        description: "مدفوعتان معلقتان"
+        title: "المدفوعات المعلقة",
+        value: "2,150",
+        description: "3 مدفوعات معلقة"
       },
-      nextPayment: {
-        title: "الدفعة القادمة",
-        value: "€1,245.25",
-        description: "مقرر في 15/04/2023"
+      nextScheduled: {
+        title: "الدفعة المجدولة التالية",
+        value: "5,000",
+        description: "مستحقة في 15 مارس 2024"
       }
     },
     search: {
-      placeholder: "البحث عن دفعة..."
+      placeholder: "البحث عن المدفوعات..."
     },
     status: {
       all: "جميع الحالات",
       completed: "مكتمل",
-      pending: "قيد الانتظار",
+      pending: "معلق",
       failed: "فشل"
     },
     table: {
       headers: {
-        id: "معرف الدفع",
+        id: "المعرف",
         date: "التاريخ",
         order: "الطلب",
         method: "الطريقة",
@@ -45,10 +45,8 @@ const paymentAr = {
       bank: "تحويل بنكي"
     },
     actions: {
-      viewDetails: "عرض التفاصيل",
-      downloadReceipt: "تحميل الإيصال"
+      view: "عرض التفاصيل",
+      download: "تحميل الإيصال"
     }
   }
-};
-
-export default paymentAr; 
+}; 

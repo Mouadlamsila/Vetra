@@ -1,4 +1,4 @@
-const paymentFr = {
+export const paymentFr = {
   payment: {
     title: "Paiements",
     subtitle: "Gérez les paiements reçus et à recevoir",
@@ -51,4 +51,3 @@ const paymentFr = {
   }
 };
 
-export default paymentFr; 
