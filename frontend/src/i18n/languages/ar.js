@@ -1,6 +1,7 @@
 import { profileAr } from './pages/profile';
 import { storeAr } from './pages/store';
 import { productAr } from './pages/product';
+import { ordersAr } from './pages/orders';
 const ar = {
   Features: "الرئيسية",
   AboutUs: "معلومات عنا",
@@ -251,7 +252,7 @@ const ar = {
   },
   profile: profileAr,
   store: storeAr,
-  product: productAr
+  product: productAr,
+  orders: ordersAr
 };
-
 export default ar; 

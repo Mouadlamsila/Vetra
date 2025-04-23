@@ -1,6 +1,7 @@
 import { profileEn } from './pages/profile';
 import { storeEn } from './pages/store';
 import { productEn } from './pages/product';
+import { ordersEn } from './pages/orders';
 const en = {
   Features: "Features",
   AboutUs: "About Us",
@@ -251,7 +252,8 @@ const en = {
   },
   profile: profileEn,
   store: storeEn,
-  product: productEn
+  product: productEn,
+  orders: ordersEn
 };
 
 export default en; 
