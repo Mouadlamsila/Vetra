@@ -3,6 +3,7 @@ import { storeEn } from './pages/store';
 import { productEn } from './pages/product';
 import { ordersEn } from './pages/orders';
 import { statsEn } from './pages/stats';
+import { paymentEn } from './pages/payment';
 const en = {
   Features: "Features",
   AboutUs: "About Us",
@@ -255,7 +256,8 @@ const en = {
   store: storeEn,
   product: productEn,
   orders: ordersEn,
-  stats: statsEn
+  stats: statsEn,
+  payment: paymentEn
 };
 
 export default en; 

@@ -3,6 +3,7 @@ import { storeFr } from './pages/store';
 import { productFr } from './pages/product';
 import { ordersFr } from './pages/orders';
 import { statsFr } from './pages/stats';
+import { paymentFr } from './pages/payment';
 const fr = {
   Features: "Fonctionnalités",
   AboutUs: "À propos",
@@ -255,7 +256,8 @@ const fr = {
   store: storeFr,
   product: productFr,
   orders: ordersFr,
-  stats: statsFr
+  stats: statsFr,
+  payment: paymentFr
 };
 
 export default fr; 

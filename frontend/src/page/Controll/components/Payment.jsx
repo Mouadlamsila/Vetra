@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { CreditCard, Download, Eye, MoreHorizontal, Search } from "lucide-react"
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentsPage() {
+  const { t } = useTranslation();
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [openActionMenu, setOpenActionMenu] = useState(null);
@@ -65,29 +67,11 @@ export default function PaymentsPage() {
   }
 
   const getStatusText = (status) => {
-    switch (status) {
-      case 'completed':
-        return 'Complété';
-      case 'pending':
-        return 'En attente';
-      case 'failed':
-        return 'Échoué';
-      default:
-        return status;
-    }
+    return t(`payment.payment.status.${status}`);
   }
 
   const getMethodText = (method) => {
-    switch (method) {
-      case 'card':
-        return 'Carte';
-      case 'paypal':
-        return 'PayPal';
-      case 'bank':
-        return 'Virement';
-      default:
-        return method;
-    }
+    return t(`payment.payment.methods.${method}`);
   }
 
   const handleActionClick = (paymentId) => {
@@ -107,39 +91,39 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Paiements</h1>
-        <p className="text-gray-500">Gérez les paiements reçus et à recevoir</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('payment.payment.title')}</h1>
+        <p className="text-gray-500">{t('payment.payment.subtitle')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Total reçu</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('payment.payment.metrics.totalReceived.title')}</h3>
             <CreditCard className="h-4 w-4 text-[#6D28D9]" />
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">€4,550.50</div>
-            <p className="text-xs text-gray-500">Ce mois-ci</p>
+            <div className="text-2xl font-bold">{t('payment.payment.metrics.totalReceived.value')}</div>
+            <p className="text-xs text-gray-500">{t('payment.payment.metrics.totalReceived.description')}</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">En attente</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('payment.payment.metrics.pending.title')}</h3>
             <CreditCard className="h-4 w-4 text-[#6D28D9]" />
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">€305.74</div>
-            <p className="text-xs text-gray-500">2 paiements en attente</p>
+            <div className="text-2xl font-bold">{t('payment.payment.metrics.pending.value')}</div>
+            <p className="text-xs text-gray-500">{t('payment.payment.metrics.pending.description')}</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Prochain versement</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('payment.payment.metrics.nextPayment.title')}</h3>
             <CreditCard className="h-4 w-4 text-[#6D28D9]" />
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">€1,245.25</div>
-            <p className="text-xs text-gray-500">Prévu le 15/04/2023</p>
+            <div className="text-2xl font-bold">{t('payment.payment.metrics.nextPayment.value')}</div>
+            <p className="text-xs text-gray-500">{t('payment.payment.metrics.nextPayment.description')}</p>
           </div>
         </div>
       </div>
@@ -149,7 +133,7 @@ export default function PaymentsPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Rechercher un paiement..."
+            placeholder={t('payment.payment.search.placeholder')}
             className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,10 +144,10 @@ export default function PaymentsPage() {
           onChange={(e) => setSelectedStatus(e.target.value)}
           className="w-full md:w-[180px] py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent"
         >
-          <option value="all">Tous les statuts</option>
-          <option value="completed">Complété</option>
-          <option value="pending">En attente</option>
-          <option value="failed">Échoué</option>
+          <option value="all">{t('payment.payment.status.all')}</option>
+          <option value="completed">{t('payment.payment.status.completed')}</option>
+          <option value="pending">{t('payment.payment.status.pending')}</option>
+          <option value="failed">{t('payment.payment.status.failed')}</option>
         </select>
       </div>
 
@@ -172,13 +156,13 @@ export default function PaymentsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b bg-gray-50">
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID Paiement</th>
-                <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-gray-500">Date</th>
-                <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-gray-500">Commande</th>
-                <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">Méthode</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">Montant</th>
-                <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">Statut</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">Actions</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">{t('payment.payment.table.headers.id')}</th>
+                <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-gray-500">{t('payment.payment.table.headers.date')}</th>
+                <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-gray-500">{t('payment.payment.table.headers.order')}</th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">{t('payment.payment.table.headers.method')}</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">{t('payment.payment.table.headers.amount')}</th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">{t('payment.payment.table.headers.status')}</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">{t('payment.payment.table.headers.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -214,14 +198,14 @@ export default function PaymentsPage() {
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               <Eye className="mr-2 h-4 w-4" />
-                              Voir les détails
+                              {t('payment.payment.actions.viewDetails')}
                             </button>
                             <button
                               onClick={() => handleDownloadReceipt(payment.id)}
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               <Download className="mr-2 h-4 w-4" />
-                              Télécharger le reçu
+                              {t('payment.payment.actions.downloadReceipt')}
                             </button>
                           </div>
                         </div>
