@@ -1,0 +1,32 @@
+const profileEn = {
+  title: "Profile",
+  personalInfo: "Personal Information",
+  updateInfo: "Update your personal information",
+  profilePhoto: "Profile Photo",
+  name: "Name",
+  email: "Email",
+  oldPassword: "Current Password",
+  newPassword: "New Password",
+  confirmPassword: "Confirm Password",
+  update: "Update Profile",
+  save: "Save Changes",
+  uploading: "Uploading...",
+  invalidFile: "Invalid file type. Please upload an image.",
+  fileTooLarge: "File is too large. Maximum size is 5MB.",
+  oldPasswordRequired: "Current password is required",
+  incorrectOldPassword: "Current password is incorrect",
+  passwordsDontMatch: "Passwords don't match",
+  passwordRequirementsNotMet: "Password requirements not met",
+  updateSuccess: "Profile updated successfully",
+  updateError: "Failed to update profile",
+  unexpectedError: "An unexpected error occurred",
+  uploadFailed: "Failed to upload photo",
+  passwordRequirements: "Password Requirements",
+  minLength: "At least 8 characters",
+  uppercase: "At least one uppercase letter",
+  lowercase: "At least one lowercase letter",
+  number: "At least one number",
+  special: "At least one special character"
+};
+
+export default profileEn; 

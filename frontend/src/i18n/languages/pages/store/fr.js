@@ -1,0 +1,73 @@
+const storeFr = {
+  createStore: {
+    title: "Créer une Boutique",
+    subtitle: "Créez votre nouvelle boutique en ligne",
+    storeInfo: "Informations de la boutique",
+    storeInfoDesc: "Entrez les détails de votre nouvelle boutique",
+    storeName: "Nom de la boutique *",
+    storeNamePlaceholder: "Ma Boutique",
+    description: "Description *",
+    descriptionPlaceholder: "Décrivez votre boutique en quelques mots...",
+    category: "Catégorie *",
+    selectCategory: "Sélectionnez une catégorie",
+    categories: {
+      fashion: "Mode et Vêtements",
+      electronics: "Électronique",
+      home: "Maison et Décoration",
+      beauty: "Beauté et Bien-être",
+      food: "Alimentation",
+      other: "Autre"
+    },
+    location: "Emplacement *",
+    locationPlaceholder: "Adresse de la boutique",
+    address: {
+      line1: "Adresse ligne 1",
+      line1Placeholder: "Adresse ligne 1",
+      line2: "Adresse ligne 2",
+      line2Placeholder: "Adresse ligne 2",
+      city: "Ville",
+      cityPlaceholder: "Ville",
+      postalCode: "Code postal",
+      postalCodePlaceholder: "Code postal",
+      country: "Pays",
+      countryPlaceholder: "Pays"
+    },
+    logo: "Logo de la boutique",
+    logoDesc: "Déposez votre logo ici",
+    logoFormat: "PNG, JPG ou SVG (max. 2MB)",
+    upload: "Télécharger",
+    banner: "Bannière de la boutique",
+    bannerDesc: "Déposez votre bannière ici",
+    bannerFormat: "1200 x 300 px recommandé (max. 5MB)",
+    cancel: "Annuler",
+    create: "Créer la boutique",
+    creating: "Création en cours...",
+    requiredFields: "Veuillez remplir tous les champs obligatoires",
+    error: "Erreur lors de la création de la boutique",
+    success: "Boutique créée avec succès"
+  },
+  editStore: {
+    title: "Modifier la Boutique",
+    subtitle: "Mettez à jour les informations de votre boutique",
+    update: "Mettre à jour",
+    updating: "Mise à jour en cours...",
+    success: "Boutique mise à jour avec succès",
+    error: "Erreur lors de la mise à jour de la boutique"
+  },
+  stores: {
+    title: "Mes Boutiques",
+    subtitle: "Gérez vos boutiques en ligne",
+    createStore: "Créer une boutique",
+    store: "Boutique",
+    products: "Produits",
+    view: "Voir",
+    edit: "Modifier",
+    status: {
+      active: "Actif",
+      pending: "En attente",
+      suspended: "Suspendu"
+    }
+  }
+};
+
+export default storeFr; 

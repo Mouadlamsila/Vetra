@@ -3,8 +3,10 @@ import { Store, Upload } from "lucide-react";
 import ShinyButton from "../../../blocks/TextAnimations/ShinyButton/ShinyButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function AddStorePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [boutique, setBoutique] = useState({
     nom: '',
@@ -163,8 +165,8 @@ export default function AddStorePage() {
   return (
     <div className="space-y-6 p-10 border-1">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Créer une Boutique</h1>
-        <p className="text-muted-foreground text-gray-500">Créez votre nouvelle boutique en ligne</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('store.createStore.title')}</h1>
+        <p className="text-muted-foreground text-gray-500">{t('store.createStore.subtitle')}</p>
       </div>
 
       {error && (
@@ -175,20 +177,20 @@ export default function AddStorePage() {
 
       <form onSubmit={handleSubmit} className="rounded-lg border-1 border-[#c8c2fd] bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight">Informations de la boutique</h3>
-          <p className="text-sm text-muted-foreground">Entrez les détails de votre nouvelle boutique</p>
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">{t('store.createStore.storeInfo')}</h3>
+          <p className="text-sm text-muted-foreground">{t('store.createStore.storeInfoDesc')}</p>
         </div>
         <div className="p-6 space-y-6">
           <div className="space-y-2">
             <label htmlFor="nom" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Nom de la boutique *
+              {t('store.createStore.storeName')}
             </label>
             <input
               id="nom"
               name="nom"
               value={boutique.nom}
               onChange={handleInputChange}
-              placeholder="Ma Boutique"
+              placeholder={t('store.createStore.storeNamePlaceholder')}
               className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
               required
             />
@@ -196,14 +198,14 @@ export default function AddStorePage() {
 
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Description *
+              {t('store.createStore.description')}
             </label>
             <textarea
               id="description"
               name="description"
               value={boutique.description}
               onChange={handleInputChange}
-              placeholder="Décrivez votre boutique en quelques mots..."
+              placeholder={t('store.createStore.descriptionPlaceholder')}
               className="w-full min-h-[100px] px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400 resize-none"
               required
             />
@@ -213,7 +215,7 @@ export default function AddStorePage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="category" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Catégory *
+                  {t('store.createStore.category')}
                 </label>
                 <select
                   id="category"
@@ -223,26 +225,26 @@ export default function AddStorePage() {
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                   required
                 >
-                  <option value="">Sélectionnez une catégorie</option>
-                  <option value="fashion">Mode et Vêtements</option>
-                  <option value="electronics">Électronique</option>
-                  <option value="home">Maison et Décoration</option>
-                  <option value="beauty">Beauté et Bien-être</option>
-                  <option value="food">Alimentation</option>
-                  <option value="other">Autre</option>
+                  <option value="">{t('store.createStore.selectCategory')}</option>
+                  <option value="fashion">{t('store.createStore.categories.fashion')}</option>
+                  <option value="electronics">{t('store.createStore.categories.electronics')}</option>
+                  <option value="home">{t('store.createStore.categories.home')}</option>
+                  <option value="beauty">{t('store.createStore.categories.beauty')}</option>
+                  <option value="food">{t('store.createStore.categories.food')}</option>
+                  <option value="other">{t('store.createStore.categories.other')}</option>
                 </select>
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="emplacement" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Emplacement *
+                  {t('store.createStore.location')}
                 </label>
                 <input
                   id="emplacement"
                   name="emplacement"
                   value={boutique.emplacement}
                   onChange={handleInputChange}
-                  placeholder="Adresse de la boutique"
+                  placeholder={t('store.createStore.locationPlaceholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                   required
                 />
@@ -252,70 +254,70 @@ export default function AddStorePage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="location.addressLine1" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Adresse ligne 1
+                  {t('store.createStore.address.line1')}
                 </label>
                 <input
                   id="location.addressLine1"
                   name="location.addressLine1"
                   value={boutique.location[0].addressLine1}
                   onChange={handleInputChange}
-                  placeholder="Adresse ligne 1"
+                  placeholder={t('store.createStore.address.line1Placeholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                 />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="location.addressLine2" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Adresse ligne 2
+                  {t('store.createStore.address.line2')}
                 </label>
                 <input
                   id="location.addressLine2"
                   name="location.addressLine2"
                   value={boutique.location[0].addressLine2}
                   onChange={handleInputChange}
-                  placeholder="Adresse ligne 2"
+                  placeholder={t('store.createStore.address.line2Placeholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                 />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="location.city" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Ville
+                  {t('store.createStore.address.city')}
                 </label>
                 <input
                   id="location.city"
                   name="location.city"
                   value={boutique.location[0].city}
                   onChange={handleInputChange}
-                  placeholder="Ville"
+                  placeholder={t('store.createStore.address.cityPlaceholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                 />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="location.postalCode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Code postal
+                  {t('store.createStore.address.postalCode')}
                 </label>
                 <input
                   id="location.postalCode"
                   name="location.postalCode"
                   value={boutique.location[0].postalCode}
                   onChange={handleInputChange}
-                  placeholder="Code postal"
+                  placeholder={t('store.createStore.address.postalCodePlaceholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                 />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="location.country" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Pays
+                  {t('store.createStore.address.country')}
                 </label>
                 <input
                   id="location.country"
                   name="location.country"
                   value={boutique.location[0].country}
                   onChange={handleInputChange}
-                  placeholder="Pays"
+                  placeholder={t('store.createStore.address.countryPlaceholder')}
                   className="w-full h-11 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
                 />
               </div>
@@ -325,17 +327,17 @@ export default function AddStorePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Logo de la boutique
+                {t('store.createStore.logo')}
               </label>
               <div className="border-2 relative border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
                 <Store className="h-8 w-8 text-gray-400" />
                 <div className="text-center">
-                  <p className="text-sm font-medium">Déposez votre logo ici</p>
-                  <p className="text-xs text-gray-500">PNG, JPG ou SVG (max. 2MB)</p>
+                  <p className="text-sm font-medium">{t('store.createStore.logoDesc')}</p>
+                  <p className="text-xs text-gray-500">{t('store.createStore.logoFormat')}</p>
                 </div>
                 <label htmlFor="logo" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
                   <Upload className="h-4 w-4 mr-2" />
-                  Télécharger
+                  {t('store.createStore.upload')}
                 </label>
                 <input 
                   type="file" 
@@ -349,16 +351,16 @@ export default function AddStorePage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Bannière de la boutique
+                {t('store.createStore.banner')}
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:border-[#c8c2fd] transition-colors duration-200">
                 <div className="text-center">
-                  <p className="text-sm font-medium">Déposez votre bannière ici</p>
-                  <p className="text-xs text-gray-500">1200 x 300 px recommandé (max. 5MB)</p>
+                  <p className="text-sm font-medium">{t('store.createStore.bannerDesc')}</p>
+                  <p className="text-xs text-gray-500">{t('store.createStore.bannerFormat')}</p>
                 </div>
                 <label htmlFor="banniere" className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]">
                   <Upload className="h-4 w-4 mr-2" />
-                  Télécharger
+                  {t('store.createStore.upload')}
                 </label>
                 <input 
                   type="file" 
@@ -378,7 +380,7 @@ export default function AddStorePage() {
             onClick={() => navigate('/dashboard')}
             className="inline-flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]"
           >
-            Annuler
+            {t('store.createStore.cancel')}
           </button>
           <ShinyButton 
             rounded={true} 
@@ -387,7 +389,7 @@ export default function AddStorePage() {
             disabled={loading}
           >
             <p className="text-sm sm:text-base">
-              {loading ? 'Création en cours...' : 'Créer la boutique'}
+              {loading ? t('store.createStore.creating') : t('store.createStore.create')}
             </p>
             <Store className="w-4 h-4 sm:w-5 sm:h-5" />
           </ShinyButton>

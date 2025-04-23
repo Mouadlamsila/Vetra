@@ -5,8 +5,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductsPage() {
+  const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState({});
   const [selectedStore, setSelectedStore] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -223,15 +225,15 @@ export default function ProductsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mes Produits</h1>
-          <p className="text-gray-500">Gérez vos produits en vente</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('product.products.title')}</h1>
+          <p className="text-gray-500">{t('product.products.subtitle')}</p>
         </div>
         <Link 
           to="/controll/AddProduct"
           className="inline-flex items-center px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors"
         >
           <PlusCircle className="mr-2 h-4 w-4" />
-          Ajouter un produit
+          {t('product.products.createProduct')}
         </Link>
       </div>
 
@@ -240,7 +242,7 @@ export default function ProductsPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Rechercher un produit..."
+            placeholder={t('product.products.search')}
             className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -252,7 +254,7 @@ export default function ProductsPage() {
             onChange={(e) => setSelectedStore(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent"
           >
-            <option value="all">Toutes les boutiques</option>
+            <option value="all">{t('product.products.allStores')}</option>
             {stores && stores.map(store => (
               <option key={store.id} value={store.id}>
                 {store?.nom || `Boutique ${store.id}`}
@@ -271,7 +273,7 @@ export default function ProductsPage() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent"
           >
-            <option value="all">Toutes les catégories</option>
+            <option value="all">{t('product.products.allCategories')}</option>
             {getUniqueCategories().map(category => (
               <option key={category} value={category}>
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -288,21 +290,21 @@ export default function ProductsPage() {
 
       {filteredProducts.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          Aucun produit trouvé
+          {t('product.products.noProducts')}
         </div>
       ) : (
         <div className="border border-[#c8c2fd] shadow rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y  divide-[#c8c2fd]">
+          <table className="min-w-full divide-y divide-[#c8c2fd]">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Produit</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">ID</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Prix</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">Catégorie</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">Boutique</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Statut</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">{t('product.products.table.product')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">{t('product.products.table.id')}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">{t('product.products.table.price')}</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">{t('product.products.table.stock')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">{t('product.products.table.category')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1e3a8a] uppercase tracking-wider hidden md:table-cell">{t('product.products.table.store')}</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">{t('product.products.table.status')}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[#1e3a8a] uppercase tracking-wider">{t('product.products.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-[#c8c2fd]">
@@ -310,7 +312,7 @@ export default function ProductsPage() {
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      {product?.imgMain  ? (
+                      {product?.imgMain ? (
                         <div className="w-10 h-10 rounded overflow-hidden">  
                           <img 
                             src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`} 
@@ -324,7 +326,7 @@ export default function ProductsPage() {
                         </div>
                       )}
                       <div>
-                        <span className="font-medium">{product?.name || 'Sans nom'}</span>
+                        <span className="font-medium">{product?.name || t('product.products.noName')}</span>
                         <div className="text-xs text-gray-500">SKU: {product?.sku || 'N/A'}</div>
                       </div>
                     </div>
@@ -334,7 +336,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     {product?.prix?.toFixed(2) || '0.00'} €
-                    {product?.comparePrice > 0  && (
+                    {product?.comparePrice > 0 && (
                       <div className="text-xs text-gray-500 line-through">
                         {product.comparePrice.toFixed(2)} €
                       </div>
@@ -344,7 +346,7 @@ export default function ProductsPage() {
                     {product?.stock || 0}
                     {product?.lowStockAlert && (
                       <div className="text-xs text-gray-500">
-                        Alerte: {product.lowStockAlert}
+                        {t('product.products.lowStockAlert')}: {product.lowStockAlert}
                       </div>
                     )}
                   </td>
@@ -354,11 +356,11 @@ export default function ProductsPage() {
                         {product.categories}
                       </span>
                     ) : (
-                      'Non catégorisé'
+                      t('product.products.uncategorized')
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                    {product?.boutique?.nom || 'Non assigné'}
+                    {product?.boutique?.nom || t('product.products.unassigned')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(product?.stock || 0)}`}>
@@ -374,26 +376,26 @@ export default function ProductsPage() {
                         <MoreHorizontal className="h-5 w-5" />
                       </button>
                       {isDropdownOpen[product.id] && (
-                        <div className="absolute right-6 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 " style={{ position: 'fixed', zIndex: 1000 }}>
+                        <div className="absolute right-6 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5" style={{ position: 'fixed', zIndex: 1000 }}>
                           <div className="pt-1">
-                            <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">Actions</div>
+                            <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">{t('product.products.actions')}</div>
                             <div className="h-px bg-[#c8c2fd]"></div>
                             <Link
                               to={`/controll/edit-product/${product.documentId}`}
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                             >
                               <Edit className="mr-2 h-4 w-4" />
-                              Modifier
+                              {t('product.products.actions.edit')}
                             </Link>
                             <button 
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                               onClick={() => {
                                 setIsDropdownOpen({});
-                                // Logique pour gérer le stock
+                                // Logic for managing stock
                               }}
                             >
                               <Package className="mr-2 h-4 w-4" />
-                              Gérer le stock
+                              {t('product.products.actions.manageStock')}
                             </button>
                             <div className="h-px bg-[#c8c2fd]"></div>
                             <button 
@@ -401,7 +403,7 @@ export default function ProductsPage() {
                               onClick={() => handleDeleteProduct(product.documentId)}
                             >
                               <Trash className="mr-2 h-4 w-4" />
-                              Supprimer
+                              {t('product.products.actions.delete')}
                             </button>
                           </div>
                         </div>

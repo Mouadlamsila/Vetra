@@ -5,8 +5,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 export default function EditProduct() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('info');
   const [formData, setFormData] = useState({
     name: '',
@@ -89,21 +91,14 @@ export default function EditProduct() {
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Erreur lors du chargement des données');
-        toast.error('Erreur lors du chargement des données', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false, 
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error(t('product.editProduct.fetchError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [id, IDUser]);
+  }, [id, IDUser, t]);
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -246,14 +241,7 @@ export default function EditProduct() {
         }
       );
 
-      toast.success('Produit mis à jour avec succès', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.success(t('product.editProduct.success'));
 
       await Swal.fire({
         title: "Produit mis à jour!",
@@ -266,14 +254,7 @@ export default function EditProduct() {
     } catch (err) {
       setError(err.message || 'Failed to update product');
       console.error('Error updating product:', err);
-      toast.error(err.message || 'Erreur lors de la mise à jour du produit', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(t('product.editProduct.error'));
     } finally {
       setLoading(false);
     }
@@ -309,8 +290,8 @@ export default function EditProduct() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Modifier un Produit</h1>
-        <p className="text-gray-500">Modifiez les informations de votre produit</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('product.editProduct.title')}</h1>
+        <p className="text-gray-500">{t('product.editProduct.description')}</p>
       </div>
 
       <div className="border-b border-gray-200">
@@ -324,7 +305,7 @@ export default function EditProduct() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Informations
+            {t('product.editProduct.info')}
           </button>
           <button
             type="button"
@@ -335,7 +316,7 @@ export default function EditProduct() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Images
+            {t('product.editProduct.images')}
           </button>
           <button
             type="button"
@@ -346,7 +327,7 @@ export default function EditProduct() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Prix et Stock
+            {t('product.editProduct.pricing')}
           </button>
           <button
             type="button"
@@ -357,7 +338,7 @@ export default function EditProduct() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Livraison
+            {t('product.editProduct.shipping')}
           </button>
         </nav>
       </div>
@@ -366,14 +347,14 @@ export default function EditProduct() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Informations du produit</h2>
-              <p className="text-sm text-gray-500">Modifiez les détails de base de votre produit</p>
+              <h2 className="text-lg font-medium">{t('product.editProduct.productInfo')}</h2>
+              <p className="text-sm text-gray-500">{t('product.editProduct.productInfoDescription')}</p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label htmlFor="product-name" className="block text-sm font-medium text-gray-700">
-                  Nom du produit
+                  {t('product.editProduct.productName')}
                 </label>
                 <input
                   type="text"
@@ -382,13 +363,13 @@ export default function EditProduct() {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="Nom du produit"
+                  placeholder={t('product.editProduct.productNamePlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-description" className="block text-sm font-medium text-gray-700">
-                  Description
+                  {t('product.editProduct.description')}
                 </label>
                 <textarea
                   id="product-description"
@@ -397,14 +378,14 @@ export default function EditProduct() {
                   onChange={handleInputChange}
                   rows={4}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="Décrivez votre produit en détail..."
+                  placeholder={t('product.editProduct.descriptionPlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="product-category" className="block text-sm font-medium text-gray-700">
-                    Catégorie
+                    {t('product.editProduct.category')}
                   </label>
                   <select
                     id="product-category"
@@ -413,18 +394,18 @@ export default function EditProduct() {
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="">Sélectionnez une catégorie</option>
-                    <option value="clothing">Vêtements</option>
-                    <option value="electronics">Électronique</option>
-                    <option value="home">Maison</option>
-                    <option value="beauty">Beauté</option>
-                    <option value="other">Autre</option>
+                    <option value="">{t('product.editProduct.selectCategory')}</option>
+                    <option value="clothing">{t('product.editProduct.clothing')}</option>
+                    <option value="electronics">{t('product.editProduct.electronics')}</option>
+                    <option value="home">{t('product.editProduct.home')}</option>
+                    <option value="beauty">{t('product.editProduct.beauty')}</option>
+                    <option value="other">{t('product.editProduct.other')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label htmlFor="product-store" className="block text-sm font-medium text-gray-700">
-                    Boutique
+                    {t('product.editProduct.store')}
                   </label>
                   <select
                     id="product-store"
@@ -433,7 +414,7 @@ export default function EditProduct() {
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="">Sélectionnez une boutique</option>
+                    <option value="">{t('product.editProduct.selectStore')}</option>
                     {stores.map(store => (
                       <option key={store.id} value={store.id}>
                         {store.nom}
@@ -445,7 +426,7 @@ export default function EditProduct() {
 
               <div>
                 <label htmlFor="product-tags" className="block text-sm font-medium text-gray-700">
-                  Tags (séparés par des virgules)
+                  {t('product.editProduct.tags')}
                 </label>
                 <input
                   type="text"
@@ -454,7 +435,7 @@ export default function EditProduct() {
                   value={formData.tags}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="nouveau, tendance, été..."
+                  placeholder={t('product.editProduct.tagsPlaceholder')}
                 />
               </div>
             </div>
@@ -466,17 +447,17 @@ export default function EditProduct() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Images du produit</h2>
-              <p className="text-sm text-gray-500">Modifiez les images de votre produit</p>
+              <h2 className="text-lg font-medium">{t('product.editProduct.productImages')}</h2>
+              <p className="text-sm text-gray-500">{t('product.editProduct.productImagesDescription')}</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image principale</label>
+                <label className="block text-sm font-medium text-gray-700">{t('product.editProduct.mainImage')}</label>
                 <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2">
                   <div className="text-center">
-                    <p className="text-sm font-medium">Déposez votre image principale ici</p>
-                    <p className="text-xs text-gray-500">PNG, JPG (max. 5MB)</p>
+                    <p className="text-sm font-medium">{t('product.editProduct.mainImageDescription')}</p>
+                    <p className="text-xs text-gray-500">{t('product.editProduct.mainImageSize')}</p>
                   </div>
                   <input
                     type="file"
@@ -490,13 +471,13 @@ export default function EditProduct() {
                     className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Télécharger
+                    {t('product.editProduct.uploadMainImage')}
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Images supplémentaires</label>
+                <label className="block text-sm font-medium text-gray-700">{t('product.editProduct.additionalImages')}</label>
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[1, 2, 3].map((i) => (
                     <div
@@ -504,7 +485,7 @@ export default function EditProduct() {
                       className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2"
                     >
                       <div className="text-center">
-                        <p className="text-xs text-gray-500">Image {i}</p>
+                        <p className="text-xs text-gray-500">{t('product.editProduct.additionalImageDescription', { index: i })}</p>
                       </div>
                       <input
                         type="file"
@@ -518,7 +499,7 @@ export default function EditProduct() {
                         className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        Ajouter
+                        {t('product.editProduct.addAdditionalImage')}
                       </label>
                     </div>
                   ))}
@@ -533,14 +514,14 @@ export default function EditProduct() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Prix et stock</h2>
-              <p className="text-sm text-gray-500">Modifiez les prix et la gestion du stock</p>
+              <h2 className="text-lg font-medium">{t('product.editProduct.productPricing')}</h2>
+              <p className="text-sm text-gray-500">{t('product.editProduct.productPricingDescription')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-price" className="block text-sm font-medium text-gray-700">
-                  Prix (€)
+                  {t('product.editProduct.price')}
                 </label>
                 <input
                   type="number"
@@ -551,13 +532,13 @@ export default function EditProduct() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.editProduct.pricePlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-compare-price" className="block text-sm font-medium text-gray-700">
-                  Prix comparé (€, optionnel)
+                  {t('product.editProduct.comparePrice')}
                 </label>
                 <input
                   type="number"
@@ -568,7 +549,7 @@ export default function EditProduct() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.editProduct.comparePricePlaceholder')}
                 />
               </div>
             </div>
@@ -576,7 +557,7 @@ export default function EditProduct() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-cost" className="block text-sm font-medium text-gray-700">
-                  Coût par unité (€)
+                  {t('product.editProduct.cost')}
                 </label>
                 <input
                   type="number"
@@ -587,13 +568,13 @@ export default function EditProduct() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.editProduct.costPlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-sku" className="block text-sm font-medium text-gray-700">
-                  SKU (Référence)
+                  {t('product.editProduct.sku')}
                 </label>
                 <input
                   type="text"
@@ -602,7 +583,7 @@ export default function EditProduct() {
                   value={formData.sku}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="SKU-12345"
+                  placeholder={t('product.editProduct.skuPlaceholder')}
                 />
               </div>
             </div>
@@ -610,7 +591,7 @@ export default function EditProduct() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-stock" className="block text-sm font-medium text-gray-700">
-                  Quantité en stock
+                  {t('product.editProduct.stock')}
                 </label>
                 <input
                   type="number"
@@ -620,13 +601,13 @@ export default function EditProduct() {
                   onChange={handleInputChange}
                   min="0"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0"
+                  placeholder={t('product.editProduct.stockPlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-low-stock" className="block text-sm font-medium text-gray-700">
-                  Alerte stock faible
+                  {t('product.editProduct.lowStockAlert')}
                 </label>
                 <input
                   type="number"
@@ -636,7 +617,7 @@ export default function EditProduct() {
                   onChange={handleInputChange}
                   min="0"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="5"
+                  placeholder={t('product.editProduct.lowStockAlertPlaceholder')}
                 />
               </div>
             </div>
@@ -648,14 +629,14 @@ export default function EditProduct() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Informations de livraison</h2>
-              <p className="text-sm text-gray-500">Modifiez les options de livraison pour ce produit</p>
+              <h2 className="text-lg font-medium">{t('product.editProduct.productShipping')}</h2>
+              <p className="text-sm text-gray-500">{t('product.editProduct.productShippingDescription')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-weight" className="block text-sm font-medium text-gray-700">
-                  Poids (kg)
+                  {t('product.editProduct.weight')}
                 </label>
                 <input
                   type="number"
@@ -666,18 +647,18 @@ export default function EditProduct() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.editProduct.weightPlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Dimensions (cm, L x l x H)
+                  {t('product.editProduct.dimensions')}
                 </label>
                 <div className="mt-1 flex gap-2">
                   <input
                     type="number"
-                    placeholder="L"
+                    placeholder={t('product.editProduct.lengthPlaceholder')}
                     name="dimensions.length"
                     value={formData.dimensions[0].length}
                     onChange={handleInputChange}
@@ -685,7 +666,7 @@ export default function EditProduct() {
                   />
                   <input
                     type="number"
-                    placeholder="l"
+                    placeholder={t('product.editProduct.widthPlaceholder')}
                     name="dimensions.width"
                     value={formData.dimensions[0].width}
                     onChange={handleInputChange}
@@ -693,7 +674,7 @@ export default function EditProduct() {
                   />
                   <input
                     type="number"
-                    placeholder="H"
+                    placeholder={t('product.editProduct.heightPlaceholder')}
                     name="dimensions.height"
                     value={formData.dimensions[0].height}
                     onChange={handleInputChange}
@@ -705,11 +686,11 @@ export default function EditProduct() {
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="cm">cm</option>
-                    <option value="m">m</option>
-                    <option value="mm">mm</option>
-                    <option value="in">in</option>
-                    <option value="ft">ft</option>
+                    <option value="cm">{t('product.editProduct.cm')}</option>
+                    <option value="m">{t('product.editProduct.m')}</option>
+                    <option value="mm">{t('product.editProduct.mm')}</option>
+                    <option value="in">{t('product.editProduct.in')}</option>
+                    <option value="ft">{t('product.editProduct.ft')}</option>
                   </select>
                 </div>
               </div>
@@ -717,7 +698,7 @@ export default function EditProduct() {
 
             <div>
               <label htmlFor="product-shipping-class" className="block text-sm font-medium text-gray-700">
-                Classe d'expédition
+                {t('product.editProduct.shippingClass')}
               </label>
               <select
                 id="product-shipping-class"
@@ -726,14 +707,14 @@ export default function EditProduct() {
                 onChange={handleInputChange}
                 className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
               >
-                <option value="">Sélectionnez une classe</option>
-                <option value="standard">Standard</option>
-                <option value="express">Express</option>
-                <option value="free">Free</option>
-                <option value="local_pickup">Local Pickup</option>
-                <option value="heavy">Heavy</option>
-                <option value="fragile">Fragile</option>
-                <option value="international">International</option>
+                <option value="">{t('product.editProduct.selectShippingClass')}</option>
+                <option value="standard">{t('product.editProduct.standard')}</option>
+                <option value="express">{t('product.editProduct.express')}</option>
+                <option value="free">{t('product.editProduct.free')}</option>
+                <option value="local_pickup">{t('product.editProduct.localPickup')}</option>
+                <option value="heavy">{t('product.editProduct.heavy')}</option>
+                <option value="fragile">{t('product.editProduct.fragile')}</option>
+                <option value="international">{t('product.editProduct.international')}</option>
               </select>
             </div>
           </div>
@@ -746,7 +727,7 @@ export default function EditProduct() {
           onClick={handleCancel}
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd]"
         >
-          Annuler
+          {t('product.editProduct.cancel')}
         </button>
         <button
           type="button"
@@ -754,7 +735,7 @@ export default function EditProduct() {
           disabled={loading}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] disabled:opacity-50"
         >
-          {loading ? 'Enregistrement...' : 'Mettre à jour le produit'}
+          {loading ? t('product.editProduct.updating') : t('product.editProduct.update')}
         </button>
       </div>
 

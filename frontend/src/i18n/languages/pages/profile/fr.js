@@ -1,0 +1,32 @@
+const profileFr = {
+  title: "Profil",
+  personalInfo: "Informations personnelles",
+  updateInfo: "Mettre à jour vos informations personnelles",
+  profilePhoto: "Photo de profil",
+  name: "Nom",
+  email: "Email",
+  oldPassword: "Mot de passe actuel",
+  newPassword: "Nouveau mot de passe",
+  confirmPassword: "Confirmer le mot de passe",
+  update: "Modifier le profil",
+  save: "Enregistrer les modifications",
+  uploading: "Téléchargement en cours...",
+  invalidFile: "Type de fichier invalide. Veuillez télécharger une image.",
+  fileTooLarge: "Le fichier est trop volumineux. La taille maximale est de 5 Mo.",
+  oldPasswordRequired: "Le mot de passe actuel est requis",
+  incorrectOldPassword: "Le mot de passe actuel est incorrect",
+  passwordsDontMatch: "Les mots de passe ne correspondent pas",
+  passwordRequirementsNotMet: "Les exigences du mot de passe ne sont pas satisfaites",
+  updateSuccess: "Profil mis à jour avec succès",
+  updateError: "Échec de la mise à jour du profil",
+  unexpectedError: "Une erreur inattendue s'est produite",
+  uploadFailed: "Échec du téléchargement de la photo",
+  passwordRequirements: "Exigences du mot de passe",
+  minLength: "Au moins 8 caractères",
+  uppercase: "Au moins une lettre majuscule",
+  lowercase: "Au moins une lettre minuscule",
+  number: "Au moins un chiffre",
+  special: "Au moins un caractère spécial"
+};
+
+export default profileFr; 

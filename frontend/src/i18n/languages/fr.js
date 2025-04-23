@@ -1,3 +1,7 @@
+import { profileFr } from './pages/profile';
+import { storeFr } from './pages/store';
+import { productFr } from './pages/product';
+
 const fr = {
   Features: "Fonctionnalités",
   AboutUs: "À propos",
@@ -245,7 +249,10 @@ const fr = {
     last5Orders: "5 dernières commandes reçues",
     order: "Commande",
     hoursAgo: "Il y a {{hours}} heure(s)"
-  }
+  },
+  profile: profileFr,
+  store: storeFr,
+  product: productFr
 };
 
 export default fr; 

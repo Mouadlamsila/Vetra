@@ -1,3 +1,6 @@
+import { profileEn } from './pages/profile';
+import { storeEn } from './pages/store';
+import { productEn } from './pages/product';
 const en = {
   Features: "Features",
   AboutUs: "About Us",
@@ -245,7 +248,10 @@ const en = {
     last5Orders: "Last 5 orders received",
     order: "Order",
     hoursAgo: "{{hours}} hour(s) ago"
-  }
+  },
+  profile: profileEn,
+  store: storeEn,
+  product: productEn
 };
 
 export default en; 

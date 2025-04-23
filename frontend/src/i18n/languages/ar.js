@@ -1,3 +1,6 @@
+import { profileAr } from './pages/profile';
+import { storeAr } from './pages/store';
+import { productAr } from './pages/product';
 const ar = {
   Features: "الرئيسية",
   AboutUs: "معلومات عنا",
@@ -245,7 +248,10 @@ const ar = {
     last5Orders: "آخر 5 طلبات مستلمة",
     order: "الطلب",
     hoursAgo: "منذ {{hours}} ساعة"
-  }
+  },
+  profile: profileAr,
+  store: storeAr,
+  product: productAr
 };
 
 export default ar; 

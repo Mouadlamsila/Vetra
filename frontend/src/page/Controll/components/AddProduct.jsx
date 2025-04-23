@@ -5,8 +5,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 export default function AddProductPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('info');
   const [formData, setFormData] = useState({
     name: '',
@@ -342,8 +344,8 @@ export default function AddProductPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{isEditMode ? 'Modifier un Produit' : 'Ajouter un Produit'}</h1>
-        <p className="text-gray-500">{isEditMode ? 'Modifiez les informations de votre produit' : 'Créez un nouveau produit pour votre boutique'}</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('product.createProduct.title')}</h1>
+        <p className="text-gray-500">{t('product.createProduct.subtitle')}</p>
       </div>
 
       <div className="border-b border-gray-200">
@@ -357,7 +359,7 @@ export default function AddProductPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Informations
+            {t('product.createProduct.storeInfo')}
           </button>
           <button
             type="button"
@@ -368,7 +370,7 @@ export default function AddProductPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Images
+            {t('product.createProduct.mainImage')}
           </button>
           <button
             type="button"
@@ -379,7 +381,7 @@ export default function AddProductPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Prix et Stock
+            {t('product.createProduct.price')}
           </button>
           <button
             type="button"
@@ -390,7 +392,7 @@ export default function AddProductPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Livraison
+            {t('product.createProduct.shippingClass')}
           </button>
         </nav>
       </div>
@@ -399,14 +401,14 @@ export default function AddProductPage() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Informations du produit</h2>
-              <p className="text-sm text-gray-500">Entrez les détails de base de votre produit</p>
+              <h2 className="text-lg font-medium">{t('product.createProduct.storeInfo')}</h2>
+              <p className="text-sm text-gray-500">{t('product.createProduct.storeInfoDesc')}</p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label htmlFor="product-name" className="block text-sm font-medium text-gray-700">
-                  Nom du produit
+                  {t('product.createProduct.productName')}
                 </label>
                 <input
                   type="text"
@@ -415,13 +417,13 @@ export default function AddProductPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="Nom du produit"
+                  placeholder={t('product.createProduct.productNamePlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-description" className="block text-sm font-medium text-gray-700">
-                  Description
+                  {t('product.createProduct.description')}
                 </label>
                 <textarea
                   id="product-description"
@@ -430,14 +432,14 @@ export default function AddProductPage() {
                   onChange={handleInputChange}
                   rows={4}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="Décrivez votre produit en détail..."
+                  placeholder={t('product.createProduct.descriptionPlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="product-category" className="block text-sm font-medium text-gray-700">
-                    Catégorie
+                    {t('product.createProduct.category')}
                   </label>
                   <select
                     id="product-category"
@@ -446,18 +448,16 @@ export default function AddProductPage() {
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="">Sélectionnez une catégorie</option>
-                    <option value="clothing">Vêtements</option>
-                    <option value="electronics">Électronique</option>
-                    <option value="home">Maison</option>
-                    <option value="beauty">Beauté</option>
-                    <option value="other">Autre</option>
+                    <option value="">{t('product.createProduct.selectCategory')}</option>
+                    {Object.entries(t('product.createProduct.categories', { returnObjects: true })).map(([key, value]) => (
+                      <option key={key} value={key}>{value}</option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
                   <label htmlFor="product-store" className="block text-sm font-medium text-gray-700">
-                    Boutique
+                    {t('product.createProduct.store')}
                   </label>
                   <select
                     id="product-store"
@@ -466,7 +466,7 @@ export default function AddProductPage() {
                     onChange={handleInputChange}
                     className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="">Sélectionnez une boutique</option>
+                    <option value="">{t('product.createProduct.selectStore')}</option>
                     {stores && stores.length > 0 ? (
                       stores.map(store => (
                         <option key={store.id} value={store.id}>
@@ -474,7 +474,7 @@ export default function AddProductPage() {
                         </option>
                       ))
                     ) : (
-                      <option value="" disabled>Aucune boutique disponible</option>
+                      <option value="" disabled>{t('product.products.noProducts')}</option>
                     )}
                   </select>
                 </div>
@@ -482,7 +482,7 @@ export default function AddProductPage() {
 
               <div>
                 <label htmlFor="product-tags" className="block text-sm font-medium text-gray-700">
-                  Tags (séparés par des virgules)
+                  {t('product.createProduct.tags')}
                 </label>
                 <input
                   type="text"
@@ -491,7 +491,7 @@ export default function AddProductPage() {
                   value={formData.tags}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="nouveau, tendance, été..."
+                  placeholder={t('product.createProduct.tagsPlaceholder')}
                 />
               </div>
             </div>
@@ -503,13 +503,13 @@ export default function AddProductPage() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Images du produit</h2>
-              <p className="text-sm text-gray-500">Ajoutez des images de votre produit</p>
+              <h2 className="text-lg font-medium">{t('product.createProduct.mainImage')}</h2>
+              <p className="text-sm text-gray-500">{t('product.createProduct.mainImageDesc')}</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image principale</label>
+                <label className="block text-sm font-medium text-gray-700">{t('product.createProduct.mainImageLabel')}</label>
                 <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center gap-2">
                   {formData.imgMain && (
                     <div className="mb-4">
@@ -521,8 +521,8 @@ export default function AddProductPage() {
                     </div>
                   )}
                   <div className="text-center">
-                    <p className="text-sm font-medium">Déposez votre image principale ici</p>
-                    <p className="text-xs text-gray-500">PNG, JPG (max. 5MB)</p>
+                    <p className="text-sm font-medium">{t('product.createProduct.mainImageDrop')}</p>
+                    <p className="text-xs text-gray-500">{t('product.createProduct.mainImageFormat')}</p>
                   </div>
                   <input
                     type="file"
@@ -536,13 +536,13 @@ export default function AddProductPage() {
                     className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Télécharger
+                    {t('product.createProduct.mainImageUpload')}
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Images supplémentaires</label>
+                <label className="block text-sm font-medium text-gray-700">{t('product.createProduct.additionalImages')}</label>
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                   {formData.imgsAdditional.map((img, index) => (
                     <div key={index} className="relative">
@@ -570,7 +570,7 @@ export default function AddProductPage() {
                   {formData.imgsAdditional.length < 3 && (
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2">
                       <div className="text-center">
-                        <p className="text-xs text-gray-500">Image supplémentaire</p>
+                        <p className="text-xs text-gray-500">{t('product.createProduct.additionalImage')}</p>
                       </div>
                       <input
                         type="file"
@@ -584,7 +584,7 @@ export default function AddProductPage() {
                         className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        Ajouter
+                        {t('product.createProduct.additionalImageUpload')}
                       </label>
                     </div>
                   )}
@@ -599,14 +599,14 @@ export default function AddProductPage() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Prix et stock</h2>
-              <p className="text-sm text-gray-500">Définissez les prix et la gestion du stock</p>
+              <h2 className="text-lg font-medium">{t('product.createProduct.price')}</h2>
+              <p className="text-sm text-gray-500">{t('product.createProduct.priceDesc')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-price" className="block text-sm font-medium text-gray-700">
-                  Prix (€)
+                  {t('product.createProduct.priceLabel')}
                 </label>
                 <input
                   type="number"
@@ -617,13 +617,13 @@ export default function AddProductPage() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.createProduct.pricePlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-compare-price" className="block text-sm font-medium text-gray-700">
-                  Prix comparé (€, optionnel)
+                  {t('product.createProduct.comparePriceLabel')}
                 </label>
                 <input
                   type="number"
@@ -634,7 +634,7 @@ export default function AddProductPage() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.createProduct.comparePricePlaceholder')}
                 />
               </div>
             </div>
@@ -642,7 +642,7 @@ export default function AddProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-cost" className="block text-sm font-medium text-gray-700">
-                  Coût par unité (€)
+                  {t('product.createProduct.costLabel')}
                 </label>
                 <input
                   type="number"
@@ -653,13 +653,13 @@ export default function AddProductPage() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.createProduct.costPlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-sku" className="block text-sm font-medium text-gray-700">
-                  SKU (Référence)
+                  {t('product.createProduct.skuLabel')}
                 </label>
                 <input
                   type="text"
@@ -668,7 +668,7 @@ export default function AddProductPage() {
                   value={formData.sku}
                   onChange={handleInputChange}
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="SKU-12345"
+                  placeholder={t('product.createProduct.skuPlaceholder')}
                 />
               </div>
             </div>
@@ -676,7 +676,7 @@ export default function AddProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-stock" className="block text-sm font-medium text-gray-700">
-                  Quantité en stock
+                  {t('product.createProduct.stockLabel')}
                 </label>
                 <input
                   type="number"
@@ -686,13 +686,13 @@ export default function AddProductPage() {
                   onChange={handleInputChange}
                   min="0"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0"
+                  placeholder={t('product.createProduct.stockPlaceholder')}
                 />
               </div>
 
               <div>
                 <label htmlFor="product-low-stock" className="block text-sm font-medium text-gray-700">
-                  Alerte stock faible
+                  {t('product.createProduct.lowStockLabel')}
                 </label>
                 <input
                   type="number"
@@ -702,7 +702,7 @@ export default function AddProductPage() {
                   onChange={handleInputChange}
                   min="0"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="5"
+                  placeholder={t('product.createProduct.lowStockPlaceholder')}
                 />
               </div>
             </div>
@@ -714,14 +714,14 @@ export default function AddProductPage() {
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 space-y-6">
             <div>
-              <h2 className="text-lg font-medium">Informations de livraison</h2>
-              <p className="text-sm text-gray-500">Définissez les options de livraison pour ce produit</p>
+              <h2 className="text-lg font-medium">{t('product.createProduct.shippingClass')}</h2>
+              <p className="text-sm text-gray-500">{t('product.createProduct.shippingClassDesc')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="product-weight" className="block text-sm font-medium text-gray-700">
-                  Poids (kg)
+                  {t('product.createProduct.weightLabel')}
                 </label>
                 <input
                   type="number"
@@ -732,18 +732,16 @@ export default function AddProductPage() {
                   min="0"
                   step="0.01"
                   className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                  placeholder="0.00"
+                  placeholder={t('product.createProduct.weightPlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Dimensions (cm, L x l x H)
-                </label>
+                <label className="block text-sm font-medium text-gray-700">{t('product.createProduct.dimensionsLabel')}</label>
                 <div className="mt-1 flex gap-2">
                   <input
                     type="number"
-                    placeholder="L"
+                    placeholder={t('product.createProduct.lengthPlaceholder')}
                     name="dimensions.length"
                     value={formData.dimensions[0].length}
                     onChange={handleInputChange}
@@ -751,7 +749,7 @@ export default function AddProductPage() {
                   />
                   <input
                     type="number"
-                    placeholder="l"
+                    placeholder={t('product.createProduct.widthPlaceholder')}
                     name="dimensions.width"
                     value={formData.dimensions[0].width}
                     onChange={handleInputChange}
@@ -759,7 +757,7 @@ export default function AddProductPage() {
                   />
                   <input
                     type="number"
-                    placeholder="H"
+                    placeholder={t('product.createProduct.heightPlaceholder')}
                     name="dimensions.height"
                     value={formData.dimensions[0].height}
                     onChange={handleInputChange}
@@ -771,11 +769,11 @@ export default function AddProductPage() {
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                   >
-                    <option value="cm">cm</option>
-                    <option value="m">m</option>
-                    <option value="mm">mm</option>
-                    <option value="in">in</option>
-                    <option value="ft">ft</option>
+                    <option value="cm">{t('product.createProduct.cm')}</option>
+                    <option value="m">{t('product.createProduct.m')}</option>
+                    <option value="mm">{t('product.createProduct.mm')}</option>
+                    <option value="in">{t('product.createProduct.in')}</option>
+                    <option value="ft">{t('product.createProduct.ft')}</option>
                   </select>
                 </div>
               </div>
@@ -783,7 +781,7 @@ export default function AddProductPage() {
 
             <div>
               <label htmlFor="product-shipping-class" className="block text-sm font-medium text-gray-700">
-                Classe d'expédition
+                {t('product.createProduct.shippingClassLabel')}
               </label>
               <select
                 id="product-shipping-class"
@@ -792,14 +790,14 @@ export default function AddProductPage() {
                 onChange={handleInputChange}
                 className="mt-1 block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
               >
-                <option value="">Sélectionnez une classe</option>
-                <option value="standard">Standard</option>
-                <option value="express">Express</option>
-                <option value="free">Free</option>
-                <option value="local_pickup">Local Pickup</option>
-                <option value="heavy">Heavy</option>
-                <option value="fragile">Fragile</option>
-                <option value="international">International</option>
+                <option value="">{t('product.createProduct.selectShippingClass')}</option>
+                <option value="standard">{t('product.createProduct.standard')}</option>
+                <option value="express">{t('product.createProduct.express')}</option>
+                <option value="free">{t('product.createProduct.free')}</option>
+                <option value="local_pickup">{t('product.createProduct.localPickup')}</option>
+                <option value="heavy">{t('product.createProduct.heavy')}</option>
+                <option value="fragile">{t('product.createProduct.fragile')}</option>
+                <option value="international">{t('product.createProduct.international')}</option>
               </select>
             </div>
           </div>
@@ -812,7 +810,7 @@ export default function AddProductPage() {
           onClick={handleCancel}
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd]"
         >
-          Annuler
+          {t('product.createProduct.cancel')}
         </button>
         <button
           type="button"
@@ -820,7 +818,7 @@ export default function AddProductPage() {
           disabled={loading}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] disabled:opacity-50"
         >
-          {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour le produit' : 'Enregistrer le produit'}
+          {loading ? t('product.createProduct.creating') : t('product.createProduct.create')}
         </button>
       </div>
 

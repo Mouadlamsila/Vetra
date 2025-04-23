@@ -1,0 +1,32 @@
+const profileAr = {
+  title: "الملف الشخصي",
+  personalInfo: "المعلومات الشخصية",
+  updateInfo: "تحديث معلوماتك الشخصية",
+  profilePhoto: "الصورة الشخصية",
+  name: "الاسم",
+  email: "البريد الإلكتروني",
+  oldPassword: "كلمة المرور الحالية",
+  newPassword: "كلمة المرور الجديدة",
+  confirmPassword: "تأكيد كلمة المرور",
+  update: "تحديث الملف الشخصي",
+  save: "حفظ التغييرات",
+  uploading: "جاري التحميل...",
+  invalidFile: "نوع الملف غير صالح. يرجى تحميل صورة.",
+  fileTooLarge: "حجم الملف كبير جداً. الحد الأقصى هو 5 ميجابايت.",
+  oldPasswordRequired: "كلمة المرور الحالية مطلوبة",
+  incorrectOldPassword: "كلمة المرور الحالية غير صحيحة",
+  passwordsDontMatch: "كلمات المرور غير متطابقة",
+  passwordRequirementsNotMet: "لم يتم استيفاء متطلبات كلمة المرور",
+  updateSuccess: "تم تحديث الملف الشخصي بنجاح",
+  updateError: "فشل في تحديث الملف الشخصي",
+  unexpectedError: "حدث خطأ غير متوقع",
+  uploadFailed: "فشل في تحميل الصورة",
+  passwordRequirements: "متطلبات كلمة المرور",
+  minLength: "8 أحرف على الأقل",
+  uppercase: "حرف كبير واحد على الأقل",
+  lowercase: "حرف صغير واحد على الأقل",
+  number: "رقم واحد على الأقل",
+  special: "رمز خاص واحد على الأقل"
+};
+
+export default profileAr; 

@@ -267,17 +267,17 @@ export default function Profile() {
 
     return (
         <div className="py-10 px-10">
-            <h1 className="text-3xl font-bold">{t('dashboard.profile')}</h1>
-            <p className="text-sm text-gray-500">{t('dashboard.personalInfo')}</p>
+            <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
+            <p className="text-sm text-gray-500">{t('profile.personalInfo')}</p>
             <div className="pt-5 w-auto">
                 <p className="py-1 w-30 text-center bg-gray-100 px-2 hover:bg-white rounded-sm text-gray-500 hover:text-black transition-all duration-300 ease-in-out cursor-pointer">
-                    {t('dashboard.personalInfo')}
+                    {t('profile.personalInfo')}
                 </p>
             </div>
             <div className="border mt-5 space-y-4 px-10 py-5 rounded-lg shadow border-[#c8c2fd]">
                 <div>
-                    <h1 className="text-2xl font-bold">{t('dashboard.personalInfo')}</h1>
-                    <p className="text-sm text-gray-500">{t('dashboard.updateInfo')}</p>
+                    <h1 className="text-2xl font-bold">{t('profile.personalInfo')}</h1>
+                    <p className="text-sm text-gray-500">{t('profile.updateInfo')}</p>
                 </div>
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -294,7 +294,7 @@ export default function Profile() {
                         <div className="w-20 h-20 rounded-full overflow-hidden">
                             <img 
                                 src={previewUrl} 
-                                alt={t('dashboard.profilePhoto')} 
+                                alt={t('profile.profilePhoto')} 
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -325,7 +325,7 @@ export default function Profile() {
                                 value={formData.username}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder={t('dashboard.name')}
+                                placeholder={t('profile.name')}
                             />
                         </div>
                         <div className="flex items-center gap-2">
@@ -337,7 +337,7 @@ export default function Profile() {
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder={t('dashboard.email')}
+                                placeholder={t('profile.email')}
                             />
                         </div>
                         <div className="flex items-center gap-2 relative">
@@ -349,7 +349,7 @@ export default function Profile() {
                                 value={formData.oldPassword}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder={t('dashboard.oldPassword')}
+                                placeholder={t('profile.oldPassword')}
                             />
                             {!isEditing && (
                                 <button
@@ -369,7 +369,7 @@ export default function Profile() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder={t('dashboard.newPassword')}
+                                placeholder={t('profile.newPassword')}
                             />
                             {!isEditing && (
                                 <button
@@ -389,7 +389,7 @@ export default function Profile() {
                                 value={formData.confirmPassword}
                                 onChange={handleInputChange}
                                 className={`w-full outline-none px-2 duration-75 transition-all ease-in-out border-[#c8c2fd] ${!isEditing ? "border-b-2" : "border-b-0"}`}
-                                placeholder={t('dashboard.confirmPassword')}
+                                placeholder={t('profile.confirmPassword')}
                             />
                             {!isEditing && (
                                 <button
@@ -405,27 +405,27 @@ export default function Profile() {
 
                 {!isEditing && formData.password && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <h3 className="text-sm font-semibold mb-2">{t('dashboard.passwordRequirements')}:</h3>
+                        <h3 className="text-sm font-semibold mb-2">{t('profile.passwordRequirements')}:</h3>
                         <ul className="space-y-1 text-sm">
                             <li className={`flex items-center ${passwordRequirements.length ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.length ? '✓' : '•'}</span>
-                                {t('dashboard.minLength')}
+                                {t('profile.minLength')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.uppercase ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.uppercase ? '✓' : '•'}</span>
-                                {t('dashboard.uppercase')}
+                                {t('profile.uppercase')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.lowercase ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.lowercase ? '✓' : '•'}</span>
-                                {t('dashboard.lowercase')}
+                                {t('profile.lowercase')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.number ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.number ? '✓' : '•'}</span>
-                                {t('dashboard.number')}
+                                {t('profile.number')}
                             </li>
                             <li className={`flex items-center ${passwordRequirements.special ? 'text-green-600' : 'text-gray-500'}`}>
                                 <span className="mr-2">{passwordRequirements.special ? '✓' : '•'}</span>
-                                {t('dashboard.special')}
+                                {t('profile.special')}
                             </li>
                         </ul>
                     </div>
@@ -434,7 +434,7 @@ export default function Profile() {
                 {isEditing ? (
                     <div onClick={() => setIsEditing(false)} className="w-full flex select-none justify-end pt-4">
                         <ShinyButton rounded={true} className="w-full sm:w-auto">
-                            <p className="text-sm sm:text-base">{t('dashboard.update')}</p>
+                            <p className="text-sm sm:text-base">{t('profile.update')}</p>
                             <PenBox className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>
                     </div>
@@ -446,7 +446,7 @@ export default function Profile() {
                             disabled={isUploading}
                         >
                             <p className="text-sm sm:text-base">
-                                {isUploading ? t('dashboard.uploading') : t('dashboard.save')}
+                                {isUploading ? t('profile.uploading') : t('profile.save')}
                             </p>
                             <SaveAll className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>

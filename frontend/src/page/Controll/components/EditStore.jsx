@@ -4,8 +4,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 export default function EditStore() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     nom: '',
     description: '',
@@ -297,8 +299,8 @@ export default function EditStore() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Modifier une Boutique</h1>
-        <p className="text-gray-500">Modifiez les informations de votre boutique</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('store.editStore.title')}</h1>
+        <p className="text-gray-500">{t('store.editStore.subtitle')}</p>
       </div>
 
       <div className="bg-white rounded-lg shadow">
@@ -306,7 +308,7 @@ export default function EditStore() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="store-name" className="block text-sm font-medium text-gray-700">
-                Nom de la boutique *
+                {t('store.createStore.storeName')}
               </label>
               <input
                 type="text"
@@ -315,14 +317,14 @@ export default function EditStore() {
                 value={formData?.nom}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Nom de la boutique"
+                placeholder={t('store.createStore.storeNamePlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="store-category" className="block text-sm font-medium text-gray-700">
-                Catégorie *
+                {t('store.createStore.category')}
               </label>
               <select
                 id="store-category"
@@ -332,18 +334,18 @@ export default function EditStore() {
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
                 required
               >
-                <option value="fashion">Mode et Vêtements</option>
-                <option value="electronics">Électronique</option>
-                <option value="home">Maison et Décoration</option>
-                <option value="beauty">Beauté et Bien-être</option>
-                <option value="food">Alimentation</option>
-                <option value="other">Autre</option>
+                <option value="fashion">{t('store.createStore.categories.fashion')}</option>
+                <option value="electronics">{t('store.createStore.categories.electronics')}</option>
+                <option value="home">{t('store.createStore.categories.home')}</option>
+                <option value="beauty">{t('store.createStore.categories.beauty')}</option>
+                <option value="food">{t('store.createStore.categories.food')}</option>
+                <option value="other">{t('store.createStore.categories.other')}</option>
               </select>
             </div>
 
             <div className="md:col-span-2">
               <label htmlFor="store-description" className="block text-sm font-medium text-gray-700">
-                Description *
+                {t('store.createStore.description')}
               </label>
               <textarea
                 id="store-description"
@@ -352,14 +354,14 @@ export default function EditStore() {
                 onChange={handleInputChange}
                 rows={4}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Description de la boutique"
+                placeholder={t('store.createStore.descriptionPlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="store-address" className="block text-sm font-medium text-gray-700">
-                Emplacement *
+                {t('store.createStore.location')}
               </label>
               <input
                 type="text"
@@ -368,14 +370,14 @@ export default function EditStore() {
                 value={formData?.emplacement}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Adresse"
+                placeholder={t('store.createStore.locationPlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="location.addressLine1" className="block text-sm font-medium text-gray-700">
-                Adresse ligne 1
+                {t('store.createStore.address.line1')}
               </label>
               <input
                 id="location.addressLine1"
@@ -383,13 +385,13 @@ export default function EditStore() {
                 value={formData?.location[0]?.addressLine1}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Adresse ligne 1"
+                placeholder={t('store.createStore.address.line1Placeholder')}
               />
             </div>
 
             <div>
               <label htmlFor="location.addressLine2" className="block text-sm font-medium text-gray-700">
-                Adresse ligne 2
+                {t('store.createStore.address.line2')}
               </label>
               <input
                 id="location.addressLine2"
@@ -397,13 +399,13 @@ export default function EditStore() {
                 value={formData?.location[0]?.addressLine2}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Adresse ligne 2"
+                placeholder={t('store.createStore.address.line2Placeholder')}
               />
             </div>
 
             <div>
               <label htmlFor="location.city" className="block text-sm font-medium text-gray-700">
-                Ville
+                {t('store.createStore.address.city')}
               </label>
               <input
                 id="location.city"
@@ -411,13 +413,13 @@ export default function EditStore() {
                 value={formData?.location[0]?.city}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Ville"
+                placeholder={t('store.createStore.address.cityPlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="location.postalCode" className="block text-sm font-medium text-gray-700">
-                Code postal
+                {t('store.createStore.address.postalCode')}
               </label>
               <input
                 id="location.postalCode"
@@ -425,13 +427,13 @@ export default function EditStore() {
                 value={formData?.location[0]?.postalCode}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Code postal"
+                placeholder={t('store.createStore.address.postalCodePlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="location.country" className="block text-sm font-medium text-gray-700">
-                Pays
+                {t('store.createStore.address.country')}
               </label>
               <input
                 id="location.country"
@@ -439,13 +441,13 @@ export default function EditStore() {
                 value={formData?.location[0]?.country}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#c8c2fd] focus:border-transparent sm:text-sm"
-                placeholder="Pays"
+                placeholder={t('store.createStore.address.countryPlaceholder')}
               />
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
-                Logo
+                {t('store.createStore.logo')}
               </label>
               <div className="mt-1 flex items-center gap-4">
                 <input
@@ -460,7 +462,7 @@ export default function EditStore() {
                   htmlFor="store-logo"
                   className={`inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer ${logoLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {logoLoading ? 'Téléchargement...' : 'Télécharger un logo'}
+                  {logoLoading ? t('store.editStore.updating') : t('store.createStore.upload')}
                 </label>
                 {logoLoading ? (
                   <div className="relative w-24 h-24 border-2 border-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -470,7 +472,7 @@ export default function EditStore() {
                   <div className="relative w-24 h-24 border-2 border-gray-200 rounded-lg overflow-hidden">
                     <img
                       src={`http://localhost:1337${logo.url}`}
-                      alt="Logo de la boutique"
+                      alt={t('store.createStore.logo')}
                       className="w-full h-full object-cover"
                     />
                     <button
@@ -489,7 +491,7 @@ export default function EditStore() {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
-                Bannière
+                {t('store.createStore.banner')}
               </label>
               <div className="mt-1 flex items-center gap-4">
                 <input
@@ -504,7 +506,7 @@ export default function EditStore() {
                   htmlFor="store-banniere"
                   className={`inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] cursor-pointer ${banniereLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {banniereLoading ? 'Téléchargement...' : 'Télécharger une bannière'}
+                  {banniereLoading ? t('store.editStore.updating') : t('store.createStore.upload')}
                 </label>
                 {banniereLoading ? (
                   <div className="relative w-full h-32 border-2 border-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
@@ -514,7 +516,7 @@ export default function EditStore() {
                   <div className="relative w-full h-32 border-2 border-gray-200 rounded-lg overflow-hidden">
                     <img
                       src={`http://localhost:1337${banniere.url}`}
-                      alt="Bannière de la boutique"
+                      alt={t('store.createStore.banner')}
                       className="w-full h-full object-cover"
                     />
                     <button
@@ -540,7 +542,7 @@ export default function EditStore() {
           onClick={handleCancel}
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd]"
         >
-          Annuler
+          {t('store.createStore.cancel')}
         </button>
         <button
           type="button"
@@ -548,7 +550,7 @@ export default function EditStore() {
           disabled={loading}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] disabled:opacity-50"
         >
-          {loading ? 'Enregistrement...' : 'Mettre à jour la boutique'}
+          {loading ? t('store.editStore.updating') : t('store.editStore.update')}
         </button>
       </div>
 
