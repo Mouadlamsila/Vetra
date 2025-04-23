@@ -17,6 +17,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import { useTranslation } from 'react-i18next';
 
 // Données pour les graphiques
 const salesData = [
@@ -101,6 +102,7 @@ const customerData = [
 ]
 
 export default function StatsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedPeriod, setSelectedPeriod] = useState('30');
 
@@ -108,56 +110,56 @@ export default function StatsPage() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Statistiques</h1>
-          <p className="text-gray-500">Analysez les performances de vos boutiques</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('stats.stats.title')}</h1>
+          <p className="text-gray-500">{t('stats.stats.subtitle')}</p>
         </div>
         <select
           value={selectedPeriod}
           onChange={(e) => setSelectedPeriod(e.target.value)}
           className="w-full md:w-[180px] py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent"
         >
-          <option value="7">7 derniers jours</option>
-          <option value="30">30 derniers jours</option>
-          <option value="90">3 derniers mois</option>
-          <option value="365">12 derniers mois</option>
+          <option value="7">{t('stats.stats.period.options.last7Days')}</option>
+          <option value="30">{t('stats.stats.period.options.last30Days')}</option>
+          <option value="90">{t('stats.stats.period.options.last3Months')}</option>
+          <option value="365">{t('stats.stats.period.options.last12Months')}</option>
         </select>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Ventes totales</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('stats.stats.metrics.totalSales.title')}</h3>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">€4,550.50</div>
-            <p className="text-xs text-gray-500">+12.5% par rapport au mois dernier</p>
+            <div className="text-2xl font-bold">{t('stats.stats.metrics.totalSales.value')}</div>
+            <p className="text-xs text-gray-500">{t('stats.stats.metrics.totalSales.change')}</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Commandes</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('stats.stats.metrics.orders.title')}</h3>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">45</div>
-            <p className="text-xs text-gray-500">+8.2% par rapport au mois dernier</p>
+            <div className="text-2xl font-bold">{t('stats.stats.metrics.orders.value')}</div>
+            <p className="text-xs text-gray-500">{t('stats.stats.metrics.orders.change')}</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Panier moyen</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('stats.stats.metrics.averageCart.title')}</h3>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">€101.12</div>
-            <p className="text-xs text-gray-500">+3.1% par rapport au mois dernier</p>
+            <div className="text-2xl font-bold">{t('stats.stats.metrics.averageCart.value')}</div>
+            <p className="text-xs text-gray-500">{t('stats.stats.metrics.averageCart.change')}</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-row items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-500">Visiteurs</h3>
+            <h3 className="text-sm font-medium text-gray-500">{t('stats.stats.metrics.visitors.title')}</h3>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold">1,245</div>
-            <p className="text-xs text-gray-500">+18.7% par rapport au mois dernier</p>
+            <div className="text-2xl font-bold">{t('stats.stats.metrics.visitors.value')}</div>
+            <p className="text-xs text-gray-500">{t('stats.stats.metrics.visitors.change')}</p>
           </div>
         </div>
       </div>
@@ -173,7 +175,7 @@ export default function StatsPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Ventes
+            {t('stats.stats.tabs.sales')}
           </button>
           <button
             type="button"
@@ -184,7 +186,7 @@ export default function StatsPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Produits
+            {t('stats.stats.tabs.products')}
           </button>
           <button
             type="button"
@@ -195,7 +197,7 @@ export default function StatsPage() {
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
             } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
-            Clients
+            {t('stats.stats.tabs.customers')}
           </button>
         </nav>
       </div>
@@ -203,8 +205,8 @@ export default function StatsPage() {
       {activeTab === 'sales' && (
         <div className="bg-white rounded-lg shadow p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-medium">Ventes par jour</h2>
-            <p className="text-sm text-gray-500">Évolution des ventes sur les 30 derniers jours</p>
+            <h2 className="text-lg font-medium">{t('stats.stats.charts.sales.title')}</h2>
+            <p className="text-sm text-gray-500">{t('stats.stats.charts.sales.subtitle')}</p>
           </div>
           <div className="h-96">
             <ResponsiveContainer width="100%" height="100%">
@@ -218,7 +220,7 @@ export default function StatsPage() {
                     borderColor: "#e5e7eb",
                     borderRadius: "0.375rem",
                   }}
-                  formatter={(value) => [`€${value}`, "Ventes"]}
+                  formatter={(value) => [`€${value}`, t('stats.stats.charts.sales.tooltip.sales')]}
                   labelStyle={{ fontWeight: "bold" }}
                 />
                 <Legend />
@@ -240,8 +242,8 @@ export default function StatsPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="mb-4">
-              <h2 className="text-lg font-medium">Meilleurs produits</h2>
-              <p className="text-sm text-gray-500">Produits les plus vendus</p>
+              <h2 className="text-lg font-medium">{t('stats.stats.charts.products.bestSellers.title')}</h2>
+              <p className="text-sm text-gray-500">{t('stats.stats.charts.products.bestSellers.subtitle')}</p>
             </div>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -255,7 +257,7 @@ export default function StatsPage() {
                       borderColor: "#e5e7eb",
                       borderRadius: "0.375rem",
                     }}
-                    formatter={(value) => [`${value} unités`, "Ventes"]}
+                    formatter={(value) => [`${value} ${t('stats.stats.charts.products.bestSellers.tooltip.units')}`, t('stats.stats.charts.products.bestSellers.tooltip.sales')]}
                   />
                   <Bar dataKey="ventes" fill="#6D28D9" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -264,8 +266,8 @@ export default function StatsPage() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="mb-4">
-              <h2 className="text-lg font-medium">Répartition des ventes</h2>
-              <p className="text-sm text-gray-500">Par catégorie de produit</p>
+              <h2 className="text-lg font-medium">{t('stats.stats.charts.products.distribution.title')}</h2>
+              <p className="text-sm text-gray-500">{t('stats.stats.charts.products.distribution.subtitle')}</p>
             </div>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -286,7 +288,7 @@ export default function StatsPage() {
                       borderColor: "#e5e7eb",
                       borderRadius: "0.375rem",
                     }}
-                    formatter={(value) => [`${value}%`, "Pourcentage"]}
+                    formatter={(value) => [`${value}%`, t('stats.stats.charts.products.distribution.tooltip.percentage')]}
                   />
                   <Legend layout="vertical" verticalAlign="middle" align="right" />
                 </RechartsPieChart>
@@ -299,8 +301,8 @@ export default function StatsPage() {
       {activeTab === 'customers' && (
         <div className="bg-white rounded-lg shadow p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-medium">Acquisition de clients</h2>
-            <p className="text-sm text-gray-500">Nouveaux clients par jour</p>
+            <h2 className="text-lg font-medium">{t('stats.stats.charts.customers.title')}</h2>
+            <p className="text-sm text-gray-500">{t('stats.stats.charts.customers.subtitle')}</p>
           </div>
           <div className="h-96">
             <ResponsiveContainer width="100%" height="100%">
@@ -316,8 +318,8 @@ export default function StatsPage() {
                   }}
                 />
                 <Legend />
-                <Area type="monotone" dataKey="nouveaux" stackId="1" stroke="#6D28D9" fill="#c8c2fd" />
-                <Area type="monotone" dataKey="total" stackId="2" stroke="#1e3a8a" fill="#1e3a8a" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="nouveaux" stackId="1" stroke="#6D28D9" fill="#c8c2fd" name={t('stats.stats.charts.customers.tooltip.new')} />
+                <Area type="monotone" dataKey="total" stackId="2" stroke="#1e3a8a" fill="#1e3a8a" fillOpacity={0.3} name={t('stats.stats.charts.customers.tooltip.total')} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

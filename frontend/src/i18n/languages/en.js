@@ -2,6 +2,7 @@ import { profileEn } from './pages/profile';
 import { storeEn } from './pages/store';
 import { productEn } from './pages/product';
 import { ordersEn } from './pages/orders';
+import { statsEn } from './pages/stats';
 const en = {
   Features: "Features",
   AboutUs: "About Us",
@@ -253,7 +254,8 @@ const en = {
   profile: profileEn,
   store: storeEn,
   product: productEn,
-  orders: ordersEn
+  orders: ordersEn,
+  stats: statsEn
 };
 
 export default en; 

@@ -2,6 +2,7 @@ import { profileFr } from './pages/profile';
 import { storeFr } from './pages/store';
 import { productFr } from './pages/product';
 import { ordersFr } from './pages/orders';
+import { statsFr } from './pages/stats';
 const fr = {
   Features: "Fonctionnalités",
   AboutUs: "À propos",
@@ -253,7 +254,8 @@ const fr = {
   profile: profileFr,
   store: storeFr,
   product: productFr,
-  orders: ordersFr
+  orders: ordersFr,
+  stats: statsFr
 };
 
 export default fr; 
