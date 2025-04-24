@@ -47,12 +47,16 @@ const storeAr = {
     success: "تم إنشاء المتجر بنجاح"
   },
   editStore: {
+    storeInfo: "معلومات المتجر",
     title: "تعديل المتجر",
     subtitle: "قم بتحديث معلومات متجرك",
     update: "تحديث",
     updating: "جاري التحديث...",
     success: "تم تحديث المتجر بنجاح",
-    error: "خطأ في تحديث المتجر"
+    error: "خطأ في تحديث المتجر",
+    removeLogo: "إزالة الشعار",
+    removeBanner: "إزالة البانر",
+    storeInfoDesc: "قم بتحديث معلومات متجرك أدناه",
   },
   stores: {
     title: "متاجري",

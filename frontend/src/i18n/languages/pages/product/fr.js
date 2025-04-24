@@ -70,7 +70,7 @@ const productFr = {
     weight: "Poids (kg)",
     dimensions: "Dimensions (cm, L x l x H)",
     shippingClass: "Classe d'Expédition",
-    selectShippingClass: "Sélectionnez une classe",
+   
     shippingClasses: {
       standard: "Standard",
       express: "Express",
@@ -127,6 +127,7 @@ const productFr = {
     heavy: "Lourd",
     fragile: "Fragile",
     international: "International",
+    productInfoDesc: "Remplissez les informations du produit en utilisant les onglets ci-dessous.",
 
   },
   editProduct: {
@@ -203,6 +204,9 @@ const productFr = {
     mm: "mm",
     in: "in",
     ft: "ft",
+    uploading: "Téléchargement...",
+    productInfoDesc: "Modifiez les informations de votre produit ci-dessous.",
+    loading: "Chargement...",
   }
 };
 

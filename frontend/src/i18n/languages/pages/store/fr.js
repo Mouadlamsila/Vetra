@@ -47,12 +47,16 @@ const storeFr = {
     success: "Boutique créée avec succès"
   },
   editStore: {
+    storeInfo: "Informations de la boutique",
     title: "Modifier la Boutique",
     subtitle: "Mettez à jour les informations de votre boutique",
     update: "Mettre à jour",
     updating: "Mise à jour en cours...",
     success: "Boutique mise à jour avec succès",
-    error: "Erreur lors de la mise à jour de la boutique"
+    error: "Erreur lors de la mise à jour de la boutique",
+    removeLogo: "Supprimer le logo",
+    removeBanner: "Supprimer la bannière",
+    storeInfoDesc: "Modifiez les informations de votre boutique ci-dessous",
   },
   stores: {
     title: "Mes Boutiques",

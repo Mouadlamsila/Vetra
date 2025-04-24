@@ -70,6 +70,7 @@ const productEn = {
     weight: "Weight (kg)",
     dimensions: "Dimensions (cm, L x W x H)",
     shippingClass: "Shipping Class",
+    selectShippingClass: "Select a shipping class",
     shippingClasses: {
       standard: "Standard",
       express: "Express",
@@ -107,7 +108,7 @@ const productEn = {
     dimensionsLabel: "Dimensions (cm, L x W x H)",
     shippingClassLabel: "Shipping Class",
     shippingClassDesc: "Select a shipping class for your product",
-    selectShippingClass: "Select a class",
+    
     cm: "cm",
     kg: "kg",
     m: "m",
@@ -126,6 +127,7 @@ const productEn = {
     heavy: "Heavy",
     fragile: "Fragile",
     international: "International",
+    productInfoDesc: "Fill in the product information using the tabs below.",
   },
   editProduct: {
     title: "Edit Product",
@@ -201,6 +203,9 @@ const productEn = {
     mm: "mm",
     in: "in",
     ft: "ft",
+    uploading: "Uploading...",
+    productInfoDesc: "Modify your product information below.",
+    loading: "Loading...",
   }
 };
 

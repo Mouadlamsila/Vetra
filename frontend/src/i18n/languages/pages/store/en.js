@@ -47,12 +47,16 @@ const storeEn = {
     success: "Store created successfully"
   },
   editStore: {
+    storeInfo: "Store Information",
     title: "Edit Store",
     subtitle: "Update your store information",
     update: "Update Store",
     updating: "Updating...",
     success: "Store updated successfully",
-    error: "Error updating store"
+    error: "Error updating store",
+    removeLogo: "Remove Logo",
+    removeBanner: "Remove Banner",
+    storeInfoDesc: "Update your store information below",
   },
   stores: {
     title: "My Stores",

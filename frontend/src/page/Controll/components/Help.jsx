@@ -9,6 +9,7 @@ export default function HelpPage() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('guides');
   const [expandedFaq, setExpandedFaq] = useState(null);
+  const lang = localStorage.getItem('lang');
 
   const toggleFaq = (id) => {
     setExpandedFaq(expandedFaq === id ? null : id);
@@ -26,7 +27,7 @@ export default function HelpPage() {
           <div className="flex-shrink-0">
             <AlertCircle className="h-5 w-5 text-blue-400" />
           </div>
-          <div className="ml-3">
+          <div className={lang === 'ar' ? 'mr-3' : 'ml-3'}>
             <h3 className="text-sm font-medium text-blue-800">{t('help.help.quickHelp.title')}</h3>
             <div className="mt-2 text-sm text-blue-700">
               <p>{t('help.help.quickHelp.description')}</p>
@@ -272,8 +273,8 @@ export default function HelpPage() {
           </Link>
           .
         </p>
-        <button className="shrink-0 px-4 py-2 text-sm font-medium text-[#6D28D9] hover:text-[#5B21B6] focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:ring-offset-2 rounded-md border border-[#6D28D9]">
-          <HelpCircle className="mr-2 h-4 w-4 inline" />
+        <button className="shrink-0 items-center flex px-4 py-2 text-sm font-medium text-[#6D28D9] hover:text-[#5B21B6] focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:ring-offset-2 rounded-md border border-[#6D28D9]">
+          <HelpCircle className={lang === 'ar' ? 'ml-2 h-4 w-4 inline' : 'mr-2 h-4 w-4 inline'} />
           {t('help.help.footer.button')}
         </button>
       </div>

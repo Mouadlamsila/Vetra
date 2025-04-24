@@ -72,6 +72,7 @@ const productAr = {
         weight: "الوزن (كجم)",
         dimensions: "الأبعاد (سم، الطول × العرض × الارتفاع)",
         shippingClass: "فئة الشحن",
+        selectShippingClass: "اختر فئة",
         shippingClasses: {
             standard: "قياسي",
             express: "سريع",
@@ -127,6 +128,7 @@ const productAr = {
         heavy: "ثقيل",
         fragile: "هش",
         international: "دولي",
+        productInfoDesc: "أدخل معلومات المنتج بالتفصيل.",
         
     },
     editProduct: {
@@ -203,6 +205,9 @@ const productAr = {
         mm: "مم",
         in: "بوصة",
         ft: "قدم",
+        uploading: "جاري الرفع...",
+        productInfoDesc: "تعديل معلومات المنتج أدناه.",
+        loading: "جاري التحميل...",
 
     },
 
