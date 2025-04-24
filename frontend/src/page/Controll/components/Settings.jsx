@@ -270,8 +270,8 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-medium text-gray-700">Cet appareil</p>
-                  <p className="text-sm text-gray-500">Paris, France · Dernière activité il y a 2 minutes</p>
+                  <p className="font-medium text-gray-700">{t('settings.settings.security.sessions.thisAppareil')}</p>
+                  <p className="text-sm text-gray-500">{t('settings.settings.security.sessions.parisRecent')}</p>
                 </div>
                 <button
                   disabled
@@ -283,8 +283,8 @@ export default function SettingsPage() {
               <div className="h-px bg-gray-200" />
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-medium text-gray-700">Chrome sur Windows</p>
-                  <p className="text-sm text-gray-500">Lyon, France · Dernière activité il y a 3 jours</p>
+                  <p className="font-medium text-gray-700">{t('settings.settings.security.sessions.chromeInWindows')}</p>
+                  <p className="text-sm text-gray-500">{t('settings.settings.security.sessions.lyonDays')}</p>
                 </div>
                 <button className="px-3 py-1 text-sm font-medium text-[#6D28D9] hover:text-[#5B21B6] focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:ring-offset-2 rounded-md border border-[#6D28D9]">
                   {t('settings.settings.security.sessions.disconnect')}

@@ -106,7 +106,11 @@ export const settingsAr = {
         title: "الجلسات النشطة",
         description: "إدارة جلساتك النشطة على الأجهزة المختلفة",
         current: "الحالي",
-        disconnect: "تسجيل الخروج"
+        disconnect: "تسجيل الخروج",
+        thisAppareil: "هذا الجهاز",
+        chromeInWindows: "Chrome في Windows",
+        parisRecent: "باريس، فرنسا · آخر نشاط منذ دقيقتين",
+        lyonDays: "ليون، فرنسا · آخر نشاط منذ 3 أيام"
       },
       deleteAccount: {
         title: "حذف الحساب",
@@ -117,6 +121,7 @@ export const settingsAr = {
         },
         button: "حذف حسابي"
       }
+      
     }
   }
 }; 

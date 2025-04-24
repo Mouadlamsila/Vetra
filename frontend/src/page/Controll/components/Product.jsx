@@ -20,6 +20,7 @@ export default function ProductsPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const IDUser = localStorage.getItem('IDUser');
+  const lang = localStorage.getItem('lang');
   // Fetch products and stores from the backend
   useEffect(() => {
     const fetchData = async () => {
@@ -98,18 +99,6 @@ export default function ProductsPage() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-
-  const getStatusBadgeClass = (stock) => {
-    if (stock > 10) return 'bg-green-100 text-green-800';
-    if (stock > 0) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
-  };
-
-  const getStatusText = (stock) => {
-    if (stock > 10) return 'En stock';
-    if (stock > 0) return 'Stock faible';
-    return 'Épuisé';
-  };
 
   const handleDeleteProduct = async (productId) => {
     const result = await Swal.fire({
@@ -276,7 +265,7 @@ export default function ProductsPage() {
             <option value="all">{t('product.products.allCategories')}</option>
             {getUniqueCategories().map(category => (
               <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {t(`product.products.categories.${category}`) || (category.charAt(0).toUpperCase() + category.slice(1))}
               </option>
             ))}
           </select>
@@ -351,20 +340,26 @@ export default function ProductsPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                    {product?.categories ? (
-                      <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
-                        {product.categories}
-                      </span>
-                    ) : (
-                      t('product.products.uncategorized')
-                    )}
+                    {product.categories && t(`product.products.categories.${product.categories}`) !== `product.products.categories.${product.categorie}`
+                      ? t(`product.products.categories.${product.categories}`)
+                      : t('product.products.uncategorized')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                     {product?.boutique?.nom || t('product.products.unassigned')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(product?.stock || 0)}`}>
-                      {getStatusText(product?.stock || 0)}
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      product.stock === 0
+                        ? 'bg-red-100 text-red-800'
+                        : product.stock <= product.lowStockAlert
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {product.stock === 0
+                        ? t('product.products.status.outOfStock')
+                        : product.stock <= product.lowStockAlert
+                        ? t('product.products.status.lowStock')
+                        : t('product.products.status.inStock')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -376,9 +371,9 @@ export default function ProductsPage() {
                         <MoreHorizontal className="h-5 w-5" />
                       </button>
                       {isDropdownOpen[product.id] && (
-                        <div className="absolute right-6 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5" style={{ position: 'fixed', zIndex: 1000 }}>
+                        <div className={`absolute ${lang === 'ar' ? 'left-6' : 'right-6'} mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5`} style={{ position: 'fixed', zIndex: 1000 }}>
                           <div className="pt-1">
-                            <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">{t('product.products.actions')}</div>
+                            <div className="px-4 py-2 text-start text-sm text-gray-700 font-medium">{t('product.products.actions.name')}</div>
                             <div className="h-px bg-[#c8c2fd]"></div>
                             <Link
                               to={`/controll/edit-product/${product.documentId}`}

@@ -106,7 +106,11 @@ export const settingsFr = {
         title: "Sessions actives",
         description: "Gérez vos sessions actives sur différents appareils",
         current: "Actuel",
-        disconnect: "Déconnecter"
+        disconnect: "Déconnecter",
+        activitySamples: {
+          parisRecent: "Paris, France · Dernière activité il y a 2 minutes",
+          lyonDays: "Lyon, France · Dernière activité il y a 3 jours"
+        }
       },
       deleteAccount: {
         title: "Supprimer le compte",

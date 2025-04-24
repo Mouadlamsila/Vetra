@@ -17,6 +17,11 @@ export const paymentAr = {
         title: "الدفعة المجدولة التالية",
         value: "5,000",
         description: "مستحقة في 15 مارس 2024"
+      },
+      nextPayment: {
+        title: "الدفعة المجدولة التالية",
+        value: "5,000",
+        description: "مستحقة في 15 مارس 2024"
       }
     },
     search: {
@@ -45,8 +50,8 @@ export const paymentAr = {
       bank: "تحويل بنكي"
     },
     actions: {
-      view: "عرض التفاصيل",
-      download: "تحميل الإيصال"
+      viewDetails: "عرض التفاصيل",
+      downloadReceipt: "تحميل الإيصال"
     }
   }
 }; 
