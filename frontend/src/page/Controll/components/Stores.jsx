@@ -113,12 +113,14 @@ export default function Stores() {
                         </div>
 
                         <div className="flex justify-between gap-2">
-                            <button 
-                                onClick={() => navigate(`/controll/stores/${store.id}`)}
-                                className="bg-white border border-gray-300 flex items-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"
-                            >
-                                <Eye size={18} /> {t('store.stores.view')}
-                            </button>
+                            <Link to={`/view/${store.documentId}`}>
+                                <button 
+                                    className="bg-white border border-gray-300 flex items-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"
+                                >
+                                    <Eye size={18} /> {t('store.stores.view')}
+                                </button>
+                            </Link>
+                            
                             <button 
                                 onClick={() => navigate(`/controll/edit-store/${store.documentId}`)}
                                 className="bg-white border border-gray-300 flex items-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"
