@@ -128,6 +128,7 @@ const productEn = {
     fragile: "Fragile",
     international: "International",
     productInfoDesc: "Fill in the product information using the tabs below.",
+    uploading: "Uploading...",
   },
   editProduct: {
     title: "Edit Product",

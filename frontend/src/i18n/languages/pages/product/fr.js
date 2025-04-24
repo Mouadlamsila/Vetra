@@ -128,7 +128,7 @@ const productFr = {
     fragile: "Fragile",
     international: "International",
     productInfoDesc: "Remplissez les informations du produit en utilisant les onglets ci-dessous.",
-
+    uploading: "Téléchargement...",
   },
   editProduct: {
     title: "Modifier le Produit",

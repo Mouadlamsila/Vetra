@@ -251,6 +251,7 @@ export default function AddProductPage() {
           imgsAdditional: [...prev.imgsAdditional, uploadResponse.data[0].id],
         }))
         setImgsAdditional([...imgsAdditional, uploadResponse.data[0].url])
+
         setLoadingImgsAdditional(false)
       }
 
@@ -517,7 +518,7 @@ export default function AddProductPage() {
                         ),
                       )}
                     </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <div className={`absolute inset-y-0 flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"}`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -554,7 +555,7 @@ export default function AddProductPage() {
                         </option>
                       )}
                     </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <div className={`absolute inset-y-0 flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"}`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -669,7 +670,8 @@ export default function AddProductPage() {
                           setFormData((prev) => ({
                             ...prev,
                             imgsAdditional: prev.imgsAdditional.filter((_, i) => i !== index),
-                          }))
+                          }));
+                          setImgsAdditional(imgsAdditional.filter((_, i) => i !== index));
                         }}
                         className="absolute top-2 right-2 bg-white text-red-500 rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
                       >
@@ -680,10 +682,18 @@ export default function AddProductPage() {
                   {formData.imgsAdditional.length < 3 && (
                     <div className="border-2 border-dashed border-[#c8c2fd] rounded-lg p-4 flex flex-col items-center justify-center gap-2 bg-[#c8c2fd]/5 transition-all hover:bg-[#c8c2fd]/10">
                       <div className="w-12 h-12 bg-[#6D28D9]/10 rounded-full flex items-center justify-center mb-2">
-                        <Upload className="h-6 w-6 text-[#6D28D9]" />
+                        {loadingImgsAdditional ? (
+                          <Loader className="h-6 w-6 text-[#6D28D9] animate-spin" />
+                        ) : (
+                          <Upload className="h-6 w-6 text-[#6D28D9]" />
+                        )}
                       </div>
                       <div className="text-center">
-                        <p className="text-xs text-[#6D28D9]/70">{t("product.createProduct.additionalImage")}</p>
+                        {loadingImgsAdditional ? (
+                          <p className="text-xs text-[#6D28D9]/70">{t("product.createProduct.uploading")}</p>
+                        ) : (
+                          <p className="text-xs text-[#6D28D9]/70">{t("product.createProduct.additionalImage")}</p>
+                        )}
                       </div>
                       <input
                         type="file"
@@ -696,8 +706,16 @@ export default function AddProductPage() {
                         htmlFor="additional-image"
                         className="mt-2 inline-flex items-center px-3 py-1.5 border border-[#6D28D9] rounded-md text-xs font-medium text-[#6D28D9] bg-white hover:bg-[#6D28D9]/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] cursor-pointer transition-colors"
                       >
-                        <Upload className={`h-3 w-3 ${lang === "ar" ? "ml-1" : "mr-1"}`} />
-                        {t("product.createProduct.additionalImageUpload")}
+                        {loadingImgsAdditional ? (
+                          <>
+                            <Loader className={`h-3 w-3 text-center animate-spin`} />
+                          </>
+                        ) : (
+                          <>
+                            <Upload className={`h-3 w-3 ${lang === "ar" ? "ml-1"  : "mr-1"}`} />
+                            {t("product.createProduct.additionalImageUpload")}
+                          </>
+                        )}  
                       </label>
                     </div>
                   )}

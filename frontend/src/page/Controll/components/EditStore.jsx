@@ -125,7 +125,7 @@ console.log(formData)
         ...prev,
         location: [
           {
-            ...prev.location[0],
+          ...prev.location[0],
             [field]: value,
           },
         ],
@@ -148,7 +148,7 @@ console.log(formData)
 
     try {
       const uploadResponse = await axios.post("http://localhost:1337/api/upload", formData, {
-        headers: {
+          headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
@@ -191,7 +191,7 @@ console.log(formData)
 
     try {
       const uploadResponse = await axios.post("http://localhost:1337/api/upload", formData, {
-        headers: {
+          headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
@@ -245,12 +245,12 @@ console.log(formData)
           logo: logo ? logo.id : null,
           banniere: banniere ? banniere.id : null,
         },
-      }
+        }
 
       console.log("Submitting Store Data:", JSON.stringify(storeData, null, 2))
 
       const response = await axios.put(`http://localhost:1337/api/boutiques/${id}`, storeData, {
-        headers: {
+          headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -302,7 +302,7 @@ console.log(formData)
       confirmButtonText: "Oui, quitter",
       cancelButtonText: "Annuler",
     })
-
+    
     if (result.isConfirmed) {
       navigate("/controll/stores")
     }
@@ -312,7 +312,7 @@ console.log(formData)
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
           <p className="text-[#6D28D9] font-medium">Chargement des données...</p>
         </div>
       </div>
@@ -325,7 +325,7 @@ console.log(formData)
         <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
           <Edit className="h-6 w-6 text-white" />
         </div>
-        <div>
+      <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("store.editStore.title")}</h1>
           <p className="text-[#6D28D9]/70">{t("store.editStore.subtitle")}</p>
         </div>
@@ -385,22 +385,22 @@ console.log(formData)
                 <span>{t("store.createStore.category")}</span>
               </label>
               <div className="relative">
-                <select
-                  id="store-category"
-                  name="category"
-                  value={formData?.category}
-                  onChange={handleInputChange}
+              <select
+                id="store-category"
+                name="category"
+                value={formData?.category}
+                onChange={handleInputChange}
                  
                   className={`block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] appearance-none focus:border-[#6D28D9] sm:text-sm ${lang === "ar" ? "" : ""}`}
-                  required
-                >
+                required
+              >
                   <option value="fashion">{t("store.createStore.categories.fashion")}</option>
                   <option value="electronics">{t("store.createStore.categories.electronics")}</option>
                   <option value="home">{t("store.createStore.categories.home")}</option>
                   <option value="beauty">{t("store.createStore.categories.beauty")}</option>
                   <option value="food">{t("store.createStore.categories.food")}</option>
                   <option value="other">{t("store.createStore.categories.other")}</option>
-                </select>
+              </select>
                 <div className={`absolute inset-y-0  flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} `}>
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -486,40 +486,40 @@ console.log(formData)
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div>
                 <label
                   htmlFor="location.city"
                   className="flex items-center space-x-2 text-sm font-medium text-[#1e3a8a] mb-1"
                 >
                   <Building className="h-4 w-4" />
                   <span>{t("store.createStore.address.city")}</span>
-                </label>
-                <input
-                  id="location.city"
-                  name="location.city"
-                  value={formData?.location[0]?.city}
-                  onChange={handleInputChange}
+              </label>
+              <input
+                id="location.city"
+                name="location.city"
+                value={formData?.location[0]?.city}
+                onChange={handleInputChange}
                   className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                   placeholder={t("store.createStore.address.cityPlaceholder")}
-                />
-              </div>
+              />
+            </div>
 
-              <div>
+            <div>
                 <label
                   htmlFor="location.postalCode"
                   className="flex items-center space-x-2 text-sm font-medium text-[#1e3a8a] mb-1"
                 >
                   <MapPin className="h-4 w-4" />
                   <span>{t("store.createStore.address.postalCode")}</span>
-                </label>
-                <input
-                  id="location.postalCode"
-                  name="location.postalCode"
-                  value={formData?.location[0]?.postalCode}
-                  onChange={handleInputChange}
+              </label>
+              <input
+                id="location.postalCode"
+                name="location.postalCode"
+                value={formData?.location[0]?.postalCode}
+                onChange={handleInputChange}
                   className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                   placeholder={t("store.createStore.address.postalCodePlaceholder")}
-                />
+              />
               </div>
             </div>
 
@@ -566,23 +566,23 @@ console.log(formData)
                   )}
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                    id="store-logo"
-                    disabled={logoLoading}
-                  />
-                  <label
-                    htmlFor="store-logo"
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  id="store-logo"
+                  disabled={logoLoading}
+                />
+                <label
+                  htmlFor="store-logo"
                     className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] cursor-pointer ${
                       logoLoading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                  >
+                >
                     <Upload className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2 "}`} />
                     {logoLoading ? t("store.editStore.updating") : t("store.createStore.upload")}
-                  </label>
+                </label>
                   {logo && (
                     <button
                       type="button"
@@ -596,7 +596,7 @@ console.log(formData)
                       {t("store.editStore.removeLogo")}
                     </button>
                   )}
-                </div>
+                  </div>
               </div>
             </div>
 
@@ -625,23 +625,23 @@ console.log(formData)
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleBanniereUpload}
-                    className="hidden"
-                    id="store-banniere"
-                    disabled={banniereLoading}
-                  />
-                  <label
-                    htmlFor="store-banniere"
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBanniereUpload}
+                  className="hidden"
+                  id="store-banniere"
+                  disabled={banniereLoading}
+                />
+                <label
+                  htmlFor="store-banniere"
                     className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] cursor-pointer ${
                       banniereLoading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                  >
+                >
                     <Upload className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
                     {banniereLoading ? t("store.editStore.updating") : t("store.createStore.upload")}
-                  </label>
+                </label>
                   {banniere && (
                     <button
                       type="button"
@@ -654,25 +654,25 @@ console.log(formData)
                       <X className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
                       {t("store.editStore.removeBanner")}
                     </button>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
         <div className="w-full items-center flex justify-end p-6 gap-2 border-t border-[#c8c2fd]/30 bg-gray-50">
-          <button
-            type="button"
-            onClick={handleCancel}
+        <button
+          type="button"
+          onClick={handleCancel}
             className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd]"
-          >
+        >
             <X className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
             {t("store.createStore.cancel")}
-          </button>
-          <button
+        </button>
+        <button
             type="submit"
-            disabled={loading}
+          disabled={loading}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] disabled:opacity-50"
           >
             {loading ? (
@@ -686,9 +686,9 @@ console.log(formData)
                 {t("store.editStore.update")}
               </>
             )}
-          </button>
+        </button>
         </div>
       </form>
     </div>
   )
-}
+} 

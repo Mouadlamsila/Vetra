@@ -129,6 +129,8 @@ const productAr = {
         fragile: "هش",
         international: "دولي",
         productInfoDesc: "أدخل معلومات المنتج بالتفصيل.",
+        uploading: "جاري الرفع...",
+        
         
     },
     editProduct: {
