@@ -48,6 +48,7 @@ export default function AddStorePage() {
   const [bannierePreview, setBannierePreview] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const lang = localStorage.getItem("lang")
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -208,7 +209,7 @@ export default function AddStorePage() {
       <div className="bg-[#c8c2fd]/10 rounded-lg p-4 mb-6">
         <div className="flex items-center space-x-2 text-[#6D28D9]">
           <Info className="h-5 w-5" />
-          <p className="text-sm">Remplissez les informations de votre boutique pour commencer à vendre.</p>
+          <p className="text-sm">{t("store.createStore.info")}</p>
         </div>
       </div>
 
@@ -291,7 +292,7 @@ export default function AddStorePage() {
                     <option value="food">{t("store.createStore.categories.food")}</option>
                     <option value="other">{t("store.createStore.categories.other")}</option>
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -447,7 +448,7 @@ export default function AddStorePage() {
                   htmlFor="logo"
                   className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-[#6D28D9] text-white hover:bg-[#6D28D9]/90 cursor-pointer"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
                   {t("store.createStore.upload")}
                 </label>
                 <input
@@ -490,7 +491,7 @@ export default function AddStorePage() {
                   htmlFor="banniere"
                   className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 h-9 px-4 py-2 bg-[#6D28D9] text-white hover:bg-[#6D28D9]/90 cursor-pointer"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
                   {t("store.createStore.upload")}
                 </label>
                 <input
@@ -511,7 +512,7 @@ export default function AddStorePage() {
             onClick={() => navigate("/dashboard")}
             className="inline-flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-200 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 hover:border-[#c8c2fd]"
           >
-            <X className="h-4 w-4 mr-2" />
+            <X className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
             {t("store.createStore.cancel")}
           </button>
           <ShinyButton rounded={true} className="w-full sm:w-auto" type="submit" disabled={loading}>

@@ -39,6 +39,13 @@ const productAr = {
         lowStockAlert: "تنبيه المخزون المنخفض",
         unassigned: "متجر غير معين",
         uncategorized: "غير مصنف",
+        loading: "جاري تحميل المنتجات...",
+        filterByStore: "تصفية بالمتجر",
+        filterByCategory: "تصفية بالفئة",
+        resetFilters: "إعادة تصفية",
+        productsFound: "منتجات موجودة",
+        noProductsFound: "لم يتم العثور على منتجات",
+        tryDifferentFilters: "حاول تصفيات مختلفة",
     },
     createProduct: {
         title: "إضافة منتج جديد",

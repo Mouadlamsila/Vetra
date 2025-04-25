@@ -37,6 +37,15 @@ const productFr = {
     lowStockAlert: "Alerte stock faible",
     unassigned: "Magasin non assigné",
     uncategorized: "Non catégorisé",
+    loading: "Chargement des produits...",
+    filterByStore: "Filtrer par magasin",
+    filterByCategory: "Filtrer par catégorie",
+    resetFilters: "Réinitialiser les filtres",
+    productsFound: "Produits trouvés",
+    noProductsFound: "Aucun produit trouvé",
+    tryDifferentFilters: "Essayez différents filtres",
+    
+    
   },
   createProduct: {
     title: "Ajouter un Nouveau Produit",

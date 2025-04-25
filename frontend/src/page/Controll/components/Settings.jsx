@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState(i18n.language);
   const [timezone, setTimezone] = useState('europe-paris');
   const [currency, setCurrency] = useState('eur');
+  const lang = localStorage.getItem("lang")
   const [notifications, setNotifications] = useState({
     newOrder: true,
     orderStatus: true,
@@ -179,7 +180,7 @@ export default function SettingsPage() {
                     >
                       <span
                         className={`${
-                          notifications[key] ? 'translate-x-5' : 'translate-x-0'
+                          notifications[key] ? (lang === "ar" ? '-translate-x-5' : 'translate-x-5') : ('translate-x-0')
                         } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
                       />
                     </button>
@@ -214,7 +215,7 @@ export default function SettingsPage() {
                     >
                       <span
                         className={`${
-                          notifications[key] ? 'translate-x-5' : 'translate-x-0'
+                          notifications[key] ? (lang === "ar" ? '-translate-x-5' : 'translate-x-5') : ('translate-x-0')
                         } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
                       />
                     </button>

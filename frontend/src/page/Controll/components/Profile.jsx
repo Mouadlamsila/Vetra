@@ -269,7 +269,7 @@ export default function Profile() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
-          <p className="text-[#6D28D9] font-medium">Chargement des données...</p>
+          <p className="text-[#6D28D9] font-medium">{t("profile.loading")}</p>
         </div>
       </div>
     )

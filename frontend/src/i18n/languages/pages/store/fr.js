@@ -44,7 +44,8 @@ const storeFr = {
     creating: "Création en cours...",
     requiredFields: "Veuillez remplir tous les champs obligatoires",
     error: "Erreur lors de la création de la boutique",
-    success: "Boutique créée avec succès"
+    success: "Boutique créée avec succès",
+    info: "Entrez les détails de votre nouvelle boutique"
   },
   editStore: {
     storeInfo: "Informations de la boutique",

@@ -37,6 +37,13 @@ const productEn = {
     lowStockAlert: "Low Stock Alert",
     unassigned: "Unassigned Store",
     uncategorized: "Uncategorized",
+    loading: "Loading products...",
+    filterByStore: "Filter by store",
+    filterByCategory: "Filter by category",
+    resetFilters: "Reset filters",
+    productsFound: "Products found",
+    noProductsFound: "No products found",
+    tryDifferentFilters: "Try different filters",
   },
   createProduct: {
     title: "Add New Product",

@@ -44,7 +44,8 @@ const storeEn = {
     creating: "Creating...",
     requiredFields: "Please fill in all required fields",
     error: "Error creating store",
-    success: "Store created successfully"
+    success: "Store created successfully",
+    info: "Enter the details of your new store"
   },
   editStore: {
     storeInfo: "Store Information",

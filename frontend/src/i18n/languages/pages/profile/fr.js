@@ -26,7 +26,8 @@ const profileFr = {
   uppercase: "Au moins une lettre majuscule",
   lowercase: "Au moins une lettre minuscule",
   number: "Au moins un chiffre",
-  special: "Au moins un caractère spécial"
+  special: "Au moins un caractère spécial",
+  loading: "Chargement des données..."
 };
 
 export default profileFr; 
