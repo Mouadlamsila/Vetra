@@ -27,7 +27,8 @@ const profileEn = {
   lowercase: "At least one lowercase letter",
   number: "At least one number",
   special: "At least one special character",
-  loading: "Loading data..."
+  loading: "Loading data...",
+  cancel: "Cancel",
 };
 
 export default profileEn; 

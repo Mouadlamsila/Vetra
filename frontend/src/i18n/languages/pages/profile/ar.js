@@ -27,7 +27,8 @@ const profileAr = {
   lowercase: "حرف صغير واحد على الأقل",
   number: "رقم واحد على الأقل",
   special: "رمز خاص واحد على الأقل",
-  loading: "جاري تحميل البيانات..."
+  loading: "جاري تحميل البيانات...",
+  cancel: "إلغاء",
 };
 
 export default profileAr; 

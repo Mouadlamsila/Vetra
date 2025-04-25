@@ -203,18 +203,18 @@ export default function PaymentsPage() {
       <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
         <div className="relative flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className={`absolute ${lang === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400`} />
             <input
               type="text"
               placeholder={t("payment.payment.search.placeholder")}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
+              className={`w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className={`absolute ${lang === "ar" ? "left-3" : "right-3"} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600`}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -253,7 +253,7 @@ export default function PaymentsPage() {
               <option value="pending">{t("payment.payment.status.pending")}</option>
               <option value="failed">{t("payment.payment.status.failed")}</option>
             </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}>
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function PaymentsPage() {
             onClick={resetFilters}
             className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
             {t("payment.payment.resetFilters")}
           </button>
         </div>
@@ -280,7 +280,7 @@ export default function PaymentsPage() {
               onClick={resetFilters}
               className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
             >
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
               {t("payment.payment.resetFilters")}
             </button>
           </div>
@@ -291,25 +291,25 @@ export default function PaymentsPage() {
             <table className="min-w-full divide-y divide-[#c8c2fd]/30">
               <thead className="bg-[#1e3a8a]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.id")}
                   </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.date")}
                   </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.order")}
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.method")}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.amount")}
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.status")}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
                     {t("payment.payment.table.headers.actions")}
                   </th>
                 </tr>
@@ -317,29 +317,29 @@ export default function PaymentsPage() {
               <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
                 {filteredPayments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1e3a8a]">{payment.id}</td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-start text-sm font-medium text-[#1e3a8a]">{payment.id}</td>
+                    <td className="hidden md:table-cell px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {payment.date}
                     </td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="hidden md:table-cell px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {payment.orderId}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
                         {getMethodText(payment.method)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-[#6D28D9]">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-[#6D28D9]">
                       {payment.amount.toFixed(2)} €
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
                       >
                         {getStatusText(payment.status)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-end">
                       <div className="relative action-menu">
                         <button
                           onClick={() => handleActionClick(payment.id)}

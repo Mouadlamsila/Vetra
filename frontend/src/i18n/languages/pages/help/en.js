@@ -104,7 +104,8 @@ export const helpEn = {
       text: "Can't find what you're looking for? Check out our",
       documentationLink: "complete documentation center",
       contactLink: "contact our support team",
-      button: "Ask for help"
+      button: "Ask for help",
+      or: "or",
     }
   }
 };

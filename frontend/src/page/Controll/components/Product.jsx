@@ -401,28 +401,28 @@ export default function ProductsPage() {
             <table className="min-w-full divide-y h-auto z-[50] divide-[#c8c2fd]/30">
               <thead className="bg-[#1e3a8a]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
                     {t("product.products.table.product")}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
                     {t("product.products.table.id")}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("product.products.table.price")}
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("product.products.table.stock")}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
                     {t("product.products.table.category")}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
                     {t("product.products.table.store")}
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t("product.products.table.status")}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
                     {t("product.products.table.actions")}
                   </th>
                 </tr>
@@ -431,7 +431,7 @@ export default function ProductsPage() {
                 {filteredProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-start gap-3">
                         {product?.imgMain ? (
                           <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm">
                             <img
@@ -453,8 +453,8 @@ export default function ProductsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell text-gray-500">{product.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell text-center text-gray-500">{product.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="font-medium text-[#6D28D9]">{product?.prix?.toFixed(2) || "0.00"} €</div>
                       {product?.comparePrice > 0 && (
                         <div className="text-xs text-gray-500 line-through">{product.comparePrice.toFixed(2)} €</div>
@@ -468,14 +468,14 @@ export default function ProductsPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-center hidden md:table-cell">
                       {product.categories &&
                       t(`product.products.categories.${product.categories}`) !==
                         `product.products.categories.${product.categorie}`
                         ? t(`product.products.categories.${product.categories}`)
                         : t("product.products.uncategorized")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                    <td className="px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
                       {product?.boutique?.nom || t("product.products.unassigned")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -495,7 +495,7 @@ export default function ProductsPage() {
                             : t("product.products.status.inStock")}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-end">
                       <div className="relative">
                         <button
                           onClick={(e) => toggleDropdown(product.id, e)}

@@ -2,6 +2,7 @@ export const paymentEn = {
   payment: {
     title: "Payments",
     subtitle: "Manage received and pending payments",
+    infoMessage: "Here you can manage all payments and transactions",
     metrics: {
       totalReceived: {
         title: "Total Received",
@@ -45,8 +46,14 @@ export const paymentEn = {
       bank: "Bank Transfer"
     },
     actions: {
+      title: "Actions",
       viewDetails: "View details",
       downloadReceipt: "Download receipt"
-    }
+    },
+    noPaymentsFound: "No payments found",
+    paymentsFound: "Payments found",
+    filterByStatus: "Filter by status",
+    resetFilters: "Reset filters",
+    tryDifferentFilters: "Try different filters"
   }
 };

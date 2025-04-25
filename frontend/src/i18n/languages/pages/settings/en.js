@@ -87,10 +87,11 @@ export const settingsEn = {
         description: "Manage your active sessions on different devices",
         current: "Current",
         disconnect: "Disconnect",
-        activitySamples: {
-          parisRecent: "Paris, France · Last activity 2 minutes ago",
-          lyonDays: "Lyon, France · Last activity 3 days ago"
-        }
+        thisAppareil: "This device",
+        chromeInWindows: "Chrome in Windows",
+        parisRecent: "Paris, France · Last activity 2 minutes ago",
+        lyonDays: "Lyon, France · Last activity 3 days ago",
+       
       },
       deleteAccount: {
         title: "Delete Account",
