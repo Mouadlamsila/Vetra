@@ -398,7 +398,7 @@ export default function ProductsPage() {
       ) : (
         <div className="border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#c8c2fd]/30">
+            <table className="min-w-full divide-y h-auto z-[50] divide-[#c8c2fd]/30">
               <thead className="bg-[#1e3a8a]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
@@ -505,9 +505,10 @@ export default function ProductsPage() {
                         </button>
                         {isDropdownOpen[product.id] && (
                           <div
-                            className={`absolute ${
+                            className={`absolute origin-top-right ${
                               lang === "ar" ? "left-6" : "right-6"
-                            } mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 z-50`}
+                            } mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 z-[99]`}
+                            
                           >
                             <div className="py-1">
                               <div className="px-4 py-2 text-start text-sm text-[#1e3a8a] font-medium border-b border-[#c8c2fd]/30">
