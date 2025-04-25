@@ -148,6 +148,8 @@ const en = {
     support: "Technical Support",
     sales: "Sales",
     careers: "Careers",
+    login: "Login",
+    logout: "Logout",
     form: {
       title: "Send us a message",
       support: "Support Request",

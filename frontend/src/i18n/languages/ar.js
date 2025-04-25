@@ -148,6 +148,8 @@ const ar = {
     support: "الدعم الفني",
     sales: "المبيعات",
     careers: "الوظائف",
+    login: "تسجيل الدخول",
+    logout: "تسجيل الخروج",
     form: {
       title: "أرسل لنا رسالة",
       support: "طلب دعم",

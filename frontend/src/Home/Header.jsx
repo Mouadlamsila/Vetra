@@ -123,10 +123,10 @@ export default function Header() {
                 {userID ? (
                     <LinkDom to="/controll/" className={`${menu ? "hidden" : ""} duration-300 block bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9]  text-xl rounded-xl`}>
                         <User />
-                    </LinkDom    >)
-                    :
-                    (
-                        <div class="sm:flex hidden  items-center  justify-center ">
+                    </LinkDom>
+                    
+                ) : (
+                    <div class="sm:flex hidden  items-center  justify-center ">
                             <div class="relative  group bg-[#1e3a8a]  rounded-xl hover:bg-transparent ">
 
                                 <div class={`${makeStyle === "login" ? "w-full rounded-xl" : "w-0"} absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#c8c2fd] group-hover:border-[#c8c2fd] rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-xl`}></div>
@@ -321,6 +321,7 @@ export default function Header() {
                                     >
                                         <ShinyButton onClick={() => {
                                             localStorage.removeItem("user");
+                                            localStorage.removeItem("IDUser");
                                             localStorage.removeItem("token");
                                             navigate("/login");
                                         }}
