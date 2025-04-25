@@ -4,6 +4,7 @@ const ordersFr = {
     subtitle: "Gérez les commandes de vos clients",
     search: "Rechercher une commande...",
     allStatuses: "Tous les statuts",
+    infoMessage: "Voici comment vous pouvez gérer toutes les commandes",
     table: {
       order: "Commande",
       date: "Date",
@@ -11,7 +12,8 @@ const ordersFr = {
       items: "Articles",
       total: "Total",
       status: "Statut",
-      actions: "Actions"
+      actions: "Actions",
+      ord:"ORD"
     },
     status: {
       pending: "En attente",
@@ -25,7 +27,11 @@ const ordersFr = {
       viewInvoice: "Voir la facture",
       downloadInvoice: "Télécharger la facture"
     },
-    noOrders: "Aucune commande trouvée"
+    noOrdersFound: "Aucune commande trouvée",
+    ordersFound: "Commandes trouvées",
+    filterByStatus: "Filtrer par statut",
+    resetFilters: "Réinitialiser les filtres",
+    tryDifferentFilters: "Essayez différents filtres"
   }
 };
 

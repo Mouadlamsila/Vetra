@@ -189,18 +189,18 @@ export default function OrdersPage() {
       <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
         <div className="relative flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${lang === "ar" ? "right-3" : "left-3"}`} />
             <input
               type="text"
               placeholder={t('orders.orders.search')}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
+              className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className={`absolute top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 ${lang === "ar" ? "left-3" : "right-3"}`}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -242,7 +242,7 @@ export default function OrdersPage() {
               <option value="Delivered">{t('orders.orders.status.delivered')}</option>
               <option value="Cancelled">{t('orders.orders.status.cancelled')}</option>
             </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}>
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function OrdersPage() {
             onClick={resetFilters}
             className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
             {t('orders.orders.resetFilters')}
           </button>
         </div>
@@ -269,7 +269,7 @@ export default function OrdersPage() {
               onClick={resetFilters}
               className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
             >
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
               {t('orders.orders.resetFilters')}
             </button>
           </div>
@@ -280,25 +280,25 @@ export default function OrdersPage() {
             <table className="min-w-full divide-y divide-[#c8c2fd]/30">
               <thead className="bg-[#1e3a8a]">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-right" : "text-left"}`}>
                     {t('orders.orders.table.order')}
                   </th>
-                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t('orders.orders.table.date')}
                   </th>
-                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t('orders.orders.table.customer')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t('orders.orders.table.items')}
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t('orders.orders.table.total')}
                   </th>
                   <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                     {t('orders.orders.table.status')}
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                  <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-left" : "text-right"}`}>
                     {t('orders.orders.table.actions')}
                   </th>
                 </tr>
@@ -307,20 +307,20 @@ export default function OrdersPage() {
                 {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-[#1e3a8a]">ORD-{order.id}</span>
+                      <div className="flex items-center justify-start gap-2">
+                        <span className="font-medium text-[#1e3a8a]">{t('orders.orders.table.ord')}-{order.id}</span>
                       </div>
                     </td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                       {new Date(order?.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                       {order?.customer?.data?.attributes?.username || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
                       {order?.order_items?.data?.length || 0}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-[#6D28D9]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-[#6D28D9]">
                       {order?.totalAmount.toFixed(2)} €
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -328,7 +328,7 @@ export default function OrdersPage() {
                         {getStatusText(order?.statusOrder)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="relative inline-block text-left action-menu">
                         <button
                           type="button"

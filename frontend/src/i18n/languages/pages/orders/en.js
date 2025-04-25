@@ -4,6 +4,7 @@ const ordersEn = {
     subtitle: "Manage your customers' orders",
     search: "Search for an order...",
     allStatuses: "All Statuses",
+    infoMessage: "Here you can manage all orders",
     table: {
       order: "Order",
       date: "Date",
@@ -11,7 +12,8 @@ const ordersEn = {
       items: "Items",
       total: "Total",
       status: "Status",
-      actions: "Actions"
+      actions: "Actions",
+      ord:"ORD"
     },
     status: {
       pending: "Pending",
@@ -25,7 +27,11 @@ const ordersEn = {
       viewInvoice: "View Invoice",
       downloadInvoice: "Download Invoice"
     },
-    noOrders: "No orders found"
+    noOrdersFound: "No orders found",
+    ordersFound: "Orders found",
+    filterByStatus: "Filter by status",
+    resetFilters: "Reset filters",
+    tryDifferentFilters: "Try different filters"
   }
 };
 

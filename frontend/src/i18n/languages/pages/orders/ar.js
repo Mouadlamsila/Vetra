@@ -4,6 +4,7 @@ const ordersAr = {
     subtitle: "إدارة طلبات عملائك",
     search: "البحث عن طلب...",
     allStatuses: "جميع الحالات",
+    infoMessage: " هنا يمكنك إدارة جميع الطلبات",
     table: {
       order: "الطلب",
       date: "التاريخ",
@@ -11,7 +12,8 @@ const ordersAr = {
       items: "العناصر",
       total: "المجموع",
       status: "الحالة",
-      actions: "الإجراءات"
+      actions: "الإجراءات",
+      ord:"ط"
     },
     status: {
       pending: "قيد الانتظار",
@@ -25,7 +27,14 @@ const ordersAr = {
       viewInvoice: "عرض الفاتورة",
       downloadInvoice: "تحميل الفاتورة"
     },
-    noOrders: "لم يتم العثور على طلبات"
+    noOrdersFound: "لم يتم العثور على طلبات",
+    ordersFound: "طلبات موجودة",
+    filterByStatus: "تصفية بالحالة",
+    resetFilters: "إعادة تصفية",
+    tryDifferentFilters: "حاول تصفيات مختلفة",
+   
+    
+    
   }
 };
 
