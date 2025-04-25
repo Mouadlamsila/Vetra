@@ -18,6 +18,7 @@ import {
   YAxis,
 } from "recharts"
 import { useTranslation } from 'react-i18next';
+import { ChevronDown } from 'lucide-react';
 
 // Données pour les graphiques
 const salesData = [
@@ -105,6 +106,7 @@ export default function StatsPage() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedPeriod, setSelectedPeriod] = useState('30');
+  const lang = localStorage.getItem('lang');
 
   return (
     <div className="space-y-6 p-6">
@@ -113,16 +115,21 @@ export default function StatsPage() {
           <h1 className="text-3xl font-bold tracking-tight">{t('stats.stats.title')}</h1>
           <p className="text-gray-500">{t('stats.stats.subtitle')}</p>
         </div>
-        <select
-          value={selectedPeriod}
-          onChange={(e) => setSelectedPeriod(e.target.value)}
-          className="w-full md:w-[180px] py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent"
-        >
-          <option value="7">{t('stats.stats.period.options.last7Days')}</option>
-          <option value="30">{t('stats.stats.period.options.last30Days')}</option>
-          <option value="90">{t('stats.stats.period.options.last3Months')}</option>
-          <option value="365">{t('stats.stats.period.options.last12Months')}</option>
-        </select>
+        <div className="relative">
+          <select
+            value={selectedPeriod}
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+            className="w-full relative md:w-[180px] py-2 px-4 appearance-none rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-transparent"
+          >
+            <option value="7">{t('stats.stats.period.options.last7Days')}</option>
+            <option value="30">{t('stats.stats.period.options.last30Days')}</option>
+            <option value="90">{t('stats.stats.period.options.last3Months')}</option>
+            <option value="365">{t('stats.stats.period.options.last12Months')}</option>
+          </select>
+          <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
+            <ChevronDown className="h-4 w-4 text-gray-400" />
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -169,33 +176,30 @@ export default function StatsPage() {
           <button
             type="button"
             onClick={() => setActiveTab('sales')}
-            className={`${
-              activeTab === 'sales'
+            className={`${activeTab === 'sales'
                 ? 'border-[#6D28D9] text-[#6D28D9]'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
+              } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
             {t('stats.stats.tabs.sales')}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('products')}
-            className={`${
-              activeTab === 'products'
+            className={`${activeTab === 'products'
                 ? 'border-[#6D28D9] text-[#6D28D9]'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
+              } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
             {t('stats.stats.tabs.products')}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('customers')}
-            className={`${
-              activeTab === 'customers'
+            className={`${activeTab === 'customers'
                 ? 'border-[#6D28D9] text-[#6D28D9]'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
+              } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
           >
             {t('stats.stats.tabs.customers')}
           </button>

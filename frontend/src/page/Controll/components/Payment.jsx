@@ -340,40 +340,21 @@ export default function PaymentsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end">
-                      <div className="relative action-menu">
+                    <div className=" inline-block text-end action-menu">
                         <button
-                          onClick={() => handleActionClick(payment.id)}
-                          className="hover:text-[#c8c2fd] text-[#6D28D9] focus:outline-none p-1 rounded-full hover:bg-[#6D28D9]/10 transition-colors"
+                          type="button"
+                          onClick={() => handleActionClick(order.id)}
+                          className=" cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
                         >
-                          <MoreHorizontal className="h-5 w-5" />
+                          <Eye className="h-5 w-5" />
                         </button>
-                        {openActionMenu === payment.id && (
-                          <div
-                            className={`absolute ${
-                              lang === "ar" ? "left-6" : "right-6"
-                            } mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 z-50`}
-                          >
-                            <div className="py-1">
-                              <div className="px-4 py-2 text-start text-sm text-[#1e3a8a] font-medium border-b border-[#c8c2fd]/30">
-                                {t("payment.payment.actions.title")}
-                              </div>
-                              <button
-                                onClick={() => handleViewDetails(payment.id)}
-                                className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#c8c2fd]/10 flex items-center"
-                              >
-                                <Eye className="mr-2 h-4 w-4 text-[#6D28D9]" />
-                                {t("payment.payment.actions.viewDetails")}
-                              </button>
-                              <button
-                                onClick={() => handleDownloadReceipt(payment.id)}
-                                className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#c8c2fd]/10 flex items-center"
-                              >
-                                <Download className="mr-2 h-4 w-4 text-[#6D28D9]" />
-                                {t("payment.payment.actions.downloadReceipt")}
-                              </button>
-                            </div>
-                          </div>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleActionClick(order.id)}
+                          className=" cursor-pointer text-green-500 focus:outline-none p-1 rounded-full hover:bg-green-500/10 transition-colors"
+                        >
+                          <Download className="h-5 w-5" />
+                        </button>
                       </div>
                     </td>
                   </tr>

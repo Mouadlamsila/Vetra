@@ -21,6 +21,7 @@ import {
   Edit,
   Loader,
   Check,
+  ChevronDown,
 } from "lucide-react"
 import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
@@ -47,9 +48,9 @@ export default function EditProduct() {
     weight: 0,
     dimensions: [
       {
-      length: 0,
-      width: 0,
-      height: 0,
+        length: 0,
+        width: 0,
+        height: 0,
         unit: "cm",
       },
     ],
@@ -121,9 +122,9 @@ export default function EditProduct() {
           weight: product.weight || 0,
           dimensions: product.dimensions || [
             {
-            length: 0,
-            width: 0,
-            height: 0,
+              length: 0,
+              width: 0,
+              height: 0,
               unit: "cm",
             },
           ],
@@ -151,7 +152,7 @@ export default function EditProduct() {
         ...prev,
         dimensions: [
           {
-          ...prev.dimensions[0],
+            ...prev.dimensions[0],
             [dimension]: dimension === "unit" ? value : Number(value),
           },
         ],
@@ -305,11 +306,11 @@ export default function EditProduct() {
           imgMain: formData.imgMain,
           imgsAdditional: formData.imgsAdditional,
         },
-        }
+      }
       console.log(productData)
 
       await axios.put(`http://localhost:1337/api/products/${id}`, productData, {
-          headers: {
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -346,19 +347,19 @@ export default function EditProduct() {
       confirmButtonText: "Oui, quitter",
       cancelButtonText: "Annuler",
     })
-    
+
     if (result.isConfirmed) {
       navigate("/controll/products")
     }
   }
-  
+
   if (pageLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
           <p className="text-[#6D28D9] font-medium">{t("product.editProduct.loading")}</p>
-      </div>
+        </div>
       </div>
     )
   }
@@ -369,7 +370,7 @@ export default function EditProduct() {
         <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
           <Edit className="h-6 w-6 text-white" />
         </div>
-      <div>
+        <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("product.editProduct.title")}</h1>
           <p className="text-[#6D28D9]/70">{t("product.editProduct.description")}</p>
         </div>
@@ -390,54 +391,50 @@ export default function EditProduct() {
       )}
 
       <div className="flex overflow-x-auto space-x-2 pb-2 mb-4">
-          <button
-            type="button"
+        <button
+          type="button"
           onClick={() => setActiveTab("info")}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-            activeTab === "info"
-              ? "bg-[#6D28D9] text-white shadow-md"
-              : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
-          }`}
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${activeTab === "info"
+            ? "bg-[#6D28D9] text-white shadow-md"
+            : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
+            }`}
         >
           <FileText className="h-5 w-5" />
           <span>{t("product.editProduct.info")}</span>
-          </button>
-          <button
-            type="button"
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("images")}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-            activeTab === "images"
-              ? "bg-[#6D28D9] text-white shadow-md"
-              : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
-          }`}
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${activeTab === "images"
+            ? "bg-[#6D28D9] text-white shadow-md"
+            : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
+            }`}
         >
           <ImageIcon className="h-5 w-5" />
           <span>{t("product.editProduct.images")}</span>
-          </button>
-          <button
-            type="button"
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("pricing")}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-            activeTab === "pricing"
-              ? "bg-[#6D28D9] text-white shadow-md"
-              : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
-          }`}
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${activeTab === "pricing"
+            ? "bg-[#6D28D9] text-white shadow-md"
+            : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
+            }`}
         >
           <DollarSign className="h-5 w-5" />
           <span>{t("product.editProduct.pricing")}</span>
-          </button>
-          <button
-            type="button"
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("shipping")}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${
-            activeTab === "shipping"
-              ? "bg-[#6D28D9] text-white shadow-md"
-              : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
-          }`}
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all ${activeTab === "shipping"
+            ? "bg-[#6D28D9] text-white shadow-md"
+            : "bg-white text-gray-600 border border-gray-200 hover:border-[#c8c2fd] hover:text-[#6D28D9]"
+            }`}
         >
           <Truck className="h-5 w-5" />
           <span>{t("product.editProduct.shipping")}</span>
-          </button>
+        </button>
       </div>
 
       {activeTab === "info" && (
@@ -445,7 +442,7 @@ export default function EditProduct() {
           <div className="bg-[#1e3a8a] px-6 py-4 flex items-center space-x-2">
             <FileText className="h-5 w-5 text-white" />
             <h2 className="text-lg font-medium text-white">{t("product.editProduct.productInfo")}</h2>
-            </div>
+          </div>
           <div className="p-6 space-y-6">
             <div className="space-y-4">
               <div>
@@ -496,11 +493,11 @@ export default function EditProduct() {
                     <span>{t("product.editProduct.category")}</span>
                   </label>
                   <div className="relative">
-                  <select
-                    id="product-category"
-                    name="categories"
-                    value={formData.categories}
-                    onChange={handleInputChange}
+                    <select
+                      id="product-category"
+                      name="categories"
+                      value={formData.categories}
+                      onChange={handleInputChange}
                       className="block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm appearance-none"
                     >
                       <option value="">{t("product.editProduct.selectCategory")}</option>
@@ -509,8 +506,8 @@ export default function EditProduct() {
                       <option value="home">{t("product.editProduct.home")}</option>
                       <option value="beauty">{t("product.editProduct.beauty")}</option>
                       <option value="other">{t("product.editProduct.other")}</option>
-                  </select>
-                    <div className={`absolute inset-y-0  ${lang ==='ar' ? 'left-0 pl-3' : 'right-0 pr-3' } flex items-center  pointer-events-none`}>
+                    </select>
+                    <div className={`absolute inset-y-0  ${lang === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center  pointer-events-none`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -527,21 +524,21 @@ export default function EditProduct() {
                     <span>{t("product.editProduct.store")}</span>
                   </label>
                   <div className="relative">
-                  <select
-                    id="product-store"
-                    name="boutique"
-                    value={formData.boutique}
-                    onChange={handleInputChange}
+                    <select
+                      id="product-store"
+                      name="boutique"
+                      value={formData.boutique}
+                      onChange={handleInputChange}
                       className="block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm appearance-none"
-                  >
+                    >
                       <option value="">{t("product.editProduct.selectStore")}</option>
                       {stores.map((store) => (
-                      <option key={store.id} value={store.id}>
-                        {store.nom}
-                      </option>
-                    ))}
-                  </select>
-                    <div className={`absolute inset-y-0 ${lang ==='ar' ? 'left-0 pl-3' : 'right-0 pr-3' } flex items-center pointer-events-none`}>
+                        <option key={store.id} value={store.id}>
+                          {store.nom}
+                        </option>
+                      ))}
+                    </select>
+                    <div className={`absolute inset-y-0 ${lang === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center pointer-events-none`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -578,7 +575,7 @@ export default function EditProduct() {
           <div className="bg-[#1e3a8a] px-6 py-4 flex items-center space-x-2">
             <ImageIcon className="h-5 w-5 text-white" />
             <h2 className="text-lg font-medium text-white">{t("product.editProduct.productImages")}</h2>
-            </div>
+          </div>
           <div className="p-6 space-y-6">
             <div className="space-y-4">
               <div>
@@ -613,7 +610,7 @@ export default function EditProduct() {
                     ) : (
                       <div className="w-24 h-24 bg-[#6D28D9]/10 rounded-full flex items-center justify-center mb-4">
                         <ImageIcon className="h-10 w-10 text-[#6D28D9]" />
-                      </div>    
+                      </div>
                     )
                   )}
                   <div className="text-center">
@@ -636,12 +633,12 @@ export default function EditProduct() {
                   >
                     {mainImageLoading ? (
                       <>
-                       <Loader className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader className="h-4 w-4 mr-2 animate-spin" />
                         {t("product.editProduct.uploading")}
                       </>
                     ) : (
                       <>
-                    <Upload className="h-4 w-4 mr-2" />
+                        <Upload className="h-4 w-4 mr-2" />
                         {t("product.editProduct.uploadMainImage")}
                       </>
                     )}
@@ -685,8 +682,8 @@ export default function EditProduct() {
                           {additionalImageLoading
                             ? t("product.editProduct.uploading")
                             : t("product.editProduct.additionalImageDescription", {
-                                index: additionalImagePreviews.length + 1,
-                              })}
+                              index: additionalImagePreviews.length + 1,
+                            })}
                         </p>
                       </div>
                       <input
@@ -727,7 +724,7 @@ export default function EditProduct() {
           <div className="bg-[#1e3a8a] px-6 py-4 flex items-center space-x-2">
             <DollarSign className="h-5 w-5 text-white" />
             <h2 className="text-lg font-medium text-white">{t("product.editProduct.productPricing")}</h2>
-            </div>
+          </div>
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -742,17 +739,17 @@ export default function EditProduct() {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <DollarSign className="h-4 w-4 text-gray-400" />
                   </div>
-                <input
-                  type="number"
-                  id="product-price"
-                  name="prix"
-                  value={formData.prix}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
+                  <input
+                    type="number"
+                    id="product-price"
+                    name="prix"
+                    value={formData.prix}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
                     className="block py-3 pl-10 pr-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                     placeholder={t("product.editProduct.pricePlaceholder")}
-                />
+                  />
                 </div>
               </div>
 
@@ -768,17 +765,17 @@ export default function EditProduct() {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <DollarSign className="h-4 w-4 text-gray-400" />
                   </div>
-                <input
-                  type="number"
-                  id="product-compare-price"
-                  name="comparePrice"
-                  value={formData.comparePrice}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
+                  <input
+                    type="number"
+                    id="product-compare-price"
+                    name="comparePrice"
+                    value={formData.comparePrice}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
                     className="block py-3 pl-10 pr-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                     placeholder={t("product.editProduct.comparePricePlaceholder")}
-                />
+                  />
                 </div>
               </div>
             </div>
@@ -796,17 +793,17 @@ export default function EditProduct() {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <DollarSign className="h-4 w-4 text-gray-400" />
                   </div>
-                <input
-                  type="number"
-                  id="product-cost"
-                  name="cost"
-                  value={formData.cost}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
+                  <input
+                    type="number"
+                    id="product-cost"
+                    name="cost"
+                    value={formData.cost}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
                     className="block py-3 pl-10 pr-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                     placeholder={t("product.editProduct.costPlaceholder")}
-                />
+                  />
                 </div>
               </div>
 
@@ -880,7 +877,7 @@ export default function EditProduct() {
           <div className="bg-[#1e3a8a] px-6 py-4 flex items-center space-x-2">
             <Truck className="h-5 w-5 text-white" />
             <h2 className="text-lg font-medium text-white">{t("product.editProduct.productShipping")}</h2>
-            </div>
+          </div>
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -934,18 +931,23 @@ export default function EditProduct() {
                     onChange={handleInputChange}
                     className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
                   />
-                  <select 
-                    name="dimensions.unit" 
-                    value={formData.dimensions[0].unit}
-                    onChange={handleInputChange}
-                    className="block w-full py-3 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
-                  >
-                    <option value="cm">{t("product.editProduct.cm")}</option>
-                    <option value="m">{t("product.editProduct.m")}</option>
-                    <option value="mm">{t("product.editProduct.mm")}</option>
-                    <option value="in">{t("product.editProduct.in")}</option>
-                    <option value="ft">{t("product.editProduct.ft")}</option>
-                  </select>
+                  <div className="w-full relative">
+                    <select
+                      name="dimensions.unit"
+                      value={formData.dimensions[0].unit}
+                      onChange={handleInputChange}
+                      className="relative block w-full py-3 appearance-none px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm"
+                    >
+                      <option value="cm">{t("product.editProduct.cm")}</option>
+                      <option value="m">{t("product.editProduct.m")}</option>
+                      <option value="mm">{t("product.editProduct.mm")}</option>
+                      <option value="in">{t("product.editProduct.in")}</option>
+                      <option value="ft">{t("product.editProduct.ft")}</option>
+                    </select>
+                    <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -959,11 +961,11 @@ export default function EditProduct() {
                 <span>{t("product.editProduct.shippingClass")}</span>
               </label>
               <div className="relative">
-              <select
-                id="product-shipping-class"
-                name="shippingClass"
-                value={formData.shippingClass}
-                onChange={handleInputChange}
+                <select
+                  id="product-shipping-class"
+                  name="shippingClass"
+                  value={formData.shippingClass}
+                  onChange={handleInputChange}
                   className="block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm appearance-none"
                 >
                   <option value="">{t("product.editProduct.selectShippingClass")}</option>
@@ -974,7 +976,7 @@ export default function EditProduct() {
                   <option value="heavy">{t("product.editProduct.heavy")}</option>
                   <option value="fragile">{t("product.editProduct.fragile")}</option>
                   <option value="international">{t("product.editProduct.international")}</option>
-              </select>
+                </select>
                 <div className={`absolute inset-y-0 ${lang === 'ar' ? 'left-0' : 'right-0'} flex items-center pr-3 pointer-events-none `}>
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

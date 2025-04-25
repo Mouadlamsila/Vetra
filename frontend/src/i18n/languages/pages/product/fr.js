@@ -170,7 +170,7 @@ const productFr = {
     mainImageSize: "PNG, JPG, SVG (max 2Mo)",
     uploadMainImage: "Télécharger l'image principale",
     additionalImages: "Images Supplémentaires",
-    additionalImageDescription: "Téléchargez l'image supplémentaire {index} pour votre produit.",
+    additionalImageDescription: "Téléchargez l'image supplémentaire pour votre produit.",
     addAdditionalImage: "Ajouter une Image Supplémentaire",
     productPricing: "Tarification du Produit",
     productPricingDescription: "Définissez les détails de tarification pour votre produit.",

@@ -168,7 +168,7 @@ const productEn = {
     mainImageSize: "PNG, JPG, SVG (max 2MB)",
     uploadMainImage: "Upload Main Image",
     additionalImages: "Additional Images",
-    additionalImageDescription: "Upload additional image {index} for your product.",
+    additionalImageDescription: "Upload additional image for your product.",
     addAdditionalImage: "Add Additional Image",
     productPricing: "Product Pricing",
     productPricingDescription: "Set the pricing details for your product.",

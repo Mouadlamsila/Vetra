@@ -18,6 +18,12 @@ import {
   ChevronDown,
   RefreshCw,
   X,
+  Edit2,
+  Delete,
+  DeleteIcon,
+  PackageMinus,
+  PackageX,
+  PencilLine,
 } from "lucide-react"
 import axios from "axios"
 import { toast } from "react-toastify"
@@ -100,27 +106,27 @@ export default function ProductsPage() {
     }
   }
 
-  const toggleDropdown = (productId, event) => {
-    // Close all other dropdowns first
-    const newDropdownState = {}
-    newDropdownState[productId] = !isDropdownOpen[productId]
-    setIsDropdownOpen(newDropdownState)
+  // const toggleDropdown = (productId, event) => {
+  //   // Close all other dropdowns first
+  //   const newDropdownState = {}
+  //   newDropdownState[productId] = !isDropdownOpen[productId]
+  //   setIsDropdownOpen(newDropdownState)
 
-    // Prevent event from bubbling up
-    event.stopPropagation()
-  }
+  //   // Prevent event from bubbling up
+  //   event.stopPropagation()
+  // }
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setIsDropdownOpen({})
-    }
+  // // Close dropdown when clicking outside
+  // useEffect(() => {
+  //   const handleClickOutside = () => {
+  //     setIsDropdownOpen({})
+  //   }
 
-    document.addEventListener("click", handleClickOutside)
-    return () => {
-      document.removeEventListener("click", handleClickOutside)
-    }
-  }, [])
+  //   document.addEventListener("click", handleClickOutside)
+  //   return () => {
+  //     document.removeEventListener("click", handleClickOutside)
+  //   }
+  // }, [])
 
   const handleDeleteProduct = async (productId) => {
     const result = await Swal.fire({
@@ -309,9 +315,8 @@ export default function ProductsPage() {
       </div>
 
       <div
-        className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${
-          isFiltersVisible || window.innerWidth >= 768 ? "block" : "hidden md:block"
-        }`}
+        className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isFiltersVisible || window.innerWidth >= 768 ? "block" : "hidden md:block"
+          }`}
       >
         <div className="relative">
           <label className=" text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
@@ -470,7 +475,7 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-center hidden md:table-cell">
                       {product.categories &&
-                      t(`product.products.categories.${product.categories}`) !==
+                        t(`product.products.categories.${product.categories}`) !==
                         `product.products.categories.${product.categorie}`
                         ? t(`product.products.categories.${product.categories}`)
                         : t("product.products.uncategorized")}
@@ -480,13 +485,12 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span
-                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.stock === 0
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock === 0
                             ? "bg-red-100 text-red-800"
                             : product.stock <= product.lowStockAlert
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-green-100 text-green-800"
-                        }`}
+                          }`}
                       >
                         {product.stock === 0
                           ? t("product.products.status.outOfStock")
@@ -495,53 +499,22 @@ export default function ProductsPage() {
                             : t("product.products.status.inStock")}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end">
-                      <div className="relative">
-                        <button
-                          onClick={(e) => toggleDropdown(product.id, e)}
-                          className="hover:text-[#c8c2fd] text-[#6D28D9] focus:outline-none p-1 rounded-full hover:bg-[#6D28D9]/10 transition-colors"
+                    <td className="px-6 py-6 whitespace-nowrap h-full flex justify-end items-center">
+                      <div className="flex h-full items-center gap-2">
+
+                        <Link
+                          to={`/controll/edit-product/${product.documentId}`}
+                          className=" cursor-pointer h-full text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
                         >
-                          <MoreHorizontal className="h-5 w-5" />
+                          <PencilLine className="h-5 w-5" />
+                        </Link>
+                        <button
+                          onClick={(e) => handleDeleteProduct(product.documentId)}
+                          className=" cursor-pointer h-full text-red-500 focus:outline-none p-1 rounded-full hover:bg-red-500/10 transition-colors"
+                        >
+                          <PackageX className="h-5 w-5" />
                         </button>
-                        {isDropdownOpen[product.id] && (
-                          <div
-                            className={`absolute origin-top-right ${
-                              lang === "ar" ? "left-6" : "right-6"
-                            } mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-[#c8c2fd] ring-opacity-5 z-[99]`}
-                            
-                          >
-                            <div className="py-1">
-                              <div className="px-4 py-2 text-start text-sm text-[#1e3a8a] font-medium border-b border-[#c8c2fd]/30">
-                                {t("product.products.table.actions")}
-                              </div>
-                              <Link
-                                to={`/controll/edit-product/${product.documentId}`}
-                                className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#c8c2fd]/10 flex items-center"
-                              >
-                                <Edit className="mr-2 h-4 w-4 text-[#6D28D9]" />
-                                {t("product.products.actions.edit")}
-                              </Link>
-                              <button
-                                className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#c8c2fd]/10 flex items-center"
-                                onClick={() => {
-                                  setIsDropdownOpen({})
-                                  // Logic for managing stock
-                                }}
-                              >
-                                <Package className="mr-2 h-4 w-4 text-[#6D28D9]" />
-                                {t("product.products.actions.manageStock")}
-                              </button>
-                              <div className="h-px bg-[#c8c2fd]/30"></div>
-                              <button
-                                className="w-full rounded-b-md px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
-                                onClick={() => handleDeleteProduct(product.documentId)}
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                {t("product.products.actions.delete")}
-                              </button>
-                            </div>
-                          </div>
-                        )}
+
                       </div>
                     </td>
                   </tr>

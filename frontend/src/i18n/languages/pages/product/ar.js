@@ -171,7 +171,7 @@ const productAr = {
         mainImageSize: "PNG, JPG, SVG (حد أقصى 2MB)",
         uploadMainImage: "رفع الصورة الرئيسية",
         additionalImages: "صور إضافية",
-        additionalImageDescription: "قم برفع الصورة الإضافية {index} للمنتج.",
+        additionalImageDescription: "قم برفع الصورة الإضافية للمنتج.",
         addAdditionalImage: "إضافة صورة إضافية",
         productPricing: "تسعير المنتج",
         productPricingDescription: "حدد تفاصيل التسعير للمنتج.",
