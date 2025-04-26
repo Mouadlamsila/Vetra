@@ -1,35 +1,29 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import {
-  Edit,
-  MoreHorizontal,
-  Package,
   PlusCircle,
   Search,
-  Trash,
-  ImageIcon,
   ShoppingBag,
   Filter,
-  Store,
-  Tag,
+  X,
+  RefreshCw,
+  Info,
   AlertTriangle,
   ChevronDown,
-  RefreshCw,
-  X,
-  Edit2,
-  Delete,
-  DeleteIcon,
-  PackageMinus,
-  PackageX,
+  Store,
+  Tag,
+  ImageIcon,
   PencilLine,
+  PackageX,
 } from "lucide-react"
 import axios from "axios"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 export default function ProductsPage() {
   const { t } = useTranslation()
@@ -42,10 +36,27 @@ export default function ProductsPage() {
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
   const IDUser = localStorage.getItem("IDUser")
   const lang = localStorage.getItem("lang")
+
+  // Check if mobile on mount and when window resizes
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    // Initial check
+    checkIfMobile()
+
+    // Add event listener
+    window.addEventListener("resize", checkIfMobile)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile)
+  }, [])
 
   // Fetch products and stores from the backend
   useEffect(() => {
@@ -105,28 +116,6 @@ export default function ProductsPage() {
       setLoading(false)
     }
   }
-
-  // const toggleDropdown = (productId, event) => {
-  //   // Close all other dropdowns first
-  //   const newDropdownState = {}
-  //   newDropdownState[productId] = !isDropdownOpen[productId]
-  //   setIsDropdownOpen(newDropdownState)
-
-  //   // Prevent event from bubbling up
-  //   event.stopPropagation()
-  // }
-
-  // // Close dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = () => {
-  //     setIsDropdownOpen({})
-  //   }
-
-  //   document.addEventListener("click", handleClickOutside)
-  //   return () => {
-  //     document.removeEventListener("click", handleClickOutside)
-  //   }
-  // }, [])
 
   const handleDeleteProduct = async (productId) => {
     const result = await Swal.fire({
@@ -224,6 +213,89 @@ export default function ProductsPage() {
     setSearchQuery("")
   }
 
+  // Mobile product card component
+  const ProductCard = ({ product }) => (
+    <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
+      <div className="flex items-start gap-3 mb-3">
+        {product?.imgMain ? (
+          <div className="w-16 h-16 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm flex-shrink-0">
+            <img
+              src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`}
+              alt={product?.name || "Product"}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="w-16 h-16 rounded-lg bg-[#c8c2fd]/10 flex items-center justify-center flex-shrink-0">
+            <ImageIcon className="h-6 w-6 text-[#6D28D9]/60" />
+          </div>
+        )}
+        <div className="flex-1">
+          <div className="font-medium text-[#1e3a8a]">{product?.name || t("product.products.noName")}</div>
+          <div className="text-xs text-gray-500">SKU: {product?.sku || "N/A"}</div>
+          <div className="font-medium text-[#6D28D9] mt-1">{product?.prix?.toFixed(2) || "0.00"} €</div>
+        </div>
+        <span
+          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            product.stock === 0
+              ? "bg-red-100 text-red-800"
+              : product.stock <= product.lowStockAlert
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-green-100 text-green-800"
+          }`}
+        >
+          {product.stock === 0
+            ? t("product.products.status.outOfStock")
+            : product.stock <= product.lowStockAlert
+              ? t("product.products.status.lowStock")
+              : t("product.products.status.inStock")}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+        <div>
+          <p className="text-gray-500">{t("product.products.table.stock")}</p>
+          <p className="font-medium">{product?.stock || 0}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("product.products.table.category")}</p>
+          <p className="font-medium">
+            {product.categories &&
+            t(`product.products.categories.${product.categories}`) !==
+              `product.products.categories.${product.categorie}`
+              ? t(`product.products.categories.${product.categories}`)
+              : t("product.products.uncategorized")}
+          </p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("product.products.table.store")}</p>
+          <p className="font-medium">{product?.boutique?.nom || t("product.products.unassigned")}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">ID</p>
+          <p className="font-medium">{product.id}</p>
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2 border-t border-gray-100 pt-3">
+        <Link
+          to={`/controll/edit-product/${product.documentId}`}
+          className="inline-flex items-center px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-50"
+        >
+          <PencilLine className="h-4 w-4 mr-1" />
+          {t("product.products.actions.edit")}
+        </Link>
+        <button
+          onClick={() => handleDeleteProduct(product.documentId)}
+          className="inline-flex items-center px-2 py-1 text-sm text-red-500 rounded hover:bg-red-50"
+        >
+          <PackageX className="h-4 w-4 mr-1" />
+          {t("product.products.actions.delete")}
+        </button>
+      </div>
+    </div>
+  )
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -262,32 +334,52 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
+    <div className="space-y-6 p-4 md:p-6 bg-white">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-3 mb-6">
+        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg mb-3 md:mb-0">
           <ShoppingBag className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("product.products.title")}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#1e3a8a]">
+            {t("product.products.title")}
+          </h1>
           <p className="text-[#6D28D9]/70">{t("product.products.subtitle")}</p>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
-        <div className="relative flex-1">
+      {/* Info Banner (optional) */}
+      <div className="bg-[#c8c2fd]/10 rounded-lg p-4 mb-6">
+        <div className="flex items-center space-x-2 text-[#6D28D9]">
+          <Info className="h-5 w-5 flex-shrink-0" />
+          <p className="text-sm">{t("product.products.infoMessage") || "Manage your products inventory here."}</p>
+        </div>
+      </div>
+
+      {/* Search and Add Product */}
+      <div className="flex flex-col gap-4">
+        <div className="relative w-full">
           <div className="relative">
-            <Search className={`absolute  top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${lang === "ar" ? "right-3" : "left-3"}`} />
+            <Search
+              className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${
+                lang === "ar" ? "right-3" : "left-3"
+              }`}
+            />
             <input
               type="text"
               placeholder={t("product.products.search")}
-              className={`w-full  py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"}`}
+              className={`w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${
+                lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"
+              }`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className={`absolute ${lang === "ar" ? "left-3" : "right-3"} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600`}
+                className={`absolute ${
+                  lang === "ar" ? "left-3" : "right-3"
+                } top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600`}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -295,13 +387,13 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full">
           <button
             onClick={() => setIsFiltersVisible(!isFiltersVisible)}
             className="md:hidden inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             <Filter className="mr-2 h-4 w-4" />
-            Filtres {isFiltersVisible ? "▲" : "▼"}
+            {t("product.products.filters") || "Filters"} {isFiltersVisible ? "▲" : "▼"}
           </button>
 
           <Link
@@ -314,12 +406,10 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div
-        className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isFiltersVisible || window.innerWidth >= 768 ? "block" : "hidden md:block"
-          }`}
-      >
+      {/* Filters */}
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isFiltersVisible || !isMobile ? "block" : "hidden"}`}>
         <div className="relative">
-          <label className=" text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
+          <label className="text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
             <Store className={`h-4 w-4 ${lang === "ar" ? "ml-1" : "mr-1"}`} />
             {t("product.products.filterByStore")}
           </label>
@@ -337,14 +427,18 @@ export default function ProductsPage() {
                   </option>
                 ))}
             </select>
-            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
+            <div
+              className={`absolute inset-y-0 ${
+                lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"
+              } flex items-center pointer-events-none`}
+            >
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
         </div>
 
         <div className="relative">
-          <label className=" text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
+          <label className="text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
             <Tag className={`h-4 w-4 ${lang === "ar" ? "ml-1" : "mr-1"}`} />
             {t("product.products.filterByCategory")}
           </label>
@@ -361,7 +455,11 @@ export default function ProductsPage() {
                 </option>
               ))}
             </select>
-            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
+            <div
+              className={`absolute inset-y-0 ${
+                lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"
+              } flex items-center pointer-events-none`}
+            >
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
@@ -378,8 +476,9 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      {/* No Results */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
+        <div className="text-center py-8 md:py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
           <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-900 mb-1">{t("product.products.noProductsFound")}</h3>
           <p className="text-gray-500 mb-4">{t("product.products.tryDifferentFilters")}</p>
@@ -401,131 +500,143 @@ export default function ProductsPage() {
           </div>
         </div>
       ) : (
-        <div className="border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y h-auto z-[50] divide-[#c8c2fd]/30">
-              <thead className="bg-[#1e3a8a]">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
-                    {t("product.products.table.product")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
-                    {t("product.products.table.id")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("product.products.table.price")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("product.products.table.stock")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
-                    {t("product.products.table.category")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">
-                    {t("product.products.table.store")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("product.products.table.status")}
-                  </th>
-                  <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
-                    {t("product.products.table.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center justify-start gap-3">
-                        {product?.imgMain ? (
-                          <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm">
-                            <img
-                              src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`}
-                              alt={product?.name || "Product"}
-                              className="w-full h-full object-cover"
-                            />
+        <>
+          {/* Mobile View - Cards */}
+          <div className="md:hidden mt-4">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+            <div className="bg-gray-50 px-4 py-3 border border-[#c8c2fd]/30 rounded-lg text-sm text-gray-500 text-center">
+              {filteredProducts.length} {t("product.products.productsFound")}
+            </div>
+          </div>
+
+          {/* Desktop View - Table */}
+          <div className="hidden md:block border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y h-auto z-[50] divide-[#c8c2fd]/30">
+                <thead className="bg-[#1e3a8a]">
+                  <tr>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.product")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.id")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.price")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.stock")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.category")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.store")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.status")}
+                    </th>
+                    <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
+                      {t("product.products.table.actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
+                  {filteredProducts.map((product) => (
+                    <tr key={product.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center justify-start gap-3">
+                          {product?.imgMain ? (
+                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm">
+                              <img
+                                src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`}
+                                alt={product?.name || "Product"}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-[#c8c2fd]/10 flex items-center justify-center">
+                              <ImageIcon className="h-6 w-6 text-[#6D28D9]/60" />
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium text-[#1e3a8a]">
+                              {product?.name || t("product.products.noName")}
+                            </div>
+                            <div className="text-xs text-gray-500">SKU: {product?.sku || "N/A"}</div>
                           </div>
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg bg-[#c8c2fd]/10 flex items-center justify-center">
-                            <ImageIcon className="h-6 w-6 text-[#6D28D9]/60" />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-gray-500">{product.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="font-medium text-[#6D28D9]">{product?.prix?.toFixed(2) || "0.00"} €</div>
+                        {product?.comparePrice > 0 && (
+                          <div className="text-xs text-gray-500 line-through">{product.comparePrice.toFixed(2)} €</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="font-medium">{product?.stock || 0}</div>
+                        {product?.lowStockAlert && (
+                          <div className="text-xs text-gray-500">
+                            {t("product.products.lowStockAlert")}: {product.lowStockAlert}
                           </div>
                         )}
-                        <div>
-                          <div className="font-medium text-[#1e3a8a]">
-                            {product?.name || t("product.products.noName")}
-                          </div>
-                          <div className="text-xs text-gray-500">SKU: {product?.sku || "N/A"}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell text-center text-gray-500">{product.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="font-medium text-[#6D28D9]">{product?.prix?.toFixed(2) || "0.00"} €</div>
-                      {product?.comparePrice > 0 && (
-                        <div className="text-xs text-gray-500 line-through">{product.comparePrice.toFixed(2)} €</div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="font-medium">{product?.stock || 0}</div>
-                      {product?.lowStockAlert && (
-                        <div className="text-xs text-gray-500">
-                          {t("product.products.lowStockAlert")}: {product.lowStockAlert}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-center hidden md:table-cell">
-                      {product.categories &&
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-center">
+                        {product.categories &&
                         t(`product.products.categories.${product.categories}`) !==
-                        `product.products.categories.${product.categorie}`
-                        ? t(`product.products.categories.${product.categories}`)
-                        : t("product.products.uncategorized")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
-                      {product?.boutique?.nom || t("product.products.unassigned")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <span
-                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock === 0
-                            ? "bg-red-100 text-red-800"
-                            : product.stock <= product.lowStockAlert
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
+                          `product.products.categories.${product.categorie}`
+                          ? t(`product.products.categories.${product.categories}`)
+                          : t("product.products.uncategorized")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        {product?.boutique?.nom || t("product.products.unassigned")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span
+                          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            product.stock === 0
+                              ? "bg-red-100 text-red-800"
+                              : product.stock <= product.lowStockAlert
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800"
                           }`}
-                      >
-                        {product.stock === 0
-                          ? t("product.products.status.outOfStock")
-                          : product.stock <= product.lowStockAlert
-                            ? t("product.products.status.lowStock")
-                            : t("product.products.status.inStock")}
-                      </span>
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap h-full flex justify-end items-center">
-                      <div className="flex h-full items-center gap-2">
-
-                        <Link
-                          to={`/controll/edit-product/${product.documentId}`}
-                          className=" cursor-pointer h-full text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
                         >
-                          <PencilLine className="h-5 w-5" />
-                        </Link>
-                        <button
-                          onClick={(e) => handleDeleteProduct(product.documentId)}
-                          className=" cursor-pointer h-full text-red-500 focus:outline-none p-1 rounded-full hover:bg-red-500/10 transition-colors"
-                        >
-                          <PackageX className="h-5 w-5" />
-                        </button>
-
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          {product.stock === 0
+                            ? t("product.products.status.outOfStock")
+                            : product.stock <= product.lowStockAlert
+                              ? t("product.products.status.lowStock")
+                              : t("product.products.status.inStock")}
+                        </span>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap h-full flex justify-end items-center">
+                        <div className="flex h-full items-center gap-2">
+                          <Link
+                            to={`/controll/edit-product/${product.documentId}`}
+                            className="cursor-pointer h-full text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
+                          >
+                            <PencilLine className="h-5 w-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteProduct(product.documentId)}
+                            className="cursor-pointer h-full text-red-500 focus:outline-none p-1 rounded-full hover:bg-red-500/10 transition-colors"
+                          >
+                            <PackageX className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
+              {filteredProducts.length} {t("product.products.productsFound")}
+            </div>
           </div>
-          <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
-            {filteredProducts.length} {t("product.products.productsFound")}
-          </div>
-        </div>
+        </>
       )}
     </div>
   )

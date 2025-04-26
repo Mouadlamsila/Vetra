@@ -5,6 +5,8 @@ const ordersFr = {
     search: "Rechercher une commande...",
     allStatuses: "Tous les statuts",
     infoMessage: "Voici comment vous pouvez gérer toutes les commandes",
+    filters:"Filtres",
+    loading:"Chargement...",
     table: {
       order: "Commande",
       date: "Date",
@@ -25,7 +27,9 @@ const ordersFr = {
     actions: {
       viewDetails: "Voir les détails",
       viewInvoice: "Voir la facture",
-      downloadInvoice: "Télécharger la facture"
+      downloadInvoice: "Télécharger la facture",
+      download:"Télécharger",
+      view:"Voir",
     },
     noOrdersFound: "Aucune commande trouvée",
     ordersFound: "Commandes trouvées",

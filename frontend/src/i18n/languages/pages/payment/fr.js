@@ -3,6 +3,7 @@ export const paymentFr = {
     title: "Paiements",
     subtitle: "Gérez les paiements reçus et à recevoir",
     infoMessage: "Voici comment vous pouvez gérer toutes les paiements et les transactions",
+    filters: "Filtres",
     metrics: {
       totalReceived: {
         title: "Total reçu",
@@ -48,7 +49,9 @@ export const paymentFr = {
     actions: {
       title: "Actions",
       viewDetails: "Voir les détails",
-      downloadReceipt: "Télécharger le reçu"
+      downloadReceipt: "Télécharger le reçu",
+      download: "Télécharger",
+      view: "Voir"
     },
     noPaymentsFound: "Aucun paiement trouvé",
     paymentsFound: "Paiements trouvés",

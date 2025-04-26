@@ -5,6 +5,8 @@ const ordersEn = {
     search: "Search for an order...",
     allStatuses: "All Statuses",
     infoMessage: "Here you can manage all orders",
+    filters:"Filters",
+    loading:"Loading...",
     table: {
       order: "Order",
       date: "Date",
@@ -25,7 +27,9 @@ const ordersEn = {
     actions: {
       viewDetails: "View Details",
       viewInvoice: "View Invoice",
-      downloadInvoice: "Download Invoice"
+      downloadInvoice: "Download Invoice",
+      download:"Download",
+      view:"View",
     },
     noOrdersFound: "No orders found",
     ordersFound: "Orders found",

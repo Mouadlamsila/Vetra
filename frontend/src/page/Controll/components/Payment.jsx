@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   CreditCard,
   Download,
   Eye,
-  MoreHorizontal,
   Search,
   X,
   RefreshCw,
@@ -24,7 +23,24 @@ export default function PaymentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [openActionMenu, setOpenActionMenu] = useState(null)
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const lang = localStorage.getItem("lang")
+
+  // Check if mobile on mount and when window resizes
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    // Initial check
+    checkIfMobile()
+
+    // Add event listener
+    window.addEventListener("resize", checkIfMobile)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile)
+  }, [])
 
   const payments = [
     {
@@ -142,27 +158,81 @@ export default function PaymentsPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [openActionMenu])
 
+  // Mobile payment card component
+  const PaymentCard = ({ payment }) => (
+    <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h3 className="font-medium text-[#1e3a8a]">{payment.id}</h3>
+          <p className="text-xs text-gray-500">{payment.date}</p>
+        </div>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+        >
+          {getStatusText(payment.status)}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+        <div>
+          <p className="text-gray-500">{t("payment.payment.table.headers.order")}</p>
+          <p className="font-medium">{payment.orderId}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("payment.payment.table.headers.amount")}</p>
+          <p className="font-medium text-[#6D28D9]">{payment.amount.toFixed(2)} €</p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("payment.payment.table.headers.method")}</p>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
+            {getMethodText(payment.method)}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2 border-t border-gray-100 pt-3">
+        <button
+          onClick={() => handleViewDetails(payment.id)}
+          className="inline-flex items-center px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-50"
+        >
+          <Eye className="h-4 w-4 mr-1" />
+          {t("payment.payment.actions.view")}
+        </button>
+        <button
+          onClick={() => handleDownloadReceipt(payment.id)}
+          className="inline-flex items-center px-2 py-1 text-sm text-green-500 rounded hover:bg-green-50"
+        >
+          <Download className="h-4 w-4 mr-1" />
+          {t("payment.payment.actions.download")}
+        </button>
+      </div>
+    </div>
+  )
+
   return (
-    <div className="space-y-6 p-6 bg-white">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
+    <div className="space-y-6 p-4 md:p-6 bg-white">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-3 mb-6">
+        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg mb-3 md:mb-0">
           <CreditCard className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("payment.payment.title")}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("payment.payment.title")}</h1>
           <p className="text-[#6D28D9]/70">{t("payment.payment.subtitle")}</p>
         </div>
       </div>
 
+      {/* Info Banner */}
       <div className="bg-[#c8c2fd]/10 rounded-lg p-4 mb-6">
         <div className="flex items-center space-x-2 text-[#6D28D9]">
-          <Info className="h-5 w-5" />
+          <Info className="h-5 w-5 flex-shrink-0" />
           <p className="text-sm">{t("payment.payment.infoMessage")}</p>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-6">
+      {/* Metrics Cards */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-4 md:p-6">
           <div className="flex flex-row items-center justify-between">
             <h3 className="text-sm font-medium text-[#1e3a8a]">{t("payment.payment.metrics.totalReceived.title")}</h3>
             <div className="bg-[#6D28D9]/10 p-2 rounded-full">
@@ -170,11 +240,13 @@ export default function PaymentsPage() {
             </div>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold text-[#1e3a8a]">{t("payment.payment.metrics.totalReceived.value")}</div>
+            <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
+              {t("payment.payment.metrics.totalReceived.value")}
+            </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.totalReceived.description")}</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-6">
+        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-4 md:p-6">
           <div className="flex flex-row items-center justify-between">
             <h3 className="text-sm font-medium text-[#1e3a8a]">{t("payment.payment.metrics.pending.title")}</h3>
             <div className="bg-[#6D28D9]/10 p-2 rounded-full">
@@ -182,11 +254,13 @@ export default function PaymentsPage() {
             </div>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold text-[#1e3a8a]">{t("payment.payment.metrics.pending.value")}</div>
+            <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
+              {t("payment.payment.metrics.pending.value")}
+            </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.pending.description")}</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-6">
+        <div className="bg-white rounded-lg shadow-lg border border-[#c8c2fd]/30 p-4 md:p-6">
           <div className="flex flex-row items-center justify-between">
             <h3 className="text-sm font-medium text-[#1e3a8a]">{t("payment.payment.metrics.nextPayment.title")}</h3>
             <div className="bg-[#6D28D9]/10 p-2 rounded-full">
@@ -194,16 +268,21 @@ export default function PaymentsPage() {
             </div>
           </div>
           <div className="mt-2">
-            <div className="text-2xl font-bold text-[#1e3a8a]">{t("payment.payment.metrics.nextPayment.value")}</div>
+            <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
+              {t("payment.payment.metrics.nextPayment.value")}
+            </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.nextPayment.description")}</p>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
-        <div className="relative flex-1">
+      {/* Search and Filters */}
+      <div className="flex flex-col gap-4">
+        <div className="relative w-full">
           <div className="relative">
-            <Search className={`absolute ${lang === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400`} />
+            <Search
+              className={`absolute ${lang === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400`}
+            />
             <input
               type="text"
               placeholder={t("payment.payment.search.placeholder")}
@@ -222,7 +301,7 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full">
           <button
             onClick={() => setIsFiltersVisible(!isFiltersVisible)}
             className="md:hidden inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
@@ -232,11 +311,9 @@ export default function PaymentsPage() {
           </button>
         </div>
       </div>
-      <div
-        className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${
-          isFiltersVisible || window.innerWidth >= 768 ? "block" : "hidden md:block"
-        }`}
-      >
+
+      {/* Filters */}
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFiltersVisible || !isMobile ? "block" : "hidden"}`}>
         <div className="relative">
           <label className="block text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
             <CreditCard className="h-4 w-4 mr-1" />
@@ -253,7 +330,9 @@ export default function PaymentsPage() {
               <option value="pending">{t("payment.payment.status.pending")}</option>
               <option value="failed">{t("payment.payment.status.failed")}</option>
             </select>
-            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}>
+            <div
+              className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}
+            >
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
@@ -270,8 +349,9 @@ export default function PaymentsPage() {
         </div>
       </div>
 
+      {/* No Results */}
       {filteredPayments.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
+        <div className="text-center py-8 md:py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
           <CreditCard className="h-12 w-12 mx-auto text-gray-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-900 mb-1">{t("payment.payment.noPaymentsFound")}</h3>
           <p className="text-gray-500 mb-4">{t("payment.payment.tryDifferentFilters")}</p>
@@ -286,86 +366,99 @@ export default function PaymentsPage() {
           </div>
         </div>
       ) : (
-        <div className="border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#c8c2fd]/30">
-              <thead className="bg-[#1e3a8a]">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.id")}
-                  </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.date")}
-                  </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.order")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.method")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.amount")}
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.status")}
-                  </th>
-                  <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
-                    {t("payment.payment.table.headers.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
-                {filteredPayments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-start text-sm font-medium text-[#1e3a8a]">{payment.id}</td>
-                    <td className="hidden md:table-cell px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {payment.date}
-                    </td>
-                    <td className="hidden md:table-cell px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {payment.orderId}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
-                        {getMethodText(payment.method)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-[#6D28D9]">
-                      {payment.amount.toFixed(2)} €
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
-                      >
-                        {getStatusText(payment.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end">
-                    <div className=" inline-block text-end action-menu">
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick(order.id)}
-                          className=" cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick(order.id)}
-                          className=" cursor-pointer text-green-500 focus:outline-none p-1 rounded-full hover:bg-green-500/10 transition-colors"
-                        >
-                          <Download className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
+        <>
+          {/* Mobile View - Cards */}
+          <div className="md:hidden mt-4">
+            {filteredPayments.map((payment) => (
+              <PaymentCard key={payment.id} payment={payment} />
+            ))}
+            <div className="bg-gray-50 px-4 py-3 border border-[#c8c2fd]/30 rounded-lg text-sm text-gray-500 text-center">
+              {filteredPayments.length} {t("payment.payment.paymentsFound")}
+            </div>
+          </div>
+
+          {/* Desktop View - Table */}
+          <div className="hidden md:block border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-[#c8c2fd]/30">
+                <thead className="bg-[#1e3a8a]">
+                  <tr>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.id")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.date")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.order")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.method")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.amount")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.status")}
+                    </th>
+                    <th className="px-6 py-3 text-end text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.actions")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
+                  {filteredPayments.map((payment) => (
+                    <tr key={payment.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-start text-sm font-medium text-[#1e3a8a]">
+                        {payment.id}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">{payment.date}</td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {payment.orderId}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
+                          {getMethodText(payment.method)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-[#6D28D9]">
+                        {payment.amount.toFixed(2)} €
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+                        >
+                          {getStatusText(payment.status)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-end">
+                        <div className="inline-block text-end action-menu">
+                          <button
+                            type="button"
+                            onClick={() => handleViewDetails(payment.id)}
+                            className="cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
+                          >
+                            <Eye className="h-5 w-5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadReceipt(payment.id)}
+                            className="cursor-pointer text-green-500 focus:outline-none p-1 rounded-full hover:bg-green-500/10 transition-colors"
+                          >
+                            <Download className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
+              {filteredPayments.length} {t("payment.payment.paymentsFound")}
+            </div>
           </div>
-          <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
-            {filteredPayments.length} {t("payment.payment.paymentsFound")}
-          </div>
-        </div>
+        </>
       )}
     </div>
   )

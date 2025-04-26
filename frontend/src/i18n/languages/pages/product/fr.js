@@ -7,6 +7,8 @@ const productFr = {
     allStores: "Tous les Magasins",
     allCategories: "Toutes les Catégories",
     noProducts: "Aucun produit trouvé",
+    filters: "Filtres",
+    infoMessage: "ici vous pouvez gérer tous les produits",
     table: {
       product: "Produit",
       id: "ID",

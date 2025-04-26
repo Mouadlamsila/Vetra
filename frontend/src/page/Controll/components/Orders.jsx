@@ -1,150 +1,230 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { Download, Eye, FileText, MoreHorizontal, Search, ShoppingBag, Filter, X, RefreshCw, Info, AlertTriangle, ChevronDown, Package } from 'lucide-react';
-import axios from 'axios';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react"
+import {
+  Download,
+  Eye,
+  Search,
+  ShoppingBag,
+  Filter,
+  X,
+  RefreshCw,
+  Info,
+  AlertTriangle,
+  ChevronDown,
+  Package,
+} from "lucide-react"
+import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 export default function OrdersPage() {
-  const { t } = useTranslation();
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [openActionMenu, setOpenActionMenu] = useState(null);
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const IDUser = localStorage.getItem('IDUser');
-  const lang = localStorage.getItem('lang');
-  // Add filtered orders state
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const { t } = useTranslation()
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [openActionMenu, setOpenActionMenu] = useState(null)
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [filteredOrders, setFilteredOrders] = useState([])
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const IDUser = localStorage.getItem("IDUser")
+  const lang = localStorage.getItem("lang")
+
+  // Check if mobile on mount and when window resizes
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    // Initial check
+    checkIfMobile()
+
+    // Add event listener
+    window.addEventListener("resize", checkIfMobile)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile)
+  }, [])
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         const response = await axios.get(
           `http://localhost:1337/api/orders?populate=*&filters[customer][id][$eq]=${IDUser}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
-        setOrders(response.data.data);
-        setFilteredOrders(response.data.data); // Initialize filtered orders
-        setLoading(false);
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          },
+        )
+        setOrders(response.data.data)
+        setFilteredOrders(response.data.data) // Initialize filtered orders
+        setLoading(false)
       } catch (err) {
-        setError(t('orders.orders.error'));
-        setLoading(false);
-        console.error('Error fetching orders:', err);
+        setError(t("orders.orders.error"))
+        setLoading(false)
+        console.error("Error fetching orders:", err)
       }
-    };
+    }
 
-    fetchOrders();
-  }, [IDUser, t]);
+    fetchOrders()
+  }, [IDUser, t])
 
   // Add useEffect for filtering
   useEffect(() => {
-    let filtered = [...orders];
+    let filtered = [...orders]
 
     // Filter by status
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(order => order.statusOrder === selectedStatus);
+    if (selectedStatus !== "all") {
+      filtered = filtered.filter((order) => order.statusOrder === selectedStatus)
     }
 
     // Filter by search query
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(order => 
-        order.id.toString().toLowerCase().includes(query) ||
-        (order.customer?.data?.attributes?.username || '').toLowerCase().includes(query) ||
-        order.statusOrder.toLowerCase().includes(query)
-      );
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(
+        (order) =>
+          order.id.toString().toLowerCase().includes(query) ||
+          (order.customer?.data?.attributes?.username || "").toLowerCase().includes(query) ||
+          order.statusOrder.toLowerCase().includes(query),
+      )
     }
 
-    setFilteredOrders(filtered);
-  }, [orders, selectedStatus, searchQuery]);
+    setFilteredOrders(filtered)
+  }, [orders, selectedStatus, searchQuery])
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'Delivered':
-        return 'bg-green-100 text-green-800';
-      case 'Shipped':
-        return 'bg-blue-100 text-blue-800';
-      case 'Processing':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Pending':
-        return 'bg-gray-100 text-gray-800';
-      case 'Cancelled':
-        return 'bg-red-100 text-red-800';
+      case "Delivered":
+        return "bg-green-100 text-green-800"
+      case "Shipped":
+        return "bg-blue-100 text-blue-800"
+      case "Processing":
+        return "bg-yellow-100 text-yellow-800"
+      case "Pending":
+        return "bg-gray-100 text-gray-800"
+      case "Cancelled":
+        return "bg-red-100 text-red-800"
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800"
     }
-  };
+  }
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'Delivered':
-        return t('orders.orders.status.delivered');
-      case 'Shipped':
-        return t('orders.orders.status.shipped');
-      case 'Processing':
-        return t('orders.orders.status.processing');
-      case 'Pending':
-        return t('orders.orders.status.pending');
-      case 'Cancelled':
-        return t('orders.orders.status.cancelled');
+      case "Delivered":
+        return t("orders.orders.status.delivered")
+      case "Shipped":
+        return t("orders.orders.status.shipped")
+      case "Processing":
+        return t("orders.orders.status.processing")
+      case "Pending":
+        return t("orders.orders.status.pending")
+      case "Cancelled":
+        return t("orders.orders.status.cancelled")
       default:
-        return status;
+        return status
     }
-  };
+  }
 
   const handleActionClick = (orderId) => {
-    setOpenActionMenu(openActionMenu === orderId ? null : orderId);
-  };
+    setOpenActionMenu(openActionMenu === orderId ? null : orderId)
+  }
 
   const handleViewDetails = (orderId) => {
-    console.log('View order details:', orderId);
-    setOpenActionMenu(null);
-  };
+    console.log("View order details:", orderId)
+    setOpenActionMenu(null)
+  }
 
   const handleViewInvoice = (orderId) => {
-    console.log('View invoice:', orderId);
-    setOpenActionMenu(null);
-  };
+    console.log("View invoice:", orderId)
+    setOpenActionMenu(null)
+  }
 
   const handleDownloadInvoice = (orderId) => {
-    console.log('Download invoice:', orderId);
-    setOpenActionMenu(null);
-  };
+    console.log("Download invoice:", orderId)
+    setOpenActionMenu(null)
+  }
 
   const resetFilters = () => {
-    setSelectedStatus('all');
-    setSearchQuery('');
-  };
+    setSelectedStatus("all")
+    setSearchQuery("")
+  }
 
   // Close menu when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event) => {
-      if (openActionMenu && !event.target.closest('.action-menu')) {
-        setOpenActionMenu(null);
+      if (openActionMenu && !event.target.closest(".action-menu")) {
+        setOpenActionMenu(null)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openActionMenu]);
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [openActionMenu])
+
+  // Mobile order card component
+  const OrderCard = ({ order }) => (
+    <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h3 className="font-medium text-[#1e3a8a]">
+            {t("orders.orders.table.ord")}-{order.id}
+          </h3>
+          <p className="text-xs text-gray-500">{new Date(order?.createdAt).toLocaleDateString()}</p>
+        </div>
+        <span
+          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}
+        >
+          {getStatusText(order?.statusOrder)}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+        <div>
+          <p className="text-gray-500">{t("orders.orders.table.customer")}</p>
+          <p className="font-medium">{order?.customer?.data?.attributes?.username || "N/A"}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("orders.orders.table.items")}</p>
+          <p className="font-medium">{order?.order_items?.data?.length || 0}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">{t("orders.orders.table.total")}</p>
+          <p className="font-medium text-[#6D28D9]">{order?.totalAmount.toFixed(2)} €</p>
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2 border-t border-gray-100 pt-3">
+        <button
+          onClick={() => handleViewDetails(order.id)}
+          className="inline-flex items-center px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-50"
+        >
+          <Eye className="h-4 w-4 mr-1" />
+          {t("orders.orders.actions.view")}
+        </button>
+        <button
+          onClick={() => handleDownloadInvoice(order.id)}
+          className="inline-flex items-center px-2 py-1 text-sm text-green-500 rounded hover:bg-green-50"
+        >
+          <Download className="h-4 w-4 mr-1" />
+          {t("orders.orders.actions.download")}
+        </button>
+      </div>
+    </div>
+  )
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
-          <p className="text-[#6D28D9] font-medium">{t('orders.orders.loading')}</p>
+          <p className="text-[#6D28D9] font-medium">{t("orders.orders.loading")}</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -160,40 +240,45 @@ export default function OrdersPage() {
             className="px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors inline-flex items-center"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            {t('orders.orders.retry')}
+            {t("orders.orders.retry")}
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
+    <div className="space-y-6 p-4 md:p-6 bg-white">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-3 mb-6">
+        <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg mb-3 md:mb-0">
           <ShoppingBag className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e3a8a]">{t('orders.orders.title')}</h1>
-          <p className="text-[#6D28D9]/70">{t('orders.orders.subtitle')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("orders.orders.title")}</h1>
+          <p className="text-[#6D28D9]/70">{t("orders.orders.subtitle")}</p>
         </div>
       </div>
 
+      {/* Info Banner */}
       <div className="bg-[#c8c2fd]/10 rounded-lg p-4 mb-6">
         <div className="flex items-center space-x-2 text-[#6D28D9]">
-          <Info className="h-5 w-5" />
-          <p className="text-sm">{t('orders.orders.infoMessage')}</p>
+          <Info className="h-5 w-5 flex-shrink-0" />
+          <p className="text-sm">{t("orders.orders.infoMessage")}</p>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
-        <div className="relative flex-1">
+      {/* Search and Filters */}
+      <div className="flex flex-col gap-4">
+        <div className="relative w-full">
           <div className="relative">
-            <Search className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${lang === "ar" ? "right-3" : "left-3"}`} />
+            <Search
+              className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${lang === "ar" ? "right-3" : "left-3"}`}
+            />
             <input
               type="text"
-              placeholder={t('orders.orders.search')}
-              className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"}`}
+              placeholder={t("orders.orders.search")}
+              className={`w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] ${lang === "ar" ? "pl-4 pr-10" : "pl-10 pr-4"}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -208,26 +293,23 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full">
           <button
             onClick={() => setIsFiltersVisible(!isFiltersVisible)}
             className="md:hidden inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             <Filter className="mr-2 h-4 w-4" />
-            {t('orders.orders.filters')} {isFiltersVisible ? "▲" : "▼"}
+            {t("orders.orders.filters")} {isFiltersVisible ? "▲" : "▼"}
           </button>
         </div>
       </div>
 
-      <div
-        className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${
-          isFiltersVisible || window.innerWidth >= 768 ? "block" : "hidden md:block"
-        }`}
-      >
+      {/* Filters */}
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFiltersVisible || !isMobile ? "block" : "hidden"}`}>
         <div className="relative">
           <label className="block text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
             <Package className="h-4 w-4 mr-1" />
-            {t('orders.orders.filterByStatus')}
+            {t("orders.orders.filterByStatus")}
           </label>
           <div className="relative">
             <select
@@ -235,14 +317,16 @@ export default function OrdersPage() {
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
             >
-              <option value="all">{t('orders.orders.allStatuses')}</option>
-              <option value="Pending">{t('orders.orders.status.pending')}</option>
-              <option value="Processing">{t('orders.orders.status.processing')}</option>
-              <option value="Shipped">{t('orders.orders.status.shipped')}</option>
-              <option value="Delivered">{t('orders.orders.status.delivered')}</option>
-              <option value="Cancelled">{t('orders.orders.status.cancelled')}</option>
+              <option value="all">{t("orders.orders.allStatuses")}</option>
+              <option value="Pending">{t("orders.orders.status.pending")}</option>
+              <option value="Processing">{t("orders.orders.status.processing")}</option>
+              <option value="Shipped">{t("orders.orders.status.shipped")}</option>
+              <option value="Delivered">{t("orders.orders.status.delivered")}</option>
+              <option value="Cancelled">{t("orders.orders.status.cancelled")}</option>
             </select>
-            <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}>
+            <div
+              className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}
+            >
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
           </div>
@@ -254,108 +338,147 @@ export default function OrdersPage() {
             className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
           >
             <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
-            {t('orders.orders.resetFilters')}
+            {t("orders.orders.resetFilters")}
           </button>
         </div>
       </div>
 
+      {/* No Results */}
       {filteredOrders.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
+        <div className="text-center py-8 md:py-12 bg-gray-50 rounded-lg border border-[#c8c2fd]/30">
           <Package className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-          <h3 className="text-lg font-medium text-gray-900 mb-1">{t('orders.orders.noOrdersFound')}</h3>
-          <p className="text-gray-500 mb-4">{t('orders.orders.tryDifferentFilters')}</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">{t("orders.orders.noOrdersFound")}</h3>
+          <p className="text-gray-500 mb-4">{t("orders.orders.tryDifferentFilters")}</p>
           <div className="flex justify-center space-x-3">
             <button
               onClick={resetFilters}
               className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
             >
               <RefreshCw className={`h-4 w-4 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
-              {t('orders.orders.resetFilters')}
+              {t("orders.orders.resetFilters")}
             </button>
           </div>
         </div>
       ) : (
-        <div className="border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#c8c2fd]/30">
-              <thead className="bg-[#1e3a8a]">
-                <tr>
-                  <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-right" : "text-left"}`}>
-                    {t('orders.orders.table.order')}
-                  </th>
-                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t('orders.orders.table.date')}
-                  </th>
-                  <th scope="col" className="hidden md:table-cell px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t('orders.orders.table.customer')}
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t('orders.orders.table.items')}
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t('orders.orders.table.total')}
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                    {t('orders.orders.table.status')}
-                  </th>
-                  <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-left" : "text-right"}`}>
-                    {t('orders.orders.table.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center justify-start gap-2">
-                        <span className="font-medium text-[#1e3a8a]">{t('orders.orders.table.ord')}-{order.id}</span>
-                      </div>
-                    </td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                      {new Date(order?.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                      {order?.customer?.data?.attributes?.username || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {order?.order_items?.data?.length || 0}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-[#6D28D9]">
-                      {order?.totalAmount.toFixed(2)} €
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}>
-                        {getStatusText(order?.statusOrder)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <div className=" inline-block text-end action-menu">
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick(order.id)}
-                          className=" cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick(order.id)}
-                          className=" cursor-pointer text-green-500 focus:outline-none p-1 rounded-full hover:bg-green-500/10 transition-colors"
-                        >
-                          <Download className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
+        <>
+          {/* Mobile View - Cards */}
+          <div className="md:hidden mt-4">
+            {filteredOrders.map((order) => (
+              <OrderCard key={order.id} order={order} />
+            ))}
+            <div className="bg-gray-50 px-4 py-3 border border-[#c8c2fd]/30 rounded-lg text-sm text-gray-500 text-center">
+              {filteredOrders.length} {t("orders.orders.ordersFound")}
+            </div>
+          </div>
+
+          {/* Desktop View - Table */}
+          <div className="hidden md:block border border-[#c8c2fd]/30 shadow-lg rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-[#c8c2fd]/30">
+                <thead className="bg-[#1e3a8a]">
+                  <tr>
+                    <th
+                      scope="col"
+                      className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-right" : "text-left"}`}
+                    >
+                      {t("orders.orders.table.order")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      {t("orders.orders.table.date")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      {t("orders.orders.table.customer")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      {t("orders.orders.table.items")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      {t("orders.orders.table.total")}
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      {t("orders.orders.table.status")}
+                    </th>
+                    <th
+                      scope="col"
+                      className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-left" : "text-right"}`}
+                    >
+                      {t("orders.orders.table.actions")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-[#c8c2fd]/30">
+                  {filteredOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center justify-start gap-2">
+                          <span className="font-medium text-[#1e3a8a]">
+                            {t("orders.orders.table.ord")}-{order.id}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                        {new Date(order?.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                        {order?.customer?.data?.attributes?.username || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {order?.order_items?.data?.length || 0}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-[#6D28D9]">
+                        {order?.totalAmount.toFixed(2)} €
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                        <span
+                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}
+                        >
+                          {getStatusText(order?.statusOrder)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                        <div className="inline-block text-end action-menu">
+                          <button
+                            type="button"
+                            onClick={() => handleViewDetails(order.id)}
+                            className="cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
+                          >
+                            <Eye className="h-5 w-5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadInvoice(order.id)}
+                            className="cursor-pointer text-green-500 focus:outline-none p-1 rounded-full hover:bg-green-500/10 transition-colors"
+                          >
+                            <Download className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
+              {filteredOrders.length} {t("orders.orders.ordersFound")}
+            </div>
           </div>
-          <div className="bg-gray-50 px-6 py-3 border-t border-[#c8c2fd]/30 text-sm text-gray-500">
-            {filteredOrders.length} {t('orders.orders.ordersFound')}
-          </div>
-        </div>
+        </>
       )}
     </div>
-  );
+  )
 }

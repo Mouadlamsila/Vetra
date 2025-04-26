@@ -5,6 +5,8 @@ const ordersAr = {
     search: "البحث عن طلب...",
     allStatuses: "جميع الحالات",
     infoMessage: " هنا يمكنك إدارة جميع الطلبات",
+    filters:"تصفيات",
+    loading:"جاري التحميل",
     table: {
       order: "الطلب",
       date: "التاريخ",
@@ -25,7 +27,9 @@ const ordersAr = {
     actions: {
       viewDetails: "عرض التفاصيل",
       viewInvoice: "عرض الفاتورة",
-      downloadInvoice: "تحميل الفاتورة"
+      downloadInvoice: "تحميل الفاتورة",
+      download:"تحميل",
+      view:"عرض",
     },
     noOrdersFound: "لم يتم العثور على طلبات",
     ordersFound: "طلبات موجودة",

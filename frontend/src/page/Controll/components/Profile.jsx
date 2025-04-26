@@ -539,17 +539,17 @@ export default function Profile() {
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-[#c8c2fd]/20">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-[#c8c2fd]/20 w-full">
           {isEditing ? (
             <button
               onClick={() => setIsEditing(false)}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] transition-colors disabled:opacity-50"
             >
-              <PenBox className="h-4 w-4 mr-2" />
+              <PenBox className={`h-4 w-4 ${language === "ar" ? "ml-2" : "mr-2"}`} />
               {t("profile.update")}
             </button>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => {
                   setIsEditing(true)
@@ -568,26 +568,25 @@ export default function Profile() {
                     )
                   }
                 }}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8c2fd] transition-colors"
+                disabled={isUploading}
               >
-                <X className="h-4 w-4 mr-2" />
+                <X className={`h-4 w-4 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                 {t("profile.cancel")}
               </button>
               <button
                 onClick={handleUpdate}
                 disabled={isUploading}
-                className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] disabled:opacity-50 transition-colors ${
-                  isUploading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6D28D9] hover:bg-[#6D28D9]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6D28D9] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isUploading ? (
                   <>
-                    <Loader className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader className={`h-4 w-4 ${language === "ar" ? "ml-2" : "mr-2"} animate-spin`} />
                     {t("profile.uploading")}
                   </>
                 ) : (
                   <>
-                    <SaveAll className="h-4 w-4 mr-2" />
+                    <SaveAll className={`h-4 w-4 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                     {t("profile.save")}
                   </>
                 )}

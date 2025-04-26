@@ -108,10 +108,10 @@ export default function BoardTable() {
                 <p className="text-sm  text-gray-500">{t('dashboard.welcome')}</p>
             </div>
             <div className="flex justify-center ">
-                <div className="grid gap-2  w-[100%] grid-cols-4">
+                <div className="grid gap-4 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                     {card.map((item, index) => (
-                        <div key={index} className="bg-white border py-7 border-[#c8c2fd]  shadow rounded-lg px-5">
-                            <div className=" w-full  gap-2">
+                        <div key={index} className="bg-white border py-7 border-[#c8c2fd] shadow rounded-lg px-5">
+                            <div className="w-full gap-2">
                                 <div className="flex justify-between">
                                     <h2 className="text-sm font-medium">{item.title}</h2>
                                     <div className="text-[#6D28D9]">{item.icon}</div>
@@ -123,8 +123,8 @@ export default function BoardTable() {
                     ))}
                 </div>
             </div>
-            <div className="grid w-full grid-cols-[59.5%_39.5%] gap-[1%]">
-                <div className="bg-white border border-[#c8c2fd]  shadow rounded-lg ">
+            <div className="grid w-full grid-cols-1 lg:grid-cols-[59.5%_39.5%] gap-4 lg:gap-[1%]">
+                <div className="bg-white border border-[#c8c2fd] shadow rounded-lg">
                     <div className="p-5">
                         <h1 className="text-2xl font-bold">{t('dashboard.salesOverview')}</h1>
                         <p className="text-sm text-gray-500">{t('dashboard.last30Days')}</p>
@@ -180,13 +180,13 @@ export default function BoardTable() {
                         </div>
                     </div>
                 </div>
-                <div className="bg-white border border-[#c8c2fd]  shadow rounded-lg ">
+                <div className="bg-white border border-[#c8c2fd] shadow rounded-lg">
                     <div className="p-5">
                         <h1 className="text-2xl font-bold">{t('dashboard.recentOrders')}</h1>
                         <p className="text-sm text-gray-500">{t('dashboard.last5Orders')}</p>
                     </div>
                     <div className="h-[1px] bg-[#c8c2fd] w-full"></div>
-                    <div className="h-[300px] grid gap-1 px-4 py-2 w-full">
+                    <div className="h-[300px] grid gap-2 px-4 py-2 w-full overflow-y-auto">
                         {recentOrders.map((item, index) => (
                             <div key={index} className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">

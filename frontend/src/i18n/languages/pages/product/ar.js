@@ -7,6 +7,8 @@ const productAr = {
         allStores: "جميع المتاجر",
         allCategories: "جميع الفئات",
         noProducts: "لم يتم العثور على منتجات",
+        filters: "تصفية",
+        infoMessage: " هنا يمكنك إدارة جميع المنتجات",
 
         table: {
             product: "المنتج",
@@ -27,7 +29,8 @@ const productAr = {
             name: "الإجراءات",
             edit: "تعديل",
             manageStock: "إدارة المخزون",
-            delete: "حذف"
+            delete: "حذف",
+            
         },
         categories: {
             clothing: "ملابس",

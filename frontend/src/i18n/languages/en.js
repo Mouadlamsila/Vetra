@@ -254,7 +254,8 @@ const en = {
     recentOrders: "Recent Orders",
     last5Orders: "Last 5 orders received",
     order: "Order",
-    hoursAgo: "{{hours}} hour(s) ago"
+    hoursAgo: "{{hours}} hour(s) ago",
+    home: "Home"
   },
   profile: profileEn,
   store: storeEn,

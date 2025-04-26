@@ -254,8 +254,10 @@ const ar = {
     recentOrders: "الطلبات الحديثة",
     last5Orders: "آخر 5 طلبات مستلمة",
     order: "الطلب",
-    hoursAgo: "منذ {{hours}} ساعة"
+    hoursAgo: "منذ {{hours}} ساعة",
+    home: "الرئيسية",
   },
+  
   profile: profileAr,
   store: storeAr,
   product: productAr,

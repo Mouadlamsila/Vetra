@@ -3,6 +3,7 @@ export const paymentAr = {
     title: "المدفوعات",
     subtitle: "إدارة المدفوعات والمعاملات",
     infoMessage: "هنا يمكنك إدارة جميع المدفوعات والمعاملات",
+    filters: "تصفيات",
     metrics: {
       totalReceived: {
         title: "إجمالي المدفوعات المستلمة",
@@ -53,7 +54,10 @@ export const paymentAr = {
     actions: {
       title: "الإجراءات",
       viewDetails: "عرض التفاصيل",
-      downloadReceipt: "تحميل الإيصال"
+      downloadReceipt: "تحميل الإيصال",
+      download: "تحميل",
+      view: "عرض",
+      
     },
     noPaymentsFound: "لم يتم العثور على مدفوعات",
     paymentsFound: "تم العثور على مدفوعات",

@@ -7,6 +7,7 @@ import {
   CreditCard,
   Home,
   LogOut,
+  Package,
   Settings,
   ShoppingBag,
   Store,
@@ -38,11 +39,13 @@ export default function MobileNavigation() {
     { icon: Home, path: "/controll/", label: t("dashboard.title") },
     { icon: User, path: "/controll/Profil", label: t("dashboard.profile") },
     { icon: Store, path: "/controll/Stores", label: t("dashboard.myStores") },
+    { icon: Package, path: "/controll/Products", label: t("dashboard.myProducts") },
     { icon: ShoppingBag, path: "/controll/Orders", label: t("dashboard.orders") },
   ]
-
+  
   // Additional navigation items (shown when expanded)
   const additionalNavItems = [
+    { icon: "logo", path: "/", label: t("dashboard.home")},
     { icon: ChartColumn, path: "/controll/Stats", label: t("dashboard.statistics") },
     { icon: CreditCard, path: "/controll/Payment", label: t("dashboard.payments") },
     { icon: Settings, path: "/controll/Settings", label: t("dashboard.settings") },
@@ -122,7 +125,10 @@ export default function MobileNavigation() {
               onClick={item.onClick || (() => navigate(item.path))}
             >
               <div className={`p-1.5 rounded-full ${isActive ? "bg-[#c8c2fd]" : ""}`}>
-                <item.icon size={20} />
+                {item.icon === "logo" ?
+                <img src="/img/logo/v.png" alt="logo" className="w-6 h-6" />
+                : 
+                <item.icon size={20} />}
               </div>
               <span className="text-xs mt-1 font-medium">{item.label}</span>
             </div>
