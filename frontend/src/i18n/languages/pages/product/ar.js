@@ -140,7 +140,15 @@ const productAr = {
         international: "دولي",
         productInfoDesc: "أدخل معلومات المنتج بالتفصيل.",
         uploading: "جاري الرفع...",
-        
+        error: "حدث خطأ أثناء إنشاء المنتج",
+        success: "تم إنشاء المنتج بنجاح",
+        successTitle: "تم إنشاء المنتج بنجاح",
+        successText: "تم إنشاء المنتج بنجاح. يمكنك الآن إدارة منتجك.",
+        cancelTitle: "إلغاء الإنشاء",
+        cancelText: "هل أنت متأكد أنك تريد إلغاء إنشاء المنتج؟",
+        cancelConfirm: "نعم، إلغاء",
+        cancelCancel: "إلغاء",
+        successConfirm: "موافق"
         
     },
     editProduct: {
@@ -220,6 +228,13 @@ const productAr = {
         uploading: "جاري الرفع...",
         productInfoDesc: "تعديل معلومات المنتج أدناه.",
         loading: "جاري التحميل...",
+        successConfirm: "موافق",
+        successTitle: "تم تحديث المنتج بنجاح",
+        successText: "تم تحديث المنتج بنجاح. يمكنك الآن إدارة منتجك.",
+        cancelTitle: "إلغاء التحديث",
+        cancelText: "هل أنت متأكد أنك تريد إلغاء تحديث المنتج؟",
+        cancelConfirm: "نعم، إلغاء",
+        cancelCancel: "إلغاء"
 
     },
 

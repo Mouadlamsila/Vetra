@@ -285,11 +285,11 @@ export default function AddProductPage() {
     try {
       const token = localStorage.getItem("token")
       if (!token) {
-        throw new Error("Token non trouvé. Veuillez vous connecter.")
+        throw new Error(t('product.createProduct.errorToken'))
       }
 
       if (!formData.name || !formData.description || !formData.categories || !formData.boutique) {
-        throw new Error("Veuillez remplir tous les champs obligatoires")
+        throw new Error(t('product.createProduct.errorRequired'))
       }
 
       const productData = {
@@ -325,7 +325,7 @@ export default function AddProductPage() {
         },
       })
 
-      toast.success("Produit créé avec succès", {
+      toast.success(t('product.createProduct.success'), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -335,10 +335,10 @@ export default function AddProductPage() {
       })
 
       await Swal.fire({
-        title: "Produit créé!",
-        text: "Le produit a été créé avec succès.",
+        title: t('product.createProduct.successTitle'),
+        text: t('product.createProduct.successText'),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t('product.createProduct.successConfirm'),
         confirmButtonColor: "#6D28D9",
       })
 
@@ -346,7 +346,7 @@ export default function AddProductPage() {
     } catch (err) {
       setError(err.message || "Failed to create product")
       console.error("Error creating product:", err)
-      toast.error(err.message || "Erreur lors de la création du produit", {
+      toast.error(t('product.createProduct.error'), {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -362,14 +362,14 @@ export default function AddProductPage() {
   const handleCancel = async () => {
     if (formData.name || formData.description || formData.categories || formData.boutique) {
       const result = await Swal.fire({
-        title: "Êtes-vous sûr?",
-        text: "Toutes les modifications non enregistrées seront perdues.",
+        title: t('product.createProduct.cancelTitle'),
+        text: t('product.createProduct.cancelText'),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#6D28D9",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Oui, quitter",
-        cancelButtonText: "Annuler",
+        confirmButtonText: t('product.createProduct.cancelConfirm'),
+        cancelButtonText: t('product.createProduct.cancelCancel'),
       })
 
       if (result.isConfirmed) {

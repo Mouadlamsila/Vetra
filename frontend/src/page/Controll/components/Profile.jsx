@@ -297,14 +297,14 @@ export default function Profile() {
       <div className="border mt-5 space-y-6 px-6 md:px-10 py-6 rounded-lg shadow-xs border-[#c8c2fd]/30 bg-white">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-            <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"} flex-shrink-0 mt-0.5`} />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-            <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <CheckCircle className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"} flex-shrink-0 mt-0.5`} />
             <span>{success}</span>
           </div>
         )}

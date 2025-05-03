@@ -134,8 +134,7 @@ export default function EditProduct() {
         })
       } catch (err) {
         console.error("Error fetching data:", err)
-        setError("Erreur lors du chargement des données")
-        toast.error(t("product.editProduct.fetchError"))
+        setError(t("product.editProduct.fetchError"))
       } finally {
         setPageLoading(false)
       }
@@ -319,10 +318,10 @@ export default function EditProduct() {
       toast.success(t("product.editProduct.success"))
 
       await Swal.fire({
-        title: "Produit mis à jour!",
-        text: "Le produit a été mis à jour avec succès.",
+        title: t("product.editProduct.successTitle"),
+        text: t("product.editProduct.successText"),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("product.editProduct.successConfirm"),
         confirmButtonColor: "#6D28D9",
       })
 
@@ -338,14 +337,14 @@ export default function EditProduct() {
 
   const handleCancel = async () => {
     const result = await Swal.fire({
-      title: "Êtes-vous sûr?",
-      text: "Toutes les modifications non enregistrées seront perdues.",
+      title: t("product.editProduct.cancelTitle"),
+      text: t("product.editProduct.cancelText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#6D28D9",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Oui, quitter",
-      cancelButtonText: "Annuler",
+      confirmButtonText: t("product.editProduct.cancelConfirm"),
+      cancelButtonText: t("product.editProduct.cancelCancel"),
     })
 
     if (result.isConfirmed) {

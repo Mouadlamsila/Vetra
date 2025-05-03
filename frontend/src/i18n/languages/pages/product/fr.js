@@ -140,6 +140,13 @@ const productFr = {
     international: "International",
     productInfoDesc: "Remplissez les informations du produit en utilisant les onglets ci-dessous.",
     uploading: "Téléchargement...",
+    error: "Erreur lors de la création du produit",
+    success: "Produit créé avec succès",
+    successTitle: "Produit créé avec succès",
+    successText: "Produit créé avec succès. Vous pouvez maintenant gérer votre produit.",
+    cancelTitle: "Annuler la création",
+    cancelText: "Êtes-vous sûr de vouloir annuler la création du produit?",
+    successConfirm: "OK"
   },
   editProduct: {
     title: "Modifier le Produit",
@@ -218,6 +225,13 @@ const productFr = {
     uploading: "Téléchargement...",
     productInfoDesc: "Modifiez les informations de votre produit ci-dessous.",
     loading: "Chargement...",
+    successConfirm: "OK",
+    successTitle: "Produit mis à jour avec succès",
+    successText: "Produit mis à jour avec succès. Vous pouvez maintenant gérer votre produit.",
+    cancelTitle: "Annuler la mise à jour",
+    cancelText: "Êtes-vous sûr de vouloir annuler la mise à jour du produit?",
+    cancelConfirm: "OK",
+    cancelCancel: "Annuler"
   }
 };
 

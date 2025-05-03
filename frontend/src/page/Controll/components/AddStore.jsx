@@ -100,7 +100,7 @@ export default function AddStorePage() {
     try {
       const token = localStorage.getItem("token")
       if (!token) {
-        throw new Error("Token non trouvé. Veuillez vous connecter.")
+        throw new Error(t('store.createStore.errorToken'))
       }
 
       console.log("Récupération des informations utilisateur...")
@@ -112,7 +112,7 @@ export default function AddStorePage() {
       console.log("Informations utilisateur:", userResponse.data)
 
       if (!boutique.nom || !boutique.description || !boutique.category || !boutique.emplacement) {
-        throw new Error("Veuillez remplir tous les champs obligatoires")
+        throw new Error(t('store.createStore.errorRequired'))
       }
 
       const requestData = {

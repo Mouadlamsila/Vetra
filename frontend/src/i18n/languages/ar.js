@@ -262,6 +262,21 @@ const ar = {
     noOrders: "لا يوجد طلبات",
     noOrdersDescription: "قم بإنشاء طلب جديد لإدارة الطلبات",
   },
+  registrationSuccess: "تم إنشاء الحساب بنجاح",
+  emailAlreadyExists: "البريد الإلكتروني مستخدم بالفعل",
+  usernameAlreadyExists: "اسم المستخدم مستخدم بالفعل",
+  registrationError: "حدث خطأ أثناء إنشاء الحساب",
+  passwordsDoNotMatch: "كلمات المرور غير متطابقة",
+
+  allFieldsRequired: "جميع الحقول مطلوبة",
+  loginFailed: "فشل تسجيل الدخول",
+  invalidCredentials: "بيانات الدخول غير صالحة",
+  //footer
+  companyName: "شركة سيرفيس",
+  allRightsReserved: "جميع الحقوق محفوظة",
+  privacyPolicy: "سياسة الخصوصية",
+  termsOfService: "الشروط والأحكام",
+  cookiePolicy: "سياسة الكوكيز",
   
   profile: profileAr,
   store: storeAr,

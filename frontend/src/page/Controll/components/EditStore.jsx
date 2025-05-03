@@ -100,8 +100,8 @@ export default function EditStore() {
         }
       } catch (err) {
         console.error("Error fetching store data:", err)
-        setError("Erreur lors du chargement des données de la boutique")
-        toast.error("Erreur lors du chargement des données de la boutique", {
+        setError(t("store.editStore.errorFetch"))
+        toast.error(t("store.editStore.errorFetch"), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -158,7 +158,7 @@ console.log(formData)
       setLogoPreview(URL.createObjectURL(file))
       setLogoLoading(false)
 
-      toast.success("Logo téléchargé avec succès", {
+      toast.success(t("store.editStore.successUploadLogo"), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -167,10 +167,10 @@ console.log(formData)
         draggable: true,
       })
     } catch (err) {
-      setError("Failed to upload logo")
+      setError(t("store.editStore.errorUploadLogo"))
       setLogoLoading(false)
       console.error("Error uploading logo:", err)
-      toast.error("Erreur lors du téléchargement du logo", {
+      toast.error(t("store.editStore.errorUploadLogo"), {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -201,7 +201,7 @@ console.log(formData)
       setBannierePreview(URL.createObjectURL(file))
       setBanniereLoading(false)
 
-      toast.success("Bannière téléchargée avec succès", {
+      toast.success(t("store.editStore.successUploadBanniere"), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -210,10 +210,10 @@ console.log(formData)
         draggable: true,
       })
     } catch (err) {
-      setError("Failed to upload banniere")
+      setError(t("store.editStore.errorUploadBanniere"))
       setBanniereLoading(false)
       console.error("Error uploading banniere:", err)
-      toast.error("Erreur lors du téléchargement de la bannière", {
+      toast.error(t("store.editStore.errorUploadBanniere"), {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -231,7 +231,7 @@ console.log(formData)
 
     try {
       if (!formData.nom || !formData.description || !formData.category || !formData.emplacement) {
-        throw new Error("Veuillez remplir tous les champs obligatoires")
+        throw new Error(t("store.editStore.errorRequired"))
       }
 
       const storeData = {
@@ -256,7 +256,7 @@ console.log(formData)
         },
       })
 
-      toast.success("Boutique mise à jour avec succès", {
+      toast.success(t("store.editStore.successUpdate"), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -266,10 +266,10 @@ console.log(formData)
       })
 
       await Swal.fire({
-        title: "Boutique mise à jour!",
-        text: "La boutique a été mise à jour avec succès.",
+        title: t("store.editStore.successTitle"),
+        text: t("store.editStore.successText"),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("store.editStore.successConfirm"),
         confirmButtonColor: "#6D28D9",
       })
 
@@ -277,8 +277,8 @@ console.log(formData)
     } catch (err) {
       console.error("Error updating store:", err)
       console.error("Error details:", err.response?.data)
-      setError(err.message || "Failed to update store")
-      toast.error(err.response?.data?.error?.message || "Erreur lors de la mise à jour de la boutique", {
+      setError(err.message || t("store.editStore.errorUpdate"))
+      toast.error(err.response?.data?.error?.message || t("store.editStore.errorUpdate"), {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -293,14 +293,14 @@ console.log(formData)
 
   const handleCancel = async () => {
     const result = await Swal.fire({
-      title: "Êtes-vous sûr?",
-      text: "Toutes les modifications non enregistrées seront perdues.",
+      title: t("store.editStore.cancelTitle"),
+      text: t("store.editStore.cancelText"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#6D28D9",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Oui, quitter",
-      cancelButtonText: "Annuler",
+      confirmButtonText: t("store.editStore.cancelConfirm"),
+      cancelButtonText: t("store.editStore.cancelCancel"),
     })
     
     if (result.isConfirmed) {
@@ -313,7 +313,7 @@ console.log(formData)
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
-          <p className="text-[#6D28D9] font-medium">Chargement des données...</p>
+          <p className="text-[#6D28D9] font-medium">{t('store.editStore.loading')}</p>
         </div>
       </div>
     )

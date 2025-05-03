@@ -138,6 +138,13 @@ const productEn = {
     international: "International",
     productInfoDesc: "Fill in the product information using the tabs below.",
     uploading: "Uploading...",
+    error: "Error creating product",
+    success: "Product created successfully",
+    successTitle: "Product created successfully",
+    successText: "Product created successfully. You can now manage your product.",
+    cancelTitle: "Cancel creation",
+    cancelText: "Are you sure you want to cancel the product creation?",
+    successConfirm: "OK"
   },
   editProduct: {
     title: "Edit Product",
@@ -216,6 +223,13 @@ const productEn = {
     uploading: "Uploading...",
     productInfoDesc: "Modify your product information below.",
     loading: "Loading...",
+    successConfirm: "OK",
+    successTitle: "Product updated successfully",
+    successText: "Product updated successfully. You can now manage your product.",
+    cancelTitle: "Cancel update",
+    cancelText: "Are you sure you want to cancel the product update?",
+    cancelConfirm: "Yes, cancel",
+    cancelCancel: "Cancel"
   }
 };
 
