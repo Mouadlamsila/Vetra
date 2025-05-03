@@ -4,9 +4,13 @@ import React, { useState } from 'react';
 import { AlertTriangle } from "lucide-react"
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from '../../../i18n/i18n';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
   const [language, setLanguage] = useState(i18n.language);
   const [timezone, setTimezone] = useState('europe-paris');
@@ -21,6 +25,7 @@ export default function SettingsPage() {
     pushMessages: true
   });
   const [twoFactor, setTwoFactor] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleNotificationChange = (key) => {
     setNotifications(prev => ({
@@ -32,6 +37,63 @@ export default function SettingsPage() {
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
     changeLanguage(newLanguage);
+  };
+
+  const handleDeleteAccount = async () => {
+    const result = await Swal.fire({
+      title: t('settings.settings.security.deleteAccount.confirmTitle'),
+      text: t('settings.settings.security.deleteAccount.confirmText'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: t('settings.settings.security.deleteAccount.confirmButton'),
+      cancelButtonText: t('settings.settings.security.deleteAccount.cancelButton')
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const userId = localStorage.getItem('IDUser');
+      const token = localStorage.getItem('token');
+
+      // Delete user account
+      await axios.delete(`http://localhost:1337/api/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Clear local storage
+      localStorage.removeItem('IDUser');
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.setItem('location', 'home');
+
+      // Show success message
+      await Swal.fire({
+        title: t('settings.settings.security.deleteAccount.successTitle'),
+        text: t('settings.settings.security.deleteAccount.successText'),
+        icon: 'success',
+        confirmButtonColor: '#3085d6',
+      });
+
+      // Navigate to home page
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      await Swal.fire({
+        title: t('settings.settings.security.deleteAccount.errorTitle'),
+        text: t('settings.settings.security.deleteAccount.errorText'),
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -313,8 +375,14 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="mt-4">
-              <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-md">
-                {t('settings.settings.security.deleteAccount.button')}
+              <button 
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className={`px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-md ${
+                  isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isDeleting ? t('settings.settings.security.deleteAccount.deleting') : t('settings.settings.security.deleteAccount.button')}
               </button>
             </div>
           </div>

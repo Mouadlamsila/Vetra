@@ -100,7 +100,13 @@ export const settingsEn = {
           title: "Warning",
           description: "This action is irreversible. All your data, stores and products will be permanently deleted."
         },
-        button: "Delete my account"
+        button: "Delete my account",
+        confirmTitle: "Delete Account",
+        confirmText: "Are you sure you want to delete your account?",
+        confirmButton: "Delete",
+        cancelButton: "Cancel",
+        successTitle: "Account deleted",
+        successText: "Your account has been deleted successfully. We're sorry to see you go.",
       }
     }
   }

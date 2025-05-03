@@ -121,7 +121,13 @@ export const settingsFr = {
           title: "Attention",
           description: "Cette action est irréversible. Toutes vos données, boutiques et produits seront définitivement supprimés."
         },
-        button: "Supprimer mon compte"
+        button: "Supprimer mon compte",
+        confirmTitle: "Supprimer le compte",
+        confirmText: "Êtes-vous sûr de vouloir supprimer votre compte ?",
+        confirmButton: "Supprimer",
+        cancelButton: "Annuler",
+        successTitle: "Compte supprimé",
+        successText: "Votre compte a été supprimé avec succès. Nous sommes désolé de vous voir partir.",
       }
     }
   }

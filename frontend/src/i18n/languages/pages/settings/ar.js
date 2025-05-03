@@ -119,7 +119,15 @@ export const settingsAr = {
           title: "تحذير",
           description: "هذا الإجراء لا رجعة فيه. سيتم حذف جميع بياناتك ومتاجرك ومنتجاتك نهائيًا."
         },
-        button: "حذف حسابي"
+        button: "حذف حسابي",
+        confirmTitle: "حذف الحساب",
+        confirmText: "هل أنت متأكد من رغبتك في حذف حسابك؟",
+        confirmButton: "حذف",
+        cancelButton: "إلغاء",
+        successTitle: "تم حذف الحساب",
+        successText: "تم حذف حسابك بنجاح. نحن نعتذر لك على عدم الاستمرارية.",
+
+
       }
       
     }
