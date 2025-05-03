@@ -104,15 +104,15 @@ export default function MobileNavigation() {
   return (
     <div 
       ref={menuRef}
-      className={`fixed bottom-0 left-0 w-full sm:hidden z-50 transition-transform duration-300 ${
+      className={`fixed bottom-0 left-0 w-full sm:hidden z-50 transition-transform duration-300 ease-in-out ${
         isVisible ? 'translate-y-0' : 'translate-y-full'
       }`}
     >
       {/* Additional menu items overlay */}
       <div 
         className={`${
-          showMore ? "translate-y-0" : "translate-y-96"
-        } duration-500 transition-all ease-in-out bg-white border-t border-gray-200 p-2 grid grid-cols-3 gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]`}
+          showMore ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        } fixed bottom-16 left-0 w-full bg-white border-t border-gray-200 p-2 grid grid-cols-3 gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-all duration-300 ease-in-out`}
       >
         {additionalNavItems.map((item, index) => {
           const isActive = location.pathname === item.path

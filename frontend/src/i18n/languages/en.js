@@ -259,6 +259,8 @@ const en = {
     oldPasswordRequired: "Old password is required",
     updateSuccess: "Update success",
     incorrectOldPassword: "Incorrect old password",
+    noOrders: "No orders",
+    noOrdersDescription: "Create an order to manage your orders",
   },
   profile: profileEn,
   store: storeEn,

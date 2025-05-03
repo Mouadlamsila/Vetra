@@ -67,6 +67,8 @@ const storeAr = {
     products: "المنتجات",
     view: "عرض",
     edit: "تعديل",
+    noStores: "لا يوجد متاجر",
+    noStoresDescription: "قم بإنشاء متجر جديد لإدارة متاجرك الإلكترونية",
     status: {
       active: "نشط",
       pending: "قيد الانتظار",

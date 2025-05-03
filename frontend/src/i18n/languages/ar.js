@@ -259,6 +259,8 @@ const ar = {
     oldPasswordRequired: "كلمة المرور القديمة مطلوبة",
     updateSuccess: "تم تحديث المعلومات بنجاح",
     incorrectOldPassword: "كلمة المرور القديمة غير صحيحة",
+    noOrders: "لا يوجد طلبات",
+    noOrdersDescription: "قم بإنشاء طلب جديد لإدارة الطلبات",
   },
   
   profile: profileAr,

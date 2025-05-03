@@ -259,6 +259,8 @@ const fr = {
     oldPasswordRequired: "Veuillez saisir votre ancien mot de passe",
     updateSuccess: "Mise à jour réussie",
     incorrectOldPassword: "Ancien mot de passe incorrect",
+    noOrders: "Aucune commande",
+    noOrdersDescription: "Créez une commande pour gérer vos commandes",
   },
   profile: profileFr,
   store: storeFr,

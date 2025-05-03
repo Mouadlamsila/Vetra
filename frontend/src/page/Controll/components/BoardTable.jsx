@@ -187,20 +187,30 @@ export default function BoardTable() {
                     </div>
                     <div className="h-[1px] bg-[#c8c2fd] w-full"></div>
                     <div className="h-[300px] grid gap-2 px-4 py-2 w-full overflow-y-auto">
-                        {recentOrders.map((item, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-[#c8c2fd]/30 text-[#6D28D9] rounded-full flex items-center justify-center">
-                                        <ShoppingBag className="size-4" />
+                        {recentOrders.length > 0 ? (
+                            recentOrders.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 bg-[#c8c2fd]/30 text-[#6D28D9] rounded-full flex items-center justify-center">
+                                            <ShoppingBag className="size-4" />
+                                        </div>
+                                        <div className="">
+                                            <p className="text-sm font-medium">{t('dashboard.order')} #{item.numCommand}</p>
+                                            <p className="text-sm text-gray-500">{t('dashboard.hoursAgo', { hours: item.heures })}</p>
+                                        </div>
                                     </div>
-                                    <div className="">
-                                        <p className="text-sm font-medium">{t('dashboard.order')} #{item.numCommand}</p>
-                                        <p className="text-sm text-gray-500">{t('dashboard.hoursAgo', { hours: item.heures })}</p>
-                                    </div>
+                                    <p className="text-sm font-medium">€{item.price}</p>
                                 </div>
-                                <p className="text-sm font-medium">€{item.price}</p>
+                            ))
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-center">
+                                <div className="bg-[#c8c2fd]/10 p-4 rounded-full mb-3">
+                                    <ShoppingBag size={32} className="text-[#6D28D9]" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('dashboard.noOrders')}</h3>
+                                
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>

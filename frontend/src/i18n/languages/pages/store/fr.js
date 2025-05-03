@@ -67,6 +67,8 @@ const storeFr = {
     products: "Produits",
     view: "Voir",
     edit: "Modifier",
+    noStores: "Aucune boutique",
+    noStoresDescription: "Créez une nouvelle boutique pour gérer vos boutiques en ligne",
     status: {
       active: "Actif",
       pending: "En attente",
