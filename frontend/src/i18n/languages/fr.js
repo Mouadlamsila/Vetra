@@ -255,7 +255,10 @@ const fr = {
     last5Orders: "5 dernières commandes reçues",
     order: "Commande",
     hoursAgo: "Il y a {{hours}} heure(s)",
-    home: "Accueil"
+    home: "Accueil",
+    oldPasswordRequired: "Veuillez saisir votre ancien mot de passe",
+    updateSuccess: "Mise à jour réussie",
+    incorrectOldPassword: "Ancien mot de passe incorrect",
   },
   profile: profileFr,
   store: storeFr,

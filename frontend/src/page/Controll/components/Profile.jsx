@@ -146,13 +146,13 @@ export default function Profile() {
       return false
     }
 
-    if (formData.password) {
-      const isOldPasswordValid = await verifyOldPassword()
-      if (!isOldPasswordValid) {
-        setError(t("dashboard.incorrectOldPassword"))
-        return false
-      }
+    const isOldPasswordValid = await verifyOldPassword()
+    if (!isOldPasswordValid) {
+      setError(t("dashboard.incorrectOldPassword"))
+      return false
+    }
 
+    if (formData.password) {
       if (formData.password !== formData.confirmPassword) {
         setError(t("dashboard.passwordsDontMatch"))
         return false

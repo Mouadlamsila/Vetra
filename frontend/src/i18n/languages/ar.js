@@ -256,6 +256,9 @@ const ar = {
     order: "الطلب",
     hoursAgo: "منذ {{hours}} ساعة",
     home: "الرئيسية",
+    oldPasswordRequired: "كلمة المرور القديمة مطلوبة",
+    updateSuccess: "تم تحديث المعلومات بنجاح",
+    incorrectOldPassword: "كلمة المرور القديمة غير صحيحة",
   },
   
   profile: profileAr,

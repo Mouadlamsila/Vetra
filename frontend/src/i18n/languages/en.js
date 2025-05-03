@@ -255,7 +255,10 @@ const en = {
     last5Orders: "Last 5 orders received",
     order: "Order",
     hoursAgo: "{{hours}} hour(s) ago",
-    home: "Home"
+    home: "Home",
+    oldPasswordRequired: "Old password is required",
+    updateSuccess: "Update success",
+    incorrectOldPassword: "Incorrect old password",
   },
   profile: profileEn,
   store: storeEn,
