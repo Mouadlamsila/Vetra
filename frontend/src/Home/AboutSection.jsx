@@ -4,10 +4,12 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Star, ChevronRight, Users, Award, Clock, Globe, CheckCircle, Brain, Rocket, Sparkles, TrendingUp, Lightbulb, Target, ChevronLeft } from "lucide-react"
 import { useTranslation } from 'react-i18next';
+import { Link } from "react-router-dom";
 
 const AboutSection = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("mission")
+  const role = localStorage.getItem("role");
 
   // Team members data
   const teamMembers = [
@@ -101,7 +103,7 @@ const AboutSection = () => {
   const language = localStorage.getItem("lang");
 
   return (
-    <section  className="py-20 px-4  bg-white ">
+    <section className="py-20 px-4  bg-white ">
       <div className="max-w-7xl mx-auto">
         {/* En-tête de la section */}
         <motion.div
@@ -196,7 +198,7 @@ const AboutSection = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-[#c8c2fd]/10 p-4 rounded-lg">
                         <div className="flex items-center mb-2">
-                          <Users className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9]`}  />
+                          <Users className={`${language === "ar" ? "ml-2" : "mr-2"} h-5 w-5 text-[#6D28D9]`} />
                           <h4 className="font-medium text-gray-900">{t('humanCentered')}</h4>
                         </div>
                         <p className="text-sm text-gray-600">
@@ -289,9 +291,8 @@ const AboutSection = () => {
                       <motion.div
                         key={index}
                         variants={itemVariants}
-                        className={`mb-12 flex items-center ${
-                          index % 2 === 0 ? "flex-row" : "flex-row-reverse"
-                        } md:flex-row-reverse md:even:flex-row`}
+                        className={`mb-12 flex items-center ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+                          } md:flex-row-reverse md:even:flex-row`}
                       >
                         <div
                           className={`w-full md:w-1/2 px-4 md:px-8 ${index % 2 === 0 ? "text-right" : "text-left"} md:text-left md:even:text-right`}
@@ -350,7 +351,7 @@ const AboutSection = () => {
                       variants={itemVariants}
                       className="bg-white p-6 rounded-xl shadow-md relative"
                     >
-                      
+
                       <div className={`absolute top-6 ${language === "ar" ? "left-3" : "right-3"}  text-[#c8c2fd] text-4xl font-serif`}>"</div>
                       <p className="text-gray-700 mb-6 relative z-10">{testimonial.quote}</p>
                       <div className="flex items-center">
@@ -394,9 +395,18 @@ const AboutSection = () => {
             {t('joinUsers')}
           </motion.p>
           <motion.div variants={itemVariants}>
-            <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
-              {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
-            </button>
+            {
+              role === "User" ? <Link to={'/to-owner'} >
+                <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
+                  {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
+                </button>
+              </Link> :
+                <Link to={'/controll'} >
+                  <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
+                    {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
+                  </button>
+                </Link>
+            }
           </motion.div>
         </motion.div>
       </div>

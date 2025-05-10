@@ -12,15 +12,16 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false)
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
   const [boutiques, setBoutiques] = useState([]);
-  const { id } = useParams();
+  const id = localStorage.getItem("IDBoutique");
+  const userId = localStorage.getItem("IDUser")
   
 
   useEffect(() => {
     console.log(id)
     const fetchBoutiques = async () => {
-      const response = await axios.get(`http://localhost:1337/api/boutiques?filters[owner][id][$eq]=${id}&populate=*`);
+      const response = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${userId}&populate=*`);
       setBoutiques(response.data.data);
-      console.log(response.data.data)
+
     };
     fetchBoutiques();
   }, [])
@@ -50,12 +51,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50  bg-white border-b border-gray-200">
       {/* Top bar */}
-      <div className="bg-purple-700 text-white py-2 text-center text-sm">
+      <div className="bg-[#1e3a8a] text-white py-2 text-center text-sm">
         <p>Livraison gratuite pour toute commande supérieure à 50€ | Retours gratuits sous 30 jours</p>
       </div>
 
       {/* Main header */}
-      <div className="container mx-auto px-15 py-4">
+      <div className="container mx-auto px-4 sm:px-15 py-4">
         <div className="flex items-center justify-between">
           {/* Logo and mobile menu */}
           <div className="flex items-center gap-4">
@@ -63,25 +64,13 @@ export default function Header() {
               <Menu className="h-6 w-6" />
             </button>
 
-            <Link to="/" className="flex items-center gap-2">
-              <div className="bg-purple-700 text-white p-2 rounded-lg">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-              </div>
-              <span className="font-bold text-xl hidden sm:inline-block">ShopEase</span>
+            <Link to={`/view/${id}`} className="flex items-center gap-2">
+              <img 
+                src={ `http://localhost:1337${boutiques?.logo?.url}` || "/placeholder.svg"} 
+                alt={boutiques?.nom || "ShopEase"} 
+                className="w-6 h-6 object-cover"
+              />
+              <span className="font-bold text-xl hidden sm:inline-block">{boutiques?.nom}</span>
             </Link>
           </div>
 
@@ -92,9 +81,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Rechercher des produits..."
-                className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
               />
-              <button className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 bg-purple-700 hover:bg-purple-800 text-white px-3 rounded-md text-sm">
+              <button className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm">
                 Rechercher
               </button>
             </div>
@@ -161,7 +150,7 @@ export default function Header() {
               >
                 <ShoppingCart className="h-5 w-5" />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-purple-700 text-white text-xs flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1e3a8a] text-white text-xs flex items-center justify-center">
                     {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                   </span>
                 )}
@@ -266,7 +255,7 @@ export default function Header() {
                                       Continuer
                                     </Link>
                                   </button>
-                                  <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
+                                  <button className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md">
                                     <Link to="/checkout" className="w-full">
                                       Commander
                                     </Link>
@@ -287,7 +276,7 @@ export default function Header() {
 
         {/* Navigation - desktop only */}
         <nav className="hidden lg:flex items-center gap-6 mt-4">
-          <Link to="/" className="text-sm font-medium hover:text-purple-700 transition-colors">
+          <Link to={`/view/${id}`} className="text-sm font-medium hover:text-purple-700 transition-colors">
             Accueil
           </Link>
 
@@ -302,41 +291,19 @@ export default function Header() {
             {categoryMenuOpen && (
               <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20">
                 <div className="p-1">
-                  <Link
-                    to="/categories/electronics"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    onClick={() => setCategoryMenuOpen(false)}
-                  >
-                    Électronique
-                  </Link>
-                  <Link
-                    to="/categories/fashion"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    onClick={() => setCategoryMenuOpen(false)}
-                  >
-                    Mode
-                  </Link>
-                  <Link
-                    to="/categories/home"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    onClick={() => setCategoryMenuOpen(false)}
-                  >
-                    Maison & Jardin
-                  </Link>
-                  <Link
-                    to="/categories/beauty"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    onClick={() => setCategoryMenuOpen(false)}
-                  >
-                    Beauté & Santé
-                  </Link>
-                  <Link
-                    to="/categories/sports"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    onClick={() => setCategoryMenuOpen(false)}
-                  >
-                    Sports & Loisirs
-                  </Link>
+                  
+                {
+                    [...new Set(boutiques?.products?.map(p => p.categories))].map((category) => (
+                      <Link
+                        to={`/categories/${category}`}
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
+                        onClick={() => setCategoryMenuOpen(false)}
+                      >
+                        {category}
+                      </Link>
+                    ))
+                  }
+                  
                 </div>
               </div>
             )}

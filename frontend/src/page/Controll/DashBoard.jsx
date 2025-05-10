@@ -7,6 +7,34 @@ export default function DashBoard() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const language = localStorage.getItem("lang");
+    const userRole = localStorage.getItem("role");
+
+    // Function to check if menu item should be disabled
+    const isMenuItemDisabled = (menuType) => {
+        if (userRole !== 'Owner') {
+            // List of menu items that should be disabled for regular users
+            const disabledMenus = [
+                'AddStore', 
+                'AddProduct', 
+                'Stats', 
+                'Payment',
+                'Stores',
+                'Products',
+                'Orders',
+                'Dashboard'
+            ];
+            return disabledMenus.includes(menuType);
+        }
+        return false;
+    };
+
+    // Function to handle menu item click
+    const handleMenuClick = (e, menuType) => {
+        if (isMenuItemDisabled(menuType)) {
+            e.preventDefault();
+            return;
+        }
+    };
 
     return (
         <div className="w-full h-full hidden sm:flex justify-center items-center bg-[#1e3a8a]">
@@ -20,7 +48,13 @@ export default function DashBoard() {
                 <div className="flex h-full w-full items-center">
                     <ul className="grid h-full w-full flex-col text-white ">
 
-                        <Link to={'/controll/'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300  ${location.pathname === '/controll/' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/'} 
+                            onClick={(e) => handleMenuClick(e, 'Dashboard')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 
+                                ${location.pathname === '/controll/' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Dashboard') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <Home />
                                 <p>{t('dashboard.title')}</p>
@@ -32,43 +66,85 @@ export default function DashBoard() {
                                 <p>{t('dashboard.profile')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/Stores'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Stores' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
-                            <li className="flex   items-center gap-2">
+                        <Link 
+                            to={'/controll/Stores'} 
+                            onClick={(e) => handleMenuClick(e, 'Stores')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/Stores' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Stores') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <li className="flex items-center gap-2">
                                 <Store />
                                 <p>{t('dashboard.myStores')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/AddStore'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/AddStore' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/AddStore'} 
+                            onClick={(e) => handleMenuClick(e, 'AddStore')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/AddStore' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('AddStore') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <CirclePlus />
                                 <p>{t('dashboard.createStore')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/Products'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Products' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/Products'} 
+                            onClick={(e) => handleMenuClick(e, 'Products')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/Products' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Products') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <Package />
                                 <p>{t('dashboard.myProducts')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/AddProduct'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/AddProduct' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/AddProduct'} 
+                            onClick={(e) => handleMenuClick(e, 'AddProduct')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/AddProduct' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('AddProduct') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <PackagePlus />
                                 <p>{t('dashboard.addProduct')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/Orders'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Orders' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/Orders'} 
+                            onClick={(e) => handleMenuClick(e, 'Orders')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/Orders' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Orders') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <ShoppingBag />
                                 <p>{t('dashboard.orders')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/Stats'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Stats' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/Stats'} 
+                            onClick={(e) => handleMenuClick(e, 'Stats')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/Stats' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Stats') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <ChartColumn />
                                 <p>{t('dashboard.statistics')}</p>
                             </li>
                         </Link>
-                        <Link to={'/controll/Payment'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Payment' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
+                        <Link 
+                            to={'/controll/Payment'} 
+                            onClick={(e) => handleMenuClick(e, 'Payment')}
+                            className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all py-2 flex items-center duration-300 w-full 
+                                ${location.pathname === '/controll/Payment' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}
+                                ${isMenuItemDisabled('Payment') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                             <li className="flex items-center gap-2">
                                 <CreditCard />
                                 <p>{t('dashboard.payments')}</p>
@@ -81,7 +157,7 @@ export default function DashBoard() {
                             </li>
                         </Link>
                         <Link to={'/controll/Help'} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Help' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
-                            <li className="flex   items-center gap-2">
+                            <li className="flex items-center gap-2">
                                 <CircleHelp />
                                 <p>{t('dashboard.help')}</p>
                             </li>
@@ -90,9 +166,11 @@ export default function DashBoard() {
                             localStorage.removeItem("user");
                             localStorage.removeItem("IDUser");
                             localStorage.removeItem("token");
+                            localStorage.removeItem("role");
+                            localStorage.removeItem('IDBoutique')
                             navigate("/login");
                         }} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Modification' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
-                            <li className="flex   items-center gap-2">
+                            <li className="flex items-center gap-2">
                                 <LogOut />
                                 <p>{t('dashboard.logout')}</p>
                             </li>

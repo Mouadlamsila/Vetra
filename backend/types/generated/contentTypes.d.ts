@@ -369,6 +369,42 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAdressAdress extends Struct.CollectionTypeSchema {
+  collectionName: 'adresses';
+  info: {
+    displayName: 'Adress';
+    pluralName: 'adresses';
+    singularName: 'adress';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    addressLine1: Schema.Attribute.String;
+    addressLine2: Schema.Attribute.String;
+    city: Schema.Attribute.String;
+    country: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::adress.adress'
+    > &
+      Schema.Attribute.Private;
+    postalCode: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiBoutiqueBoutique extends Struct.CollectionTypeSchema {
   collectionName: 'boutiques';
   info: {
@@ -414,6 +450,74 @@ export interface ApiBoutiqueBoutique extends Struct.CollectionTypeSchema {
       ['active', 'pending', 'suspended']
     > &
       Schema.Attribute.DefaultTo<'pending'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiBusinessSurveysBusinessSurveys
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'business_surveis';
+  info: {
+    description: '';
+    displayName: 'business_surveys';
+    pluralName: 'business-surveis';
+    singularName: 'business-surveys';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    business_duration: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    daily_time_available: Schema.Attribute.String;
+    delivery_required: Schema.Attribute.Boolean;
+    has_previous_store: Schema.Attribute.Boolean;
+    has_suppliers: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business-surveys.business-surveys'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
+export interface ApiCategorieProductCategorieProduct
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'categorie_products';
+  info: {
+    displayName: 'Categorie_Products';
+    pluralName: 'categorie-products';
+    singularName: 'categorie-product';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categorie-product.categorie-product'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Unique;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1048,17 +1152,18 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
+    adress: Schema.Attribute.Relation<'oneToOne', 'api::adress.adress'>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     boutiques: Schema.Attribute.Relation<'oneToMany', 'api::boutique.boutique'>;
+    business_survey: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::business-surveys.business-surveys'
+    >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    defaultAddress: Schema.Attribute.Component<
-      'address-line1.components-address-addresses',
-      true
-    >;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1076,6 +1181,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    phone: Schema.Attribute.BigInteger;
     photo: Schema.Attribute.Media<'images'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -1106,7 +1212,10 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::adress.adress': ApiAdressAdress;
       'api::boutique.boutique': ApiBoutiqueBoutique;
+      'api::business-surveys.business-surveys': ApiBusinessSurveysBusinessSurveys;
+      'api::categorie-product.categorie-product': ApiCategorieProductCategorieProduct;
       'api::country.country': ApiCountryCountry;
       'api::order-item.order-item': ApiOrderItemOrderItem;
       'api::order.order': ApiOrderOrder;

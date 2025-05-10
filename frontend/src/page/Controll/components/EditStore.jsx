@@ -117,6 +117,7 @@ export default function EditStore() {
     fetchStoreData()
   }, [id, token])
 console.log(formData)
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     if (name.startsWith("location.")) {

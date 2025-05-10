@@ -28,7 +28,8 @@
     "recharts": "^2.15.2",
     "sweetalert2": "^11.19.1",
     "swiper": "^11.2.6",
-    "three": "^0.167.1"
+    "three": "^0.167.1",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

@@ -16,15 +16,23 @@ import {
   Loader,
   X,
   Check,
+  Store,
+  Package,
+  BarChart,
+  CreditCard,
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import AdminDashBoard from "../../Admin/DashBoard"
 
 export default function Profile() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [isEditing, setIsEditing] = useState(true)
   const language = localStorage.getItem("lang")
+  const userRole = localStorage.getItem("role")
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -274,9 +282,10 @@ export default function Profile() {
       </div>
     )
   }
+  const lang = localStorage.getItem("lang")
 
   return (
-    <div className="py-10 px-6 md:px-10 bg-white">
+    <div className="py-10 grid gap-4 px-6 md:px-10 bg-white">
       <div className="flex items-center space-x-3 mb-6">
         <div className="bg-[#6D28D9] p-3 rounded-lg shadow-lg">
           <User className="h-6 w-6 text-white" />
@@ -595,6 +604,63 @@ export default function Profile() {
           )}
         </div>
       </div>
+      {userRole === "User" && (
+        <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+          <div className="flex items-start space-x-4">
+            <div className="bg-purple-100 p-3 rounded-lg">
+              <Store className="h-6 w-6 text-purple-700" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-purple-900 mb-2">{t("profile.becomeOwner.title")}</h2>
+              <p className="text-gray-600 mb-4">
+                {t("profile.becomeOwner.description")}
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white p-4 rounded-lg border border-purple-100">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Store className="h-5 w-5 text-purple-600" />
+                    <h3 className="font-medium text-purple-900">{t("profile.becomeOwner.storeManagement.title")}</h3>
+                  </div>
+                  <p className="text-sm text-gray-600">{t("profile.becomeOwner.storeManagement.description")}</p>
+                </div>
+                
+                <div className="bg-white p-4 rounded-lg border border-purple-100">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Package className="h-5 w-5 text-purple-600" />
+                    <h3 className="font-medium text-purple-900">{t("profile.becomeOwner.productControl.title")}</h3>
+                  </div>
+                  <p className="text-sm text-gray-600">{t("profile.becomeOwner.productControl.description")}</p>
+                </div>
+                
+                <div className="bg-white p-4 rounded-lg border border-purple-100">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <BarChart className="h-5 w-5 text-purple-600" />
+                    <h3 className="font-medium text-purple-900">{t("profile.becomeOwner.analytics.title")}</h3>
+                  </div>
+                  <p className="text-sm text-gray-600">{t("profile.becomeOwner.analytics.description")}</p>
+                </div>
+                
+                <div className="bg-white p-4 rounded-lg border border-purple-100">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <CreditCard className="h-5 w-5 text-purple-600" />
+                    <h3 className="font-medium text-purple-900">{t("profile.becomeOwner.paymentProcessing.title")}</h3>
+                  </div>
+                  <p className="text-sm text-gray-600">{t("profile.becomeOwner.paymentProcessing.description")}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate("/to-owner")}
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+              >
+                <Store className={`h-5 w-5 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
+                {t("profile.becomeOwner.button")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

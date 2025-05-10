@@ -6,7 +6,9 @@ import { statsFr } from './pages/stats';
 import { paymentFr } from './pages/payment';
 import { helpFr } from './pages/help';
 import { settingsFr } from './pages/settings';
+import ownerFr from './pages/owner/fr';
 const fr = {
+  Home: "Accueil",
   Features: "Fonctionnalités",
   AboutUs: "À propos",
   Services: "Services",
@@ -228,6 +230,9 @@ const fr = {
   passwordsDontMatch: "Les mots de passe ne correspondent pas",
   joinOurCommunity: "Rejoignez notre communauté",
   alreadyHaveAccount: "Vous avez déjà un compte ?",
+  statistics: "Statistiques",
+  statisticsDesc: "Statistiques de votre boutique",
+
   dashboard: {
     title: "Tableau de bord",
     welcome: "Bienvenue sur votre tableau de bord",
@@ -283,7 +288,8 @@ const fr = {
   stats: statsFr,
   payment: paymentFr,
   help: helpFr,
-  settings: settingsFr
+  settings: settingsFr,
+  owner:ownerFr
 };
 
 export default fr; 

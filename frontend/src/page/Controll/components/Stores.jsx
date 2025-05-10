@@ -116,6 +116,7 @@ export default function Stores() {
                             <div className="flex flex-col sm:flex-row justify-between gap-2">
                                 <Link to={`/view/${store.documentId}`} className="w-full sm:w-auto">
                                     <button 
+                                        onClick={()=> localStorage.setItem('IDBoutique', store.documentId)}
                                         className="w-full bg-white border border-gray-300 flex items-center justify-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"
                                     >
                                         <Eye size={18} /> {t('store.stores.view')}

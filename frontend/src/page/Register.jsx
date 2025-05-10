@@ -26,13 +26,10 @@ export default function Register() {
     const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
-    const [isAnimating, setIsAnimating] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
         const animationTimer = setInterval(() => {
-            setIsAnimating(true)
-            setTimeout(() => setIsAnimating(false), 1000)
             setActiveFeatureIndex((prev) => (prev + 1) % features.length)
         }, 3000)
         return () => clearInterval(animationTimer)
@@ -65,11 +62,28 @@ export default function Register() {
             });
 
             console.log('Registration response:', registerResponse.data);
+            
+            // Update user role to "User"
+            const userId = registerResponse.data.user.id;
+            await axios.put(`http://localhost:1337/api/users/${userId}`, {
+                role: 4
+            }, {
+                headers: {
+                    Authorization: `Bearer ${registerResponse.data.jwt}`
+                }
+            });
+
+            // Store authentication data
+            localStorage.setItem('token', registerResponse.data.jwt)
+            localStorage.setItem('user', JSON.stringify(registerResponse.data.user.documentId))
+            localStorage.setItem('IDUser', registerResponse.data.user.id)
+            localStorage.setItem('role', 'user')
+
             setSuccess(t('registrationSuccess'));
             
             // Wait for 2 seconds to show success message before redirecting
             setTimeout(() => {
-                navigate("/login")
+                navigate("/to-owner")
             }, 2000);
         } catch (error) {
             console.error('Registration error:', error);

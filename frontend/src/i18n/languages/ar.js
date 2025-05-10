@@ -6,8 +6,10 @@ import { statsAr } from './pages/stats';
 import { paymentAr } from './pages/payment';
 import { helpAr } from './pages/help';
 import { settingsAr } from './pages/settings';
+import ownerAr from './pages/owner/ar';
 const ar = {
-  Features: "الرئيسية",
+  Home: "الرئيسية",
+  Features: "الميزات",
   AboutUs: "معلومات عنا",
   Services: "خطوات",
   Contact: "اتصل",
@@ -228,6 +230,11 @@ const ar = {
   passwordsDontMatch: "كلمات المرور غير متطابقة",
   joinOurCommunity: "انضم إلى مجتمعنا",
   alreadyHaveAccount: "لديك حساب بالفعل؟",
+  statistics: "الإحصائيات",
+  statisticsDesc: "الإحصائيات الخاصة بمتجرك",
+  totalProducts: "إجمالي المنتجات",
+  totalOrders: "إجمالي الطلبات",
+  totalRevenue: "إجمالي الإيرادات",
   dashboard: {
     title: "لوحة التحكم",
     welcome: "مرحباً بك في لوحة التحكم",
@@ -285,6 +292,7 @@ const ar = {
   stats: statsAr,
   payment: paymentAr,
   help: helpAr,
-  settings: settingsAr
+  settings: settingsAr,
+  owner: ownerAr
 };
 export default ar; 

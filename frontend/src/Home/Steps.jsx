@@ -5,9 +5,14 @@ import Step2 from "../Steps/Step2";
 import Step3 from "../Steps/Step3";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
 
 const Steps = () => {
     const { t } = useTranslation();
+    const userId = localStorage.getItem("IDUser");
+    const role = localStorage.getItem('role');
+
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -38,7 +43,7 @@ const Steps = () => {
             viewport={{ once: true, amount: 0.2 }}
             variants={containerVariants}
             className="py-16 px-4 bg-white"
-            
+
         >
             <motion.div variants={itemVariants} className="text-center mb-12">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('howItWorks')}</h2>
@@ -58,13 +63,27 @@ const Steps = () => {
                     <Step3 />
                 </motion.div>
             </div>
+            {
+                role === "User" ? (
+                    <Link to="/to-owner" className="w-full flex justify-center pt-4">
+                        <ShinyButton rounded={true} className="w-full sm:w-auto">
+                            <p className="text-sm sm:text-base">{t('startNow')}</p>
+                            <Store className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </ShinyButton>
+                    </Link>
+                ) : (
+                    <Link to="/controll" className="w-full flex justify-center pt-4">
+                        <ShinyButton rounded={true} className="w-full sm:w-auto">
+                            <p className="text-sm sm:text-base">{t('startNow')}</p>
+                            <Store className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </ShinyButton>
+                    </Link>
+                )
+            }
 
-            <div className="w-full flex justify-center pt-4">
-                <ShinyButton rounded={true} className="w-full sm:w-auto">
-                    <p className="text-sm sm:text-base">{t('startNow')}</p>
-                    <Store className="w-4 h-4 sm:w-5 sm:h-5" />
-                </ShinyButton>
-            </div>
+
+
+
         </motion.div>
     );
 };

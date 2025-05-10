@@ -73,11 +73,6 @@
         "images"
       ]
     },
-    "defaultAddress": {
-      "type": "component",
-      "repeatable": true,
-      "component": "address-line1.components-address-addresses"
-    },
     "boutiques": {
       "type": "relation",
       "relation": "oneToMany",
@@ -89,6 +84,22 @@
       "relation": "oneToMany",
       "target": "api::order.order",
       "mappedBy": "customer"
+    },
+    "phone": {
+      "type": "biginteger",
+      "unique": false
+    },
+    "adress": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::adress.adress",
+      "inversedBy": "user"
+    },
+    "business_survey": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::business-surveys.business-surveys",
+      "mappedBy": "user"
     }
   }
 }

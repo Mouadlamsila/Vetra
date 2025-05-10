@@ -6,7 +6,9 @@ import { statsEn } from './pages/stats';
 import { paymentEn } from './pages/payment';
 import { helpEn } from './pages/help';
 import { settingsEn } from './pages/settings';
+import ownerEn from './pages/owner/en';
 const en = {
+  Home: "Home",
   Features: "Features",
   AboutUs: "About Us",
   Services: "Services",
@@ -228,6 +230,9 @@ const en = {
   passwordsDontMatch: "Passwords don't match",
   joinOurCommunity: "Join our community",
   alreadyHaveAccount: "Already have an account?",
+  statistics: "Statistics",
+  statisticsDesc: "Statistics of your store",
+  
   dashboard: {
     title: "Dashboard",
     welcome: "Welcome to your dashboard",
@@ -283,7 +288,8 @@ const en = {
   stats: statsEn,
   payment: paymentEn,
   help: helpEn,
-  settings: settingsEn
+  settings: settingsEn,
+  owner: ownerEn
 };
 
 export default en; 

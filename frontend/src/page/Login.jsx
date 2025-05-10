@@ -52,11 +52,15 @@ export default function Login() {
           password: formData.password
         }
       )
+      const user = await axios.get(`http://localhost:1337/api/users/${response.data.user.id}?populate=*`)
+
 
       // Store authentication data
       localStorage.setItem('token', response.data.jwt)
       localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
       localStorage.setItem('IDUser', response.data.user.id)
+     
+      localStorage.setItem('role',user.data.role.name)
      
       navigate('/')
       
