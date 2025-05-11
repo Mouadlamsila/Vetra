@@ -27,11 +27,11 @@ import { useNavigate } from "react-router-dom"
 
 export default function ProductsPage() {
   const { t } = useTranslation()
-  const [isDropdownOpen, setIsDropdownOpen] = useState({})
   const [selectedStore, setSelectedStore] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [products, setProducts] = useState([])
   const [stores, setStores] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -71,6 +71,14 @@ export default function ProductsPage() {
         navigate("/login")
         return
       }
+
+      // Fetch categories
+      const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setCategories(categoriesResponse.data.data)
 
       // Fetch user's stores
       const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
@@ -144,7 +152,6 @@ export default function ProductsPage() {
 
         // Update the products list after deletion
         setProducts((prevProducts) => prevProducts?.filter((product) => product.documentId !== productId))
-        setIsDropdownOpen({})
 
         // Show success toast
         toast.success("Produit supprimé avec succès", {
@@ -173,17 +180,6 @@ export default function ProductsPage() {
     }
   }
 
-  // Get unique categories from products
-  const getUniqueCategories = () => {
-    const categories = new Set()
-    products.forEach((product) => {
-      if (product && product.categories) {
-        categories.add(product.categories)
-      }
-    })
-    return Array.from(categories)
-  }
-
   // Filtrage des produits
   const filteredProducts = products.filter((product) => {
     // Filter by store
@@ -192,7 +188,7 @@ export default function ProductsPage() {
     }
 
     // Filter by category
-    if (selectedCategory !== "all" && product?.categories !== selectedCategory) {
+    if (selectedCategory !== "all" && product?.category?.id !== Number.parseInt(selectedCategory)) {
       return false
     }
 
@@ -211,6 +207,17 @@ export default function ProductsPage() {
     setSelectedStore("all")
     setSelectedCategory("all")
     setSearchQuery("")
+  }
+
+  // Get categories that have products
+  const getCategoriesWithProducts = () => {
+    const categoryIds = new Set()
+    products.forEach(product => {
+      if (product.category?.id) {
+        categoryIds.add(product.category.id)
+      }
+    })
+    return categories.filter(category => categoryIds.has(category.id))
   }
 
   // Mobile product card component
@@ -260,11 +267,7 @@ export default function ProductsPage() {
         <div>
           <p className="text-gray-500">{t("product.products.table.category")}</p>
           <p className="font-medium">
-            {product.categories &&
-            t(`product.products.categories.${product.categories}`) !==
-              `product.products.categories.${product.categorie}`
-              ? t(`product.products.categories.${product.categories}`)
-              : t("product.products.uncategorized")}
+            {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t("product.products.uncategorized")}
           </p>
         </div>
         <div>
@@ -449,9 +452,9 @@ export default function ProductsPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
             >
               <option value="all">{t("product.products.allCategories")}</option>
-              {getUniqueCategories().map((category) => (
-                <option key={category} value={category}>
-                  {t(`product.products.categories.${category}`) || category.charAt(0).toUpperCase() + category.slice(1)}
+              {getCategoriesWithProducts().map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -585,11 +588,7 @@ export default function ProductsPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-center">
-                        {product.categories &&
-                        t(`product.products.categories.${product.categories}`) !==
-                          `product.products.categories.${product.categorie}`
-                          ? t(`product.products.categories.${product.categories}`)
-                          : t("product.products.uncategorized")}
+                        {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t("product.products.uncategorized")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         {product?.boutique?.nom || t("product.products.unassigned")}

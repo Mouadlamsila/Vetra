@@ -9,6 +9,7 @@ import Categories from "./Categories";
 import Boutiques from "./Boutiques";
 import TopBar from "./components/TopBar";
 import Sidebar from "./components/Sidebar";
+import ProfileAdmin from "./Profile";
 
 export default function RouteAdmin() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,6 +38,7 @@ export default function RouteAdmin() {
                         <Route path="/products" element={<Produits />} />
                         <Route path="/categories" element={<Categories />} />
                         <Route path="/stores" element={<Boutiques />} />
+                        <Route path="/Profile" element={<ProfileAdmin/>}/>
                     </Routes>
                 </main>
             </div>

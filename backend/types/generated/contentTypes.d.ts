@@ -498,6 +498,7 @@ export interface ApiCategorieProductCategorieProduct
   extends Struct.CollectionTypeSchema {
   collectionName: 'categorie_products';
   info: {
+    description: '';
     displayName: 'Categorie_Products';
     pluralName: 'categorie-products';
     singularName: 'categorie-product';
@@ -642,11 +643,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     boutique: Schema.Attribute.Relation<'manyToOne', 'api::boutique.boutique'>;
-    categories: Schema.Attribute.Enumeration<
-      ['clothing', 'electronics', 'home', 'beauty', 'other']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'other'>;
+    category: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::categorie-product.categorie-product'
+    >;
     comparePrice: Schema.Attribute.Decimal;
     cost: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.DateTime;

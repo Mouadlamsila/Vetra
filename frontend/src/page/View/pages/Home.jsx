@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules"
 import {
@@ -35,7 +35,7 @@ export default function HomeView() {
   const [activeTab, setActiveTab] = useState("all")
   const userId = localStorage.getItem("IDUser")
   const id = localStorage.getItem("IDBoutique")
-  console.log(id)
+  
   useEffect(() => {
     setIsMounted(true)
     const fetchData = async () => {
@@ -80,12 +80,13 @@ export default function HomeView() {
   // Filter products based on active tab
   const filteredProducts = activeTab === "all" 
     ? products 
-    : products.filter(product => product.categories === activeTab)
+    : products.filter(product => product.category?.id === Number.parseInt(activeTab))
 
   // Get categories that have products
   const categoriesWithProducts = categories.filter(category => 
-    products.some(product => product.categories === category.name)
+    products.some(product => product.category?.id === category.id)
   )
+
 
   const heroSlides = [
     {
@@ -211,7 +212,7 @@ export default function HomeView() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categoriesWithProducts.map((category) => (
               <Link
-                to={`/view/categories/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                to={`/view/categories/${category.documentId}`}
                 key={category.id}
                 className="group"
               >
@@ -228,7 +229,7 @@ export default function HomeView() {
                     <h3 className="text-2xl font-bold text-white mb-1">{category.name}</h3>
                     <div className="flex items-center justify-between">
                       <p className="text-white/80 text-sm">
-                        {products.filter(p => p.categories === category.name).length} products
+                        {products.filter(p => p.category?.id === category.id).length} products
                       </p>
                       <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
                         Explore
@@ -262,9 +263,9 @@ export default function HomeView() {
               {categoriesWithProducts.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => setActiveTab(category.name)}
+                  onClick={() => setActiveTab(category.id.toString())}
                   className={`px-4 py-2 text-sm rounded-md ${
-                    activeTab === category.name ? "bg-[#6D28D9] text-white font-medium" : "text-gray-600 hover:text-gray-900"
+                    activeTab === category.id.toString() ? "bg-[#6D28D9] text-white font-medium" : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   {category.name}
@@ -296,7 +297,7 @@ export default function HomeView() {
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium line-clamp-1">{product.name}</h3>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                      {product.categories}
+                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : 'Non catégorisé'}
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>

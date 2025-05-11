@@ -11,6 +11,8 @@ export default function CategoryPage() {
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
+  const [categoryName, setCategoryName] = useState("")
+  const id = localStorage.getItem("IDBoutique")
 
   // Filter states
   const [priceRange, setPriceRange] = useState([0, 1000])
@@ -18,18 +20,27 @@ export default function CategoryPage() {
   const [selectedRating, setSelectedRating] = useState(0)
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:1337/api/products?filters[categories][$eq]=${category}&populate=*`)
-      .then((res) => {
-        setProducts(res.data.data)
-        setFilteredProducts(res.data.data)
+    const fetchData = async () => {
+      try {
+        // First fetch the category to get its name
+        const categoryResponse = await axios.get(`http://localhost:1337/api/categorie-products/${category}`)
+        setCategoryName(categoryResponse.data.data.name)
+
+        // Then fetch products for this category and boutique
+        const productsResponse = await axios.get(
+          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`
+        )
+        setProducts(productsResponse.data.data)
+        setFilteredProducts(productsResponse.data.data)
         setLoading(false)
-      })
-      .catch((err) => {
-        console.log(err)
+      } catch (err) {
+        console.error(err)
         setLoading(false)
-      })
-  }, [category])
+      }
+    }
+
+    fetchData()
+  }, [category, id])
 
   // Apply filters whenever filter states change
   useEffect(() => {
@@ -75,7 +86,7 @@ export default function CategoryPage() {
               Accueil
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-            <span className="text-gray-900 font-medium capitalize">{category}</span>
+            <span className="text-gray-900 font-medium">{categoryName}</span>
           </div>
         </div>
       </div>
@@ -85,7 +96,7 @@ export default function CategoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 capitalize mb-2">{category}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{categoryName}</h1>
               <p className="text-gray-500">{filteredProducts.length} produits trouvés</p>
             </div>
             <button
@@ -484,7 +495,7 @@ function ProductCard({ product }) {
         <div className="relative">
           <div className="aspect-square overflow-hidden">
             <img
-              src={`http://localhost:1337${product.imgMain?.url}` || "/placeholder.svg"}
+              src={product.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
               alt={product.name}
               className={`object-cover w-full h-full transition-transform duration-500 ${isHovered ? "scale-110" : "scale-100"}`}
             />
@@ -508,7 +519,9 @@ function ProductCard({ product }) {
           <h3 className="font-medium line-clamp-1 text-gray-900 group-hover:text-purple-700 transition-colors">
             {product.name}
           </h3>
-          <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{product.categories}</span>
+          <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">
+            {product.category?.name || 'Non catégorisé'}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">

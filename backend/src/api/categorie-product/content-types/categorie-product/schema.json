@@ -4,18 +4,20 @@
   "info": {
     "singularName": "categorie-product",
     "pluralName": "categorie-products",
-    "displayName": "Categorie_Products"
+    "displayName": "Categorie_Products",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
   },
   "attributes": {
     "photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "name": {
       "type": "string",

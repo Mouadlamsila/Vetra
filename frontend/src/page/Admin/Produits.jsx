@@ -15,22 +15,28 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [viewModalOpen, setViewModalOpen] = useState(false)
+  const [categories, setCategories] = useState([])
 
-  // Fetch products from API
+  // Fetch products and categories from API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch categories
+        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products')
+        setCategories(categoriesResponse.data.data)
+
+        // Fetch products
         const response = await axios.get('http://localhost:1337/api/products?populate=*')
         setProducts(response.data.data)
         setIsLoading(false)
       } catch (err) {
-        setError('Failed to fetch products')
+        setError('Failed to fetch data')
         setIsLoading(false)
-        console.error('Error fetching products:', err)
+        console.error('Error fetching data:', err)
       }
     }
 
-    fetchProducts()
+    fetchData()
   }, [])
 
   // Format currency
@@ -71,14 +77,11 @@ export default function Products() {
   // Filter products based on search term and filters
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = categoryFilter ? product.categories === categoryFilter : true
+    const matchesCategory = categoryFilter ? product.category?.id === Number.parseInt(categoryFilter) : true
     const matchesStore = storeFilter ? product.boutique?.id === Number.parseInt(storeFilter) : true
 
     return matchesSearch && matchesCategory && matchesStore
   })
-
-  // Get unique categories from products
-  const categories = [...new Set(products.map(product => product.categories))].filter(Boolean)
 
   // Get unique stores from products
   const stores = [...new Set(products.map(product => product.boutique).filter(Boolean))]
@@ -87,6 +90,17 @@ export default function Products() {
     setCategoryFilter("")
     setStoreFilter("")
     setSearchTerm("")
+  }
+
+  // Get categories that have products
+  const getCategoriesWithProducts = () => {
+    const categoryIds = new Set()
+    products.forEach(product => {
+      if (product.category?.id) {
+        categoryIds.add(product.category.id)
+      }
+    })
+    return categories.filter(category => categoryIds.has(category.id))
   }
 
   if (isLoading) {
@@ -137,9 +151,9 @@ export default function Products() {
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
               <option value="">Toutes les catégories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              {getCategoriesWithProducts().map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -256,7 +270,7 @@ export default function Products() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                      {product.categories}
+                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : 'Non catégorisé'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -380,7 +394,7 @@ export default function Products() {
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">{selectedProduct.name}</h3>
                       <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                        {selectedProduct.categories}
+                        {selectedProduct.category ? categories.find(cat => cat.id === selectedProduct.category.id)?.name : 'Non catégorisé'}
                       </span>
                     </div>
                   </div>

@@ -56,7 +56,8 @@ export default function AddProductPage() {
     imgMain: null,
     imgsAdditional: [],
   })
-  const [stores, setStores] = useState([]) // Changed from boutiques to stores
+  const [stores, setStores] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -74,12 +75,20 @@ export default function AddProductPage() {
   const lang = localStorage.getItem("lang")
   useEffect(() => {
     // Fetch stores when component mounts
-    const fetchStores = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("token")
         if (!token) {
           throw new Error("Token non trouvé. Veuillez vous connecter.")
         }
+
+        // Fetch categories
+        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setCategories(categoriesResponse.data.data)
 
         const response = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
           headers: {
@@ -100,7 +109,7 @@ export default function AddProductPage() {
         })
       }
     }
-    fetchStores()
+    fetchData()
 
     // Check if we're in edit mode
     if (id) {
@@ -296,7 +305,7 @@ export default function AddProductPage() {
         data: {
           name: formData.name,
           description: formData.description,
-          categories: formData.categories,
+          category: formData.categories,
           boutique: formData.boutique,
           tags: formData.tags,
           prix: Number(formData.prix),
@@ -510,13 +519,11 @@ export default function AddProductPage() {
                       className="block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm appearance-none"
                     >
                       <option value="">{t("product.createProduct.selectCategory")}</option>
-                      {Object.entries(t("product.createProduct.categories", { returnObjects: true })).map(
-                        ([key, value]) => (
-                          <option key={key} value={key}>
-                            {value}
-                          </option>
-                        ),
-                      )}
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
                     <div className={`absolute inset-y-0 flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"}`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

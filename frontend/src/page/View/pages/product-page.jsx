@@ -17,12 +17,8 @@ import {
 } from "lucide-react"
 import axios from "axios"
 
-
-
-
 export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("features")
   const { id } = useParams()
@@ -32,32 +28,39 @@ export default function ProductPage() {
   const [relatedProducts, setRelatedProducts] = useState([])
 
   useEffect(() => {
-    axios.get(`http://localhost:1337/api/products/${id}?populate=*`)
-      .then((res) => {
-        setProduct(res.data.data)
-        setCategoryProduct(res.data.data.categories)
-
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:1337/api/products/${id}?populate=*`)
+        setProduct(response.data.data)
+        setCategoryProduct(response.data.data.category?.id)
         setLoading(false)
-      })
-      .catch((err) => {
-        console.log(err)
+      } catch (err) {
+        console.error(err)
         setLoading(false)
-      })
+      }
+    }
 
+    fetchData()
   }, [id])
 
   useEffect(() => {
-    if (categoryProduct) {
-      axios.get(`http://localhost:1337/api/products?filters[categories][$eq]=${categoryProduct}&populate=*`)
-        .then((res) => {
-          const filteredProducts = res.data.data.filter(item => item.documentId !== id).slice(0, 4)
+    const fetchRelatedProducts = async () => {
+      if (categoryProduct) {
+        try {
+          const response = await axios.get(
+            `http://localhost:1337/api/products?filters[category][id][$eq]=${categoryProduct}&populate=*`
+          )
+          const filteredProducts = response.data.data
+            .filter(item => item.documentId !== id)
+            .slice(0, 4)
           setRelatedProducts(filteredProducts)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-
+        } catch (err) {
+          console.error(err)
+        }
+      }
     }
+
+    fetchRelatedProducts()
   }, [categoryProduct, id])
 
   if (loading) {
@@ -89,7 +92,6 @@ export default function ProductPage() {
   return (
     <div className="bg-white min-h-screen pb-16">
       {/* Breadcrumb */}
-
       <div className="bg-white border-gray-200 border-b">
         <div className="container mx-auto px-4 sm:px-15 py-3">
           <div className="flex items-center text-sm text-gray-500">
@@ -97,8 +99,8 @@ export default function ProductPage() {
               Accueil
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
-            <Link to={`/view/categories/${product.categories}`} className="hover:text-purple-700">
-              {product.categories}
+            <Link to={`/view/categories/${product.category?.id}`} className="hover:text-purple-700">
+              {product.category?.name || 'Non catégorisé'}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <span className="text-gray-900 font-medium truncate">{product.name}</span>
@@ -122,12 +124,13 @@ export default function ProductPage() {
               {allImages.map((image, index) => (
                 <button
                   key={index}
-                  className={`relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg  bg-white ${selectedImage === index ? "border-2 border-purple-700" : "border-2 border-gray-200"
-                    }`}
+                  className={`relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-white ${
+                    selectedImage === index ? "border-2 border-purple-700" : "border-2 border-gray-200"
+                  }`}
                   onClick={() => setSelectedImage(index)}
                 >
                   <img
-                    src={`http://localhost:1337${image}`}
+                    src={image ? `http://localhost:1337${image}` : "/placeholder.svg"}
                     alt={`${product.name} - Image ${index + 1}`}
                     className="object-contain p-2 w-full h-full"
                   />
@@ -141,7 +144,7 @@ export default function ProductPage() {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                  {product.categories}
+                  {product.category?.name || 'Non catégorisé'}
                 </span>
                 <div className="flex items-center gap-2">
                   <button className="rounded-full h-9 w-9 flex items-center justify-center border border-gray-300 hover:bg-gray-50">
@@ -232,11 +235,9 @@ export default function ProductPage() {
 
         {/* Product Details Tabs */}
         <div className="mt-16">
-
           <div className="border-b-2 border-gray-200">
             <div className="flex space-x-8">
               <div className="relative flex justify-center items-center">
-
                 <button
                   onClick={() => setActiveTab("features")}
                   className={`relative  py-3  font-medium 
@@ -250,7 +251,6 @@ export default function ProductPage() {
                 <div className={`${activeTab === "features" ? 'absolute' : 'hidden'} h-[2px] w-full -bottom-0.5 left-0 translate-[-50%, -50%] bg-purple-700`}></div>
               </div>
               <div className="relative flex justify-center items-center">
-
                 <button
                   onClick={() => setActiveTab("specifications")}
                   className={`relative py-3 font-medium 
@@ -329,15 +329,16 @@ function ProductCard({ product }) {
         <div className="relative">
           <div className="aspect-square overflow-hidden">
             <img
-              src={`http://localhost:1337${product?.imgMain?.url}` || "/placeholder.svg"}
+              src={product?.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
               alt={product?.name}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
             />
           </div>
           {product?.badge && (
             <span
-              className={`absolute top-3 left-3 px-2 py-1 text-xs font-medium text-white rounded-full ${product?.badge === "Sale" ? "bg-red-500" : product?.badge === "New" ? "bg-green-500" : "bg-purple-700"
-                }`}
+              className={`absolute top-3 left-3 px-2 py-1 text-xs font-medium text-white rounded-full ${
+                product?.badge === "Sale" ? "bg-red-500" : product?.badge === "New" ? "bg-green-500" : "bg-purple-700"
+              }`}
             >
               {product?.badge}
             </span>
@@ -357,15 +358,18 @@ function ProductCard({ product }) {
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium line-clamp-1">{product?.name}</h3>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product?.categories}</span>
+          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+            {product?.category?.name || 'Non catégorisé'}
+          </span>
         </div>
         <div className="flex items-center mb-3">
           <div className="flex text-yellow-400">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`h-3.5 w-3.5 ${i < Math.floor(product?.rating) ? "fill-current text-yellow-400" : "text-gray-300"
-                  }`}
+                className={`h-3.5 w-3.5 ${
+                  i < Math.floor(product?.rating) ? "fill-current text-yellow-400" : "text-gray-300"
+                }`}
               />
             ))}
           </div>

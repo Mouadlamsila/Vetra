@@ -53,18 +53,6 @@
         "images"
       ]
     },
-    "categories": {
-      "type": "enumeration",
-      "enum": [
-        "clothing",
-        "electronics",
-        "home",
-        "beauty",
-        "other"
-      ],
-      "required": true,
-      "default": "other"
-    },
     "boutique": {
       "type": "relation",
       "relation": "manyToOne",
@@ -95,11 +83,17 @@
       "mappedBy": "product"
     },
     "imgMain": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
+    },
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::categorie-product.categorie-product"
     }
   }
 }

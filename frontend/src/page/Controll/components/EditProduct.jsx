@@ -59,6 +59,7 @@ export default function EditProduct() {
     imgsAdditional: [],
   })
   const [stores, setStores] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [pageLoading, setPageLoading] = useState(true)
@@ -79,6 +80,14 @@ export default function EditProduct() {
         if (!token) {
           throw new Error("Token non trouvé. Veuillez vous connecter.")
         }
+
+        // Fetch categories
+        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setCategories(categoriesResponse.data.data)
 
         // Fetch stores
         const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
@@ -110,7 +119,7 @@ export default function EditProduct() {
         setFormData({
           name: product.name || "",
           description: product.description || "",
-          categories: product.categories || "",
+          categories: product.category?.id || "",
           boutique: product.boutique?.id || null,
           tags: product.tags || "",
           prix: product.prix || 0,
@@ -285,7 +294,7 @@ export default function EditProduct() {
         data: {
           name: formData.name,
           description: formData.description,
-          categories: formData.categories,
+          category: formData.categories,
           boutique: formData.boutique,
           tags: formData.tags,
           prix: Number(formData.prix),
@@ -306,7 +315,6 @@ export default function EditProduct() {
           imgsAdditional: formData.imgsAdditional,
         },
       }
-      console.log(productData)
 
       await axios.put(`http://localhost:1337/api/products/${id}`, productData, {
         headers: {
@@ -500,11 +508,11 @@ export default function EditProduct() {
                       className="block py-3 px-4 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9] sm:text-sm appearance-none"
                     >
                       <option value="">{t("product.editProduct.selectCategory")}</option>
-                      <option value="clothing">{t("product.editProduct.clothing")}</option>
-                      <option value="electronics">{t("product.editProduct.electronics")}</option>
-                      <option value="home">{t("product.editProduct.home")}</option>
-                      <option value="beauty">{t("product.editProduct.beauty")}</option>
-                      <option value="other">{t("product.editProduct.other")}</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
                     <div className={`absolute inset-y-0  ${lang === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center  pointer-events-none`}>
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

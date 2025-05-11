@@ -8,7 +8,8 @@ import {
   Tag,
   HeadphonesIcon,
   Settings,
-  Package2
+  Package2,
+  User
 } from "lucide-react";
 
 interface SidebarProps {
@@ -27,6 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { href: "/admin/categories", label: "Catégories", icon: <Tag className="text-lg" /> },
     { href: "/admin/support", label: "Support", icon: <HeadphonesIcon className="text-lg" /> },
     { href: "/admin/settings", label: "Paramètres", icon: <Settings className="text-lg" /> },
+  
   ];
 
   return (
@@ -67,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       </nav>
       
       <div className="mt-auto p-4 border-t border-slate-700">
-        <div className="flex items-center space-x-2">
+        <Link to={"/admin/Profile"} className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
             <span className="text-sm font-medium">A</span>
           </div>
@@ -75,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <p className="text-sm font-medium">Admin Principal</p>
             <p className="text-xs text-slate-400">admin@marketplace.com</p>
           </div>
-        </div>
+        </Link>
       </div>
     </aside>
   );

@@ -3,28 +3,52 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { ChevronDown, Search, User, ShoppingCart, Menu, X, Minus, Plus } from "lucide-react"
 import axios from "axios"
-import { useParams } from "react-router-dom"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
-  const [boutiques, setBoutiques] = useState([]);
-  const id = localStorage.getItem("IDBoutique");
+  const [boutiques, setBoutiques] = useState([])
+  const [categories, setCategories] = useState([])
+  const id = localStorage.getItem("IDBoutique")
   const userId = localStorage.getItem("IDUser")
   
 
   useEffect(() => {
-    console.log(id)
-    const fetchBoutiques = async () => {
-      const response = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${userId}&populate=*`);
-      setBoutiques(response.data.data);
+    const fetchData = async () => {
+      try {
+        // Fetch boutique data
+        const boutiqueResponse = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${userId}&populate=*`)
+        setBoutiques(boutiqueResponse.data.data)
 
-    };
-    fetchBoutiques();
-  }, [])
+        // Fetch products with populated categories
+        const productsResponse = await axios.get(
+          `http://localhost:1337/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
+        )
+        
+        // Extract unique categories from products
+        const uniqueCategories = Array.from(
+          new Map(
+            productsResponse.data.data
+              .filter(product => product.category)
+              .map(product => [product.category.id, product.category])
+          ).values()
+        )
+        
+        setCategories(uniqueCategories)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchData()
+  }, [id, userId])
+console.log(boutiques)
+  // Get categories that have products in this boutique
+  const getCategoriesWithProducts = () => {
+    return categories
+  }
 
   // Mock cart data
   const cartItems = [
@@ -66,7 +90,7 @@ export default function Header() {
 
             <Link to={`/view/${id}`} className="flex items-center gap-2">
               <img 
-                src={ `http://localhost:1337${boutiques?.logo?.url}` || "/placeholder.svg"} 
+                src={boutiques?.logo?.url ? `http://localhost:1337${boutiques.logo.url}` : "/placeholder.svg"} 
                 alt={boutiques?.nom || "ShopEase"} 
                 className="w-6 h-6 object-cover"
               />
@@ -291,19 +315,16 @@ export default function Header() {
             {categoryMenuOpen && (
               <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20">
                 <div className="p-1">
-                  
-                {
-                    [...new Set(boutiques?.products?.map(p => p.categories))].map((category) => (
-                      <Link
-                        to={`/categories/${category}`}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                        onClick={() => setCategoryMenuOpen(false)}
-                      >
-                        {category}
-                      </Link>
-                    ))
-                  }
-                  
+                  {getCategoriesWithProducts().map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/view/categories/${category.documentId}`}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
+                      onClick={() => setCategoryMenuOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
@@ -365,27 +386,16 @@ export default function Header() {
                         <ChevronDown className="h-4 w-4" />
                       </button>
                       <div id="mobile-categories" className="hidden pl-4 space-y-1 mt-1">
-                        <Link
-                          to="/categories/electronics"
-                          className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          Électronique
-                        </Link>
-                        <Link
-                          to="/categories/fashion"
-                          className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          Mode
-                        </Link>
-                        <Link
-                          to="/categories/home"
-                          className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          Maison & Jardin
-                        </Link>
+                        {getCategoriesWithProducts().map((category) => (
+                          <Link
+                            key={category.id}
+                            to={`/view/categories/${category.id}`}
+                            className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {category.name}
+                          </Link>
+                        ))}
                       </div>
                     </div>
 
@@ -443,21 +453,6 @@ export default function Header() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile search */}
-      {searchOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-white p-4 border-b shadow-sm z-50 lg:hidden">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Rechercher des produits..."
-              className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              autoFocus
-            />
           </div>
         </div>
       )}

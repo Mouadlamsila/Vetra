@@ -47,6 +47,31 @@ export default function StatsPage() {
         const userId = localStorage.getItem("IDUser")
         if (!userId) return
 
+        // Fetch categories
+        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products')
+        const categories = categoriesResponse.data.data
+
+        // Fetch products with categories for the logged-in user
+        const productsResponse = await axios.get(
+          `http://localhost:1337/api/products?filters[boutique][owner][id][$eq]=${userId}&populate=category`
+        )
+        const products = productsResponse.data.data
+
+        // Calculate category distribution
+        const categoryDistribution = categories.map(category => {
+          const productsInCategory = products.filter(product => 
+            product.category && product.category.id === category.id
+          ).length
+
+          return {
+            categorie: category.name,
+            valeur: productsInCategory,
+            fill: getRandomColor(),
+          }
+        }).filter(cat => cat.valeur > 0) // Only show categories with products
+
+        setCategoryData(categoryDistribution)
+
         // Fetch orders for the selected period
         const ordersResponse = await axios.get(
           `http://localhost:1337/api/orders?filters[customer][id][$eq]=${userId}&populate=*`,
@@ -81,12 +106,6 @@ export default function StatsPage() {
         })
         setSalesData(salesData)
 
-        // Fetch products and generate product data
-        const productsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[boutique][owner][id][$eq]=${userId}&populate=*`,
-        )
-        const products = productsResponse.data.data
-
         // Generate product sales data (top 5)
         const productSales = products
           .map((product) => ({
@@ -96,20 +115,6 @@ export default function StatsPage() {
           .sort((a, b) => b.ventes - a.ventes)
           .slice(0, 5)
         setProductData(productSales)
-
-        // Generate category distribution
-        const categoryDistribution = products.reduce((acc, product) => {
-          const category = product.categories || "other"
-          acc[category] = (acc[category] || 0) + 1
-          return acc
-        }, {})
-
-        const categoryData = Object.entries(categoryDistribution).map(([category, count]) => ({
-          categorie: category,
-          valeur: (count / products.length) * 100,
-          fill: getRandomColor(),
-        }))
-        setCategoryData(categoryData)
 
         // Generate customer data
         const customerData = Array.from({ length: days }, (_, i) => {
@@ -337,7 +342,7 @@ export default function StatsPage() {
                     outerRadius={({ viewBox }) => Math.min(viewBox.width, viewBox.height) / 3}
                     dataKey="valeur"
                     nameKey="categorie"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -346,8 +351,8 @@ export default function StatsPage() {
                       borderRadius: "0.375rem",
                     }}
                     formatter={(value) => [
-                      `${value}%`,
-                      t("stats.stats.charts.products.distribution.tooltip.percentage"),
+                      `${value} ${t("stats.stats.charts.products.distribution.tooltip.products")}`,
+                      t("stats.stats.charts.products.distribution.tooltip.count"),
                     ]}
                   />
                   <Legend
