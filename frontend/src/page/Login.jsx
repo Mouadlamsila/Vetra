@@ -32,6 +32,7 @@ export default function Login() {
       setActiveFeatureIndex((prev) => (prev + 1) % features.length)
     }, 3000)
     return () => clearInterval(animationTimer)
+
   }, [])
 
   const handleSubmit = async (e) => {
@@ -59,10 +60,14 @@ export default function Login() {
       localStorage.setItem('token', response.data.jwt)
       localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
       localStorage.setItem('IDUser', response.data.user.id)
-     
-      localStorage.setItem('role',user.data.role.name)
-     
-      navigate('/')
+      localStorage.setItem('role', user.data.role.name)
+
+      // Navigate based on role
+      if (user.data.role.name === "Admin") {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
       
     } catch (error) {
       let errorMessage = t('loginFailed')

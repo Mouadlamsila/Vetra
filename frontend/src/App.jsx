@@ -2,13 +2,14 @@ import Header from "./Home/Header";
 import Home from "./page/Home";
 import Footer from "./Home/Footer";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Login from "./page/login";
+import Login from "./page/Login";
 import Register from "./page/register";
 import Controll from "./page/Controll";
 import Middle from "./page/Controll/middle";
 import ViewRoute from "./page/View/App";
 import HomeView from "./page/View/pages/Home";
 import Owner from "./page/Owner";
+import RouteAdmin from "./page/Admin/Route";
 
 // Protected Route component for Owner registration
 const ProtectedOwnerRoute = () => {
@@ -61,11 +62,28 @@ const ProtectedControllRoute = () => {
   return <Controll />;
 };
 
+// Protected Route component for Admin panel
+const ProtectedAdminRoute = () => {
+  const userRole = localStorage.getItem('role');
+  
+  // Check if user is logged in
+  if (!userRole) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If not admin, redirect to home
+  if (userRole !== 'Admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <RouteAdmin />;
+};
+
 function AppContent() {
   const location = useLocation();
   return (
     <>
-      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && <Header />}
+      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -92,8 +110,9 @@ function AppContent() {
           <Route path="categories/:category" element={<HomeView />} />
           <Route path="products/:id" element={<HomeView />} />
         </Route>
+        <Route path="/admin/*" element={<ProtectedAdminRoute />} />
       </Routes>
-      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && <Footer />}
+      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Footer />}
     </>
   );
 }
