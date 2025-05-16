@@ -10,6 +10,7 @@ export default function Users() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const [viewModalOpen, setViewModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false)
   const [confirmAction, setConfirmAction] = useState("block")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [statusFilter, setStatusFilter] = useState("")
@@ -22,6 +23,23 @@ export default function Users() {
     email: "",
     phone: "",
     role: ""
+  })
+  const [newUserData, setNewUserData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "4", // Default to User role
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    country: "",
+    postalCode: "",
+    has_previous_store: false,
+    delivery_required: false,
+    has_suppliers: false,
+    daily_time_available: "1-2 hours",
+    business_duration: "just_starting"
   })
 
   // Fetch users from API
@@ -77,7 +95,17 @@ export default function Users() {
       username: user.username,
       email: user.email,
       phone: user.phone || "",
-      role: user.role?.id || ""
+      role: user.role?.id || "",
+      addressLine1: user.adress?.addressLine1 || "",
+      addressLine2: user.adress?.addressLine2 || "",
+      city: user.adress?.city || "",
+      country: user.adress?.country || "",
+      postalCode: user.adress?.postalCode || "",
+      has_previous_store: user.business_survey?.has_previous_store || false,
+      delivery_required: user.business_survey?.delivery_required || false,
+      has_suppliers: user.business_survey?.has_suppliers || false,
+      daily_time_available: user.business_survey?.daily_time_available || "1-2 hours",
+      business_duration: user.business_survey?.business_duration || "just_starting"
     })
     setEditModalOpen(true)
   }
@@ -99,28 +127,93 @@ export default function Users() {
         return
       }
 
+      // Update user basic info
       await axios.put(`http://localhost:1337/api/users/${selectedUser.id}`, {
         username: formData.username,
         email: formData.email,
-        phone: formData.phone,
         role: formData.role
       })
 
-      // Update local state
-      const updatedUsers = users.map((user) =>
-        user.id === selectedUser.id
-          ? {
-              ...user,
-              username: formData.username,
-              email: formData.email,
-              phone: formData.phone,
-              role: { ...user.role, id: formData.role }
-            }
-          : user
-      )
+      // Handle address update
+      if (selectedUser.adress) {
+        await axios.put(`http://localhost:1337/api/adresses/${selectedUser.adress.id}`, {
+          data: {
+            addressLine1: formData.addressLine1,
+            addressLine2: formData.addressLine2,
+            city: formData.city,
+            country: formData.country,
+            postalCode: formData.postalCode
+          }
+        })
+      } else if (formData.role === "1" && formData.addressLine1) {
+        // Create new address if it doesn't exist and role is Owner
+        await axios.post('http://localhost:1337/api/adresses', {
+          data: {
+            addressLine1: formData.addressLine1,
+            addressLine2: formData.addressLine2,
+            city: formData.city,
+            country: formData.country,
+            postalCode: formData.postalCode,
+            user: selectedUser.id
+          }
+        })
+      }
 
-      setUsers(updatedUsers)
+      // Handle business survey update for owners
+      if (formData.role === "1") {
+        if (selectedUser.business_survey) {
+          await axios.put(`http://localhost:1337/api/business-surveis/${selectedUser.business_survey.id}`, {
+            data: {
+              has_previous_store: formData.has_previous_store,
+              delivery_required: formData.delivery_required,
+              has_suppliers: formData.has_suppliers,
+              daily_time_available: formData.daily_time_available,
+              business_duration: formData.business_duration
+            }
+          })
+        } else {
+          await axios.post('http://localhost:1337/api/business-surveis', {
+            data: {
+              has_previous_store: formData.has_previous_store,
+              delivery_required: formData.delivery_required,
+              has_suppliers: formData.has_suppliers,
+              daily_time_available: formData.daily_time_available,
+              business_duration: formData.business_duration,
+              user: selectedUser.id
+            }
+          })
+        }
+      }
+
+      // Update phone number if role is Owner
+      if (formData.role === "1") {
+        await axios.put(`http://localhost:1337/api/users/${selectedUser.id}`, {
+          phone: formData.phone
+        })
+      }
+
+      // Refresh user data
+      const response = await axios.get('http://localhost:1337/api/users?populate=*')
+      setUsers(response.data)
       setEditModalOpen(false)
+      
+      // Reset form data
+      setFormData({
+        username: "",
+        email: "",
+        phone: "",
+        role: "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        country: "",
+        postalCode: "",
+        has_previous_store: false,
+        delivery_required: false,
+        has_suppliers: false,
+        daily_time_available: "1-2 hours",
+        business_duration: "just_starting"
+      })
     } catch (error) {
       console.error('Error updating user:', error)
       setError('Failed to update user')
@@ -162,7 +255,7 @@ export default function Users() {
 
     try {
       await axios.delete(`http://localhost:1337/api/users/${selectedUser.id}`)
-      
+
       // Update local state
       const updatedUsers = users.filter((user) => user.id !== selectedUser.id)
       setUsers(updatedUsers)
@@ -208,6 +301,91 @@ export default function Users() {
     return matchesSearch && matchesStatus
   })
 
+  const handleAddUser = async (e) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      // Create user
+      const userData = {
+        username: newUserData.username,
+        email: newUserData.email,
+        password: newUserData.password,
+        phone: newUserData.phone,
+        role: newUserData.role,
+      }
+
+      const response = await axios.post('http://localhost:1337/api/users', userData)
+      const userId = response.data.id
+
+      // If address fields are filled, create address
+      if (newUserData.addressLine1 || newUserData.city || newUserData.country) {
+        const addressData = {
+          data: {
+            addressLine1: newUserData.addressLine1,
+            addressLine2: newUserData.addressLine2,
+            city: newUserData.city,
+            country: newUserData.country,
+            postalCode: newUserData.postalCode,
+            user: userId
+          }
+        }
+        await axios.post('http://localhost:1337/api/adresses', addressData)
+      }
+
+      // If role is Owner, create business survey
+      if (newUserData.role === "1") {
+        const businessData = {
+          data: {
+            has_previous_store: newUserData.has_previous_store,
+            delivery_required: newUserData.delivery_required,
+            has_suppliers: newUserData.has_suppliers,
+            daily_time_available: newUserData.daily_time_available,
+            business_duration: newUserData.business_duration,
+            user: userId
+          }
+        }
+        await axios.post('http://localhost:1337/api/business-surveis', businessData)
+      }
+
+      // Refresh users list
+      const updatedResponse = await axios.get('http://localhost:1337/api/users?populate=*')
+      setUsers(updatedResponse.data)
+
+      setAddUserModalOpen(false)
+      setNewUserData({
+        username: "",
+        email: "",
+        password: "",
+        phone: "",
+        role: "4",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        country: "",
+        postalCode: "",
+        has_previous_store: false,
+        delivery_required: false,
+        has_suppliers: false,
+        daily_time_available: "1-2 hours",
+        business_duration: "just_starting"
+      })
+    } catch (error) {
+      console.error('Error creating user:', error)
+      setError('Failed to create user')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleNewUserInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setNewUserData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -231,7 +409,10 @@ export default function Users() {
           <h1 className="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h1>
           <p className="text-gray-500">Gérer tous les utilisateurs de la plateforme</p>
         </div>
-        <button className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
+        <button
+          onClick={() => setAddUserModalOpen(true)}
+          className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+        >
           <span className="flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -270,7 +451,7 @@ export default function Users() {
             <option value="blocked">Bloqués</option>
           </select>
         </div>
-                </div>
+      </div>
 
       {/* Users Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -333,8 +514,8 @@ export default function Users() {
                 >
                   Actions
                 </th>
-                            </tr>
-                        </thead>
+              </tr>
+            </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers.map((user) => {
                 const initials = getInitials(user.email)
@@ -387,15 +568,15 @@ export default function Users() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button 
-                          className="text-gray-500 hover:text-gray-700" 
+                        <button
+                          className="text-gray-500 hover:text-gray-700"
                           title="Voir le profil"
                           onClick={() => openViewModal(user)}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button 
-                          className="text-gray-500 hover:text-gray-700" 
+                        <button
+                          className="text-gray-500 hover:text-gray-700"
                           title="Modifier"
                           onClick={() => openEditModal(user)}
                         >
@@ -431,7 +612,7 @@ export default function Users() {
                         </button>
                       </div>
                     </td>
-                                </tr>
+                  </tr>
                 )
               })}
             </tbody>
@@ -723,16 +904,16 @@ export default function Users() {
                       {confirmAction === "block"
                         ? "Bloquer l'utilisateur"
                         : confirmAction === "delete"
-                        ? "Supprimer l'utilisateur"
-                        : "Débloquer l'utilisateur"}
+                          ? "Supprimer l'utilisateur"
+                          : "Débloquer l'utilisateur"}
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         {confirmAction === "block"
                           ? "Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus se connecter à son compte."
                           : confirmAction === "delete"
-                          ? "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
-                          : "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra à nouveau se connecter à son compte."}
+                            ? "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+                            : "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra à nouveau se connecter à son compte."}
                       </p>
                     </div>
                   </div>
@@ -741,21 +922,20 @@ export default function Users() {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${
-                    confirmAction === "block" || confirmAction === "delete"
+                  className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${confirmAction === "block" || confirmAction === "delete"
                       ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
                       : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                  }`}
+                    }`}
                   onClick={confirmAction === "delete" ? handleDeleteUser : handleConfirmAction}
                   disabled={isSubmitting}
                 >
                   {isSubmitting
                     ? "Traitement..."
                     : confirmAction === "block"
-                    ? "Bloquer"
-                    : confirmAction === "delete"
-                    ? "Supprimer"
-                    : "Débloquer"}
+                      ? "Bloquer"
+                      : confirmAction === "delete"
+                        ? "Supprimer"
+                        : "Débloquer"}
                 </button>
                 <button
                   type="button"
@@ -769,7 +949,254 @@ export default function Users() {
             </div>
           </div>
         </div>
-            )}  
+      )}
+
+      {/* Add User Modal */}
+      {addUserModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <form onSubmit={handleAddUser}>
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">Ajouter un utilisateur</h3>
+                    <button type="button" onClick={() => setAddUserModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                      <span className="sr-only">Fermer</span>
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Basic Information */}
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium text-gray-900">Informations de base</h4>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+                          <input
+                            type="text"
+                            name="username"
+                            value={newUserData.username}
+                            onChange={handleNewUserInputChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Email</label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={newUserData.email}
+                            onChange={handleNewUserInputChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                          <input
+                            type="password"
+                            name="password"
+                            value={newUserData.password}
+                            onChange={handleNewUserInputChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                          <select
+                            name="role"
+                            value={newUserData.role}
+                            onChange={handleNewUserInputChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                          >
+                            <option value="4">User</option>
+                            <option value="1">Owner</option>
+                          </select>
+                        </div>
+                        {newUserData.role === "1" &&
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Téléphone</label>
+                            <input
+                              type="tel"
+                              name="phone"
+                              value={newUserData.phone}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            />
+                          </div>}
+                      </div>
+                    </div>
+
+                    {/* Address Information */}
+                    {newUserData.role === "1" &&
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-medium text-gray-900">Adresse</h4>
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Adresse ligne 1</label>
+                            <input
+                              type="text"
+                              name="addressLine1"
+                              value={newUserData.addressLine1}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Adresse ligne 2</label>
+                            <input
+                              type="text"
+                              name="addressLine2"
+                              value={newUserData.addressLine2}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">Ville</label>
+                              <input
+                                type="text"
+                                name="city"
+                                value={newUserData.city}
+                                onChange={handleNewUserInputChange}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">Code postal</label>
+                              <input
+                                type="text"
+                                name="postalCode"
+                                value={newUserData.postalCode}
+                                onChange={handleNewUserInputChange}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Pays</label>
+                            <input
+                              type="text"
+                              name="country"
+                              value={newUserData.country}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>}
+
+                    {/* Business Survey (Only for Owners) */}
+                    {newUserData.role === "1" && (
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-medium text-gray-900">Informations Business</h4>
+                        <div className="space-y-4">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name="has_previous_store"
+                              checked={newUserData.has_previous_store}
+                              onChange={handleNewUserInputChange}
+                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            />
+                            <label className="ml-2 block text-sm text-gray-700">
+                              A déjà eu une boutique
+                            </label>
+                          </div>
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name="delivery_required"
+                              checked={newUserData.delivery_required}
+                              onChange={handleNewUserInputChange}
+                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            />
+                            <label className="ml-2 block text-sm text-gray-700">
+                              Livraison requise
+                            </label>
+                          </div>
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name="has_suppliers"
+                              checked={newUserData.has_suppliers}
+                              onChange={handleNewUserInputChange}
+                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            />
+                            <label className="ml-2 block text-sm text-gray-700">
+                              A des fournisseurs
+                            </label>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              Temps disponible quotidien
+                            </label>
+                            <select
+                              name="daily_time_available"
+                              value={newUserData.daily_time_available}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            >
+                              <option value="1-2 hours">1-2 heures</option>
+                              <option value="3-4 hours">3-4 heures</option>
+                              <option value="5-6 hours">5-6 heures</option>
+                              <option value="7+ hours">7+ heures</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              Durée de l'activité
+                            </label>
+                            <select
+                              name="business_duration"
+                              value={newUserData.business_duration}
+                              onChange={handleNewUserInputChange}
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                            >
+                              <option value="just_starting">Je débute</option>
+                              <option value="less_than_1_year">Moins d'un an</option>
+                              <option value="1_to_3_years">1 à 3 ans</option>
+                              <option value="more_than_3_years">Plus de 3 ans</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="submit"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Création..." : "Créer"}
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={() => setAddUserModalOpen(false)}
+                    disabled={isSubmitting}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-    )
+      )}
+    </div>
+  )
 }

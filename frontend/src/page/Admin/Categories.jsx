@@ -93,6 +93,7 @@ export default function Categories() {
       setCategories([...categories, newCategory])
       setCreateModalOpen(false)
       setFormData({ name: "", photo: null, photoPreview: null })
+      setRefresh(!refresh)
     } catch (error) {
       console.error('Error creating category:', error)
       setError('Failed to create category')
