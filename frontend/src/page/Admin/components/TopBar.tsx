@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Bell, Search, LogOut, Languages } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from '../../../i18n/i18n';
 import axios from 'axios';
@@ -25,10 +25,31 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const location = useLocation();
+  const [title , setTitle] = useState("Tableau de bord");
 
   useEffect(() => {
     fetchNotifications();
+   
   }, []);
+  useEffect(() => {
+    if(location.pathname === "/admin"){
+      setTitle("Tableau de bord");
+    }else if(location.pathname === "/admin/users"){
+      setTitle("Gestion des Utilisateurs");
+    }else if(location.pathname === "/admin/stores"){
+      setTitle("Gestion des Boutiques");
+    }else if(location.pathname === "/admin/products"){
+      setTitle("Gestion des Produits");
+    }else if(location.pathname === "/admin/categories"){
+      setTitle("Gestion des catégories");
+    }else if(location.pathname === "/admin/support"){
+      setTitle("Support client")
+    }else if(location.pathname === "/admin/settings"){
+      setTitle("Paramètres")
+    }
+   
+  }, [location.pathname]);
 
   const fetchNotifications = async () => {
     try {
@@ -85,11 +106,13 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
     setShowNotifications(false);
   };
 
+
+
   return (
-    <header className="bg-white border-b py-3 border-slate-200 sticky top-0 z-10">
+    <header className="bg-white border-b py-3 border-slate-200 sticky top-0 ">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <button
-          className="md:hidden p-2 hover:bg-slate-100 rounded-md"
+          className="md:hidden p-2 hover:bg-slate-100  rounded-md"
           onClick={onMenuClick}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,27 +120,23 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           </svg>
         </button>
 
-        <div className="flex items-center space-x-4 ml-auto">
-          <div className="relative hidden md:block">
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              className="w-64 pl-10 pr-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-            />
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          </div>
+        <div className="font-medium text-4xl ">
+         {title}
+        </div>
 
+        <div className="flex items-center space-x-4 ml-auto">
+          
           <div className="relative">
             <button 
               className="p-2 hover:bg-slate-100 rounded-md relative flex items-center space-x-1"
-              onClick={() => setShowLangMenu(!showLangMenu)}
+              onClick={() => {setShowLangMenu(!showLangMenu); setShowNotifications(false)} }
             >
               <Languages className="h-5 w-5" />
               <span className="text-sm">{i18n.language.toUpperCase()}</span>
             </button>
 
             {showLangMenu && (
-              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white  border-[1.9px] border-[#c8c2fd]">
                 <div className="py-1" role="menu" aria-orientation="vertical">
                   <button
                     onClick={() => handleLanguageChange('en')}
@@ -148,7 +167,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           <div className="relative">
             <button 
               className="p-2 hover:bg-slate-100 rounded-md relative"
-              onClick={() => setShowNotifications(!showNotifications)}
+              onClick={() => {setShowNotifications(!showNotifications) ; setShowLangMenu(false)}}
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
@@ -159,9 +178,9 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white border-[1.9px] border-[#c8c2fd] ">
                 <div className="py-2">
-                  <h3 className="px-4 py-2 text-sm font-medium text-gray-700 border-b">Notifications</h3>
+                  <h3 className="px-4 py-2 text-sm font-medium text-gray-700 border-b  border-[#c8c2fd]">Notifications</h3>
                   <div className="max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
                       notifications.map((notification) => (

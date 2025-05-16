@@ -20,8 +20,6 @@ export default function Header() {
     const userID = localStorage.getItem("user");
 
     useEffect(() => {
-        localStorage.setItem("location", makeStyle);
-
         if (location.pathname === '/' && location.hash) {
             const targetSection = location.hash.substring(1); // Remove the # symbol
             setTimeout(() => {

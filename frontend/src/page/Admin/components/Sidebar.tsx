@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         isOpen ? "fixed inset-0" : "hidden md:block"
       }`}
     >
-      <div className="p-4 flex items-center justify-center border-b border-[#c8c2fd]">
+      <Link to={'/'} className="p-4 flex items-center justify-center border-b border-[#c8c2fd]">
         <div className="flex items-center justify-start space-x-2">
           <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
         </div>
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-      </div>
+      </Link>
       
       <nav className="py-4">
         <ul>
