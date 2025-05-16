@@ -167,7 +167,8 @@ export default function DashBoard() {
                             localStorage.removeItem("IDUser");
                             localStorage.removeItem("token");
                             localStorage.removeItem("role");
-                            localStorage.removeItem('IDBoutique')
+                            localStorage.removeItem('IDBoutique');
+                            localStorage.setItem("location", "login");
                             navigate("/login");
                         }} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Modification' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>
                             <li className="flex items-center gap-2">

@@ -71,6 +71,7 @@ export default function Header() {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         localStorage.removeItem("IDBoutique");
+        localStorage.setItem("location", "login");
 
         navigate("/login");
     }

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 import {
   LayoutDashboard,
   Users,
@@ -17,8 +18,36 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+interface UserData {
+  username: string;
+  email: string;
+  photo?: {
+    url: string;
+  };
+}
+
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = localStorage.getItem("IDUser");
+        if (!userId) return;
+
+        const response = await axios.get(`http://localhost:1337/api/users/${userId}?populate=*`);
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const navItems = [
     { href: "/admin", label: "Tableau de bord", icon: <LayoutDashboard className="text-lg" /> },
@@ -28,18 +57,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { href: "/admin/categories", label: "Catégories", icon: <Tag className="text-lg" /> },
     { href: "/admin/support", label: "Support", icon: <HeadphonesIcon className="text-lg" /> },
     { href: "/admin/settings", label: "Paramètres", icon: <Settings className="text-lg" /> },
-  
   ];
 
   return (
     <aside 
-      className={`bg-slate-800 text-white w-full md:w-64 flex-shrink-0 md:sticky md:top-0 md:h-screen overflow-y-auto z-40 transition-all duration-300 ${
+      className={`bg-[#1e3a8a] text-white w-full md:w-64 flex-shrink-0 md:sticky md:top-0 md:h-screen overflow-y-auto z-40 transition-all duration-300 ${
         isOpen ? "fixed inset-0" : "hidden md:block"
       }`}
     >
-      <div className="p-4 flex items-center justify-center border-b border-slate-700">
+      <div className="p-4 flex items-center justify-center border-b border-[#c8c2fd]">
         <div className="flex items-center justify-start space-x-2">
-        <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
+          <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
         </div>
         <button className="md:hidden text-white" onClick={onClose}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,8 +84,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 to={item.href}
                 className={`flex items-center space-x-2 px-4 py-3 transition-colors ${
                   location.pathname === item.href
-                    ? "bg-slate-700 text-white"
-                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                    ? "bg-[#6D28D9] text-white"
+                    : "text-[#c8c2fd] hover:bg-[#6D28D9] hover:text-white"
                 }`}
               >
                 {item.icon}
@@ -68,14 +96,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </ul>
       </nav>
       
-      <div className="mt-auto p-4 border-t border-slate-700">
-        <Link to={"/admin/Profile"} className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
-            <span className="text-sm font-medium">A</span>
+      <div className="mt-auto p-4 border-t border-[#c8c2fd]">
+        <Link to="/admin/Profile" className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white overflow-hidden">
+            {userData?.photo?.url ? (
+              <img 
+                src={`http://localhost:1337${userData.photo.url}`}
+                alt={userData?.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-sm font-medium">
+                {userData?.username?.charAt(0) || 'A'}
+              </span>
+            )}
           </div>
           <div>
-            <p className="text-sm font-medium">Admin Principal</p>
-            <p className="text-xs text-slate-400">admin@marketplace.com</p>
+            <p className="text-sm font-medium">{userData?.username || 'Loading...'}</p>
+            <p className="text-[10px] text-slate-400">{userData?.email || 'Loading...'}</p>
           </div>
         </Link>
       </div>
