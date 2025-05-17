@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react"
 import { Tag, Pencil, Trash2, Plus, Save, Upload } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from 'react-i18next'
 
 export default function Categories() {
+  const { t } = useTranslation()
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -180,8 +182,8 @@ export default function Categories() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des catégories</h1>
-          <p className="text-gray-500">Créer et gérer les catégories de produits</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('categoriesAdmin.title')}</h1>
+          <p className="text-gray-500">{t('categoriesAdmin.subtitle')}</p>
         </div>
         <button
           className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-[#6D28D9] text-white rounded-md hover:bg-[#5b21b6] transition-colors"
@@ -191,7 +193,7 @@ export default function Categories() {
           }}
         >
           <Plus className="mr-2 h-4 w-4" />
-          Ajouter une catégorie
+          {t('categoriesAdmin.addCategory')}
         </button>
       </div>
 
@@ -216,11 +218,11 @@ export default function Categories() {
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold capitalize">{category.name}</h3>
                 <span className="px-2 py-1 bg-[#c8c2fd] text-[#6D28D9] text-xs font-medium rounded-full">
-                  ID: #{category.id}
+                  {t('categoriesAdmin.table.id', { id: category.id })}
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                Créé le {new Date(category.createdAt).toLocaleDateString()}
+                {t('categoriesAdmin.table.createdAt')}: {new Date(category.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -230,36 +232,24 @@ export default function Categories() {
       {/* Categories Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Toutes les catégories</h2>
+          <h2 className="text-lg font-semibold text-gray-800">{t('categoriesAdmin.allCategories')}</h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Catégorie
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('categoriesAdmin.table.category')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Créé le
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('categoriesAdmin.table.createdAt')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('categoriesAdmin.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -299,14 +289,14 @@ export default function Categories() {
                     <div className="flex items-center space-x-2">
                       <button
                         className="text-gray-500 hover:text-gray-700"
-                        title="Modifier"
+                        title={t('categoriesAdmin.modals.edit.title')}
                         onClick={() => openEditModal(category)}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         className="text-red-600 hover:text-red-900"
-                        title="Supprimer"
+                        title={t('categoriesAdmin.modals.delete.title')}
                         onClick={() => openDeleteModal(category)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -318,6 +308,12 @@ export default function Categories() {
             </tbody>
           </table>
         </div>
+
+        {categories.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">{t('categoriesAdmin.noCategories')}</p>
+          </div>
+        )}
       </div>
 
       {/* Create Category Modal */}
@@ -332,11 +328,11 @@ export default function Categories() {
             </span>
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Créer une nouvelle catégorie</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">{t('categoriesAdmin.modals.create.title')}</h3>
                 <form onSubmit={handleCreateCategory}>
                   <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Nom de la catégorie
+                      {t('categoriesAdmin.form.name.label')}
                     </label>
                     <input
                       type="text"
@@ -345,13 +341,13 @@ export default function Categories() {
                       value={formData.name}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
-                      placeholder="Ex: Électronique"
+                      placeholder={t('categoriesAdmin.form.name.placeholder')}
                       required
                     />
                   </div>
                   <div className="mb-4">
                     <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-1">
-                      Photo de la catégorie
+                      {t('categoriesAdmin.form.photo.label')}
                     </label>
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                       <div className="space-y-1 text-center">
@@ -361,7 +357,7 @@ export default function Categories() {
                             htmlFor="photo-upload"
                             className="relative cursor-pointer bg-white rounded-md font-medium text-[#6D28D9] hover:text-[#5b21b6] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#6D28D9]"
                           >
-                            <span>Télécharger une photo</span>
+                            <span>{t('categoriesAdmin.form.photo.upload')}</span>
                             <input
                               id="photo-upload"
                               name="photo"
@@ -371,9 +367,9 @@ export default function Categories() {
                               onChange={handlePhotoChange}
                             />
                           </label>
-                          <p className="pl-1">ou glisser-déposer</p>
+                          <p className="pl-1">{t('categoriesAdmin.form.photo.dragDrop')}</p>
                         </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                        <p className="text-xs text-gray-500">{t('categoriesAdmin.form.photo.format')}</p>
                       </div>
                     </div>
                   </div>
@@ -384,11 +380,11 @@ export default function Categories() {
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
-                        <span>Création en cours...</span>
+                        <span>{t('categoriesAdmin.modals.create.buttons.creating')}</span>
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Créer la catégorie
+                          {t('categoriesAdmin.modals.create.buttons.create')}
                         </>
                       )}
                     </button>
@@ -398,7 +394,7 @@ export default function Categories() {
                       onClick={() => setCreateModalOpen(false)}
                       disabled={isSubmitting}
                     >
-                      Annuler
+                      {t('categoriesAdmin.modals.create.buttons.cancel')}
                     </button>
                   </div>
                 </form>
@@ -420,11 +416,11 @@ export default function Categories() {
             </span>
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Modifier la catégorie</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">{t('categoriesAdmin.modals.edit.title')}</h3>
                 <form onSubmit={handleUpdateCategory}>
                   <div className="mb-4">
                     <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Nom de la catégorie
+                      {t('categoriesAdmin.form.name.label')}
                     </label>
                     <input
                       type="text"
@@ -438,7 +434,7 @@ export default function Categories() {
                   </div>
                   <div className="mb-4">
                     <label htmlFor="edit-photo" className="block text-sm font-medium text-gray-700 mb-1">
-                      Photo de la catégorie
+                      {t('categoriesAdmin.form.photo.label')}
                     </label>
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                       <div className="space-y-1 text-center">
@@ -454,9 +450,9 @@ export default function Categories() {
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="edit-photo-upload"
-                            className="relative cursor-pointer flex w-full justify-center  text-center  bg-white rounded-md font-medium text-[#6D28D9] hover:text-[#5b21b6] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#6D28D9]"
+                            className="relative cursor-pointer flex w-full justify-center text-center bg-white rounded-md font-medium text-[#6D28D9] hover:text-[#5b21b6] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#6D28D9]"
                           >
-                            <span >Changer la photo</span>
+                            <span>{t('categoriesAdmin.modals.edit.buttons.changePhoto')}</span>
                             <input
                               id="edit-photo-upload"
                               name="photo"
@@ -466,9 +462,8 @@ export default function Categories() {
                               onChange={handlePhotoChange}
                             />
                           </label>
-                    
                         </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                        <p className="text-xs text-gray-500">{t('categoriesAdmin.form.photo.format')}</p>
                       </div>
                     </div>
                   </div>
@@ -479,11 +474,11 @@ export default function Categories() {
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
-                        <span>Mise à jour en cours...</span>
+                        <span>{t('categoriesAdmin.modals.edit.buttons.updating')}</span>
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Mettre à jour
+                          {t('categoriesAdmin.modals.edit.buttons.update')}
                         </>
                       )}
                     </button>
@@ -493,7 +488,7 @@ export default function Categories() {
                       onClick={() => setEditModalOpen(false)}
                       disabled={isSubmitting}
                     >
-                      Annuler
+                      {t('categoriesAdmin.modals.edit.buttons.cancel')}
                     </button>
                   </div>
                 </form>
@@ -520,11 +515,12 @@ export default function Categories() {
                     <Trash2 className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">Supprimer la catégorie</h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      {t('categoriesAdmin.modals.delete.title')}
+                    </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Êtes-vous sûr de vouloir supprimer la catégorie "{selectedCategory?.name}" ? Les produits
-                        associés à cette catégorie ne seront plus catégorisés.
+                        {t('categoriesAdmin.modals.delete.message', { name: selectedCategory?.name })}
                       </p>
                     </div>
                   </div>
@@ -537,7 +533,7 @@ export default function Categories() {
                   onClick={handleDeleteCategory}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Suppression..." : "Supprimer"}
+                  {isSubmitting ? t('categoriesAdmin.modals.delete.buttons.processing') : t('categoriesAdmin.modals.delete.buttons.confirm')}
                 </button>
                 <button
                   type="button"
@@ -545,7 +541,7 @@ export default function Categories() {
                   onClick={() => setDeleteModalOpen(false)}
                   disabled={isSubmitting}
                 >
-                  Annuler
+                  {t('categoriesAdmin.modals.delete.buttons.cancel')}
                 </button>
               </div>
             </div>

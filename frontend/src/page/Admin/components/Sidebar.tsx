@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
   LayoutDashboard,
@@ -28,6 +29,7 @@ interface UserData {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,13 +52,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   }, []);
 
   const navItems = [
-    { href: "/admin", label: "Tableau de bord", icon: <LayoutDashboard className="text-lg" /> },
-    { href: "/admin/users", label: "Utilisateurs", icon: <Users className="text-lg" /> },
-    { href: "/admin/stores", label: "Boutiques", icon: <Store className="text-lg" /> },
-    { href: "/admin/products", label: "Produits", icon: <ShoppingBag className="text-lg" /> },
-    { href: "/admin/categories", label: "Catégories", icon: <Tag className="text-lg" /> },
-    { href: "/admin/support", label: "Support", icon: <HeadphonesIcon className="text-lg" /> },
-    { href: "/admin/settings", label: "Paramètres", icon: <Settings className="text-lg" /> },
+    { href: "/admin", label: t('sidebarAdmin.dashboard'), icon: <LayoutDashboard className="text-lg" /> },
+    { href: "/admin/users", label: t('sidebarAdmin.users'), icon: <Users className="text-lg" /> },
+    { href: "/admin/stores", label: t('sidebarAdmin.stores'), icon: <Store className="text-lg" /> },
+    { href: "/admin/products", label: t('sidebarAdmin.products'), icon: <ShoppingBag className="text-lg" /> },
+    { href: "/admin/categories", label: t('sidebarAdmin.categories'), icon: <Tag className="text-lg" /> },
+    { href: "/admin/support", label: t('sidebarAdmin.support'), icon: <HeadphonesIcon className="text-lg" /> },
+    { href: "/admin/settings", label: t('sidebarAdmin.settings'), icon: <Settings className="text-lg" /> },
   ];
 
   return (
@@ -112,8 +114,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             )}
           </div>
           <div>
-            <p className="text-sm font-medium">{userData?.username || 'Loading...'}</p>
-            <p className="text-[10px] text-slate-400">{userData?.email || 'Loading...'}</p>
+            <p className="text-sm font-medium">{userData?.username || t('sidebarAdmin.profile.loading')}</p>
+            <p className="text-[10px] text-slate-400">{userData?.email || t('sidebarAdmin.profile.loading')}</p>
           </div>
         </Link>
       </div>

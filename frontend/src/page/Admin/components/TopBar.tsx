@@ -26,42 +26,39 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
-  const [title , setTitle] = useState("Tableau de bord");
+  const [title, setTitle] = useState(t('usersAdmin.topBar.titles.dashboard'));
 
   useEffect(() => {
     fetchNotifications();
-   
   }, []);
+
   useEffect(() => {
     if(location.pathname === "/admin"){
-      setTitle("Tableau de bord");
+      setTitle(t('usersAdmin.topBar.titles.dashboard'));
     }else if(location.pathname === "/admin/users"){
-      setTitle("Gestion des Utilisateurs");
+      setTitle(t('usersAdmin.topBar.titles.users'));
     }else if(location.pathname === "/admin/stores"){
-      setTitle("Gestion des Boutiques");
+      setTitle(t('usersAdmin.topBar.titles.stores'));
     }else if(location.pathname === "/admin/products"){
-      setTitle("Gestion des Produits");
+      setTitle(t('usersAdmin.topBar.titles.products'));
     }else if(location.pathname === "/admin/categories"){
-      setTitle("Gestion des catégories");
+      setTitle(t('usersAdmin.topBar.titles.categories'));
     }else if(location.pathname === "/admin/support"){
-      setTitle("Support client")
+      setTitle(t('usersAdmin.topBar.titles.support'));
     }else if(location.pathname === "/admin/settings"){
-      setTitle("Paramètres")
+      setTitle(t('usersAdmin.topBar.titles.settings'));
     }
-   
-  }, [location.pathname]);
+  }, [location.pathname, t]);
 
   const fetchNotifications = async () => {
     try {
-      // Fetch pending stores
       const response = await axios.get('http://localhost:1337/api/boutiques?filters[statusBoutique][$eq]=pending&populate=*');
       const pendingStores = response.data.data;
 
-      // Create notifications for pending stores
       const storeNotifications: Notification[] = pendingStores.map((store: any) => ({
         id: store.id,
         type: 'pending_store',
-        message: `Nouvelle boutique en attente d'approbation`,
+        message: t('usersAdmin.topBar.notifications.newStore'),
         storeName: store.nom,
         createdAt: store.createdAt,
         read: false
@@ -106,8 +103,6 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
     setShowNotifications(false);
   };
 
-
-
   return (
     <header className="bg-white border-b py-3 border-slate-200 sticky top-0 ">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -120,8 +115,8 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           </svg>
         </button>
 
-        <div className="font-medium text-4xl ">
-         {title}
+        <div className="font-medium text-4xl">
+          {title}
         </div>
 
         <div className="flex items-center space-x-4 ml-auto">
@@ -167,7 +162,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           <div className="relative">
             <button 
               className="p-2 hover:bg-slate-100 rounded-md relative"
-              onClick={() => {setShowNotifications(!showNotifications) ; setShowLangMenu(false)}}
+              onClick={() => {setShowNotifications(!showNotifications); setShowLangMenu(false)}}
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
@@ -178,9 +173,11 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white border-[1.9px] border-[#c8c2fd] ">
+              <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white border-[1.9px] border-[#c8c2fd]">
                 <div className="py-2">
-                  <h3 className="px-4 py-2 text-sm font-medium text-gray-700 border-b  border-[#c8c2fd]">Notifications</h3>
+                  <h3 className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-[#c8c2fd]">
+                    {t('usersAdmin.topBar.notifications.title')}
+                  </h3>
                   <div className="max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
                       notifications.map((notification) => (
@@ -209,7 +206,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
                       ))
                     ) : (
                       <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                        Aucune notification
+                        {t('usersAdmin.topBar.notifications.noNotifications')}
                       </div>
                     )}
                   </div>
@@ -222,7 +219,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
 
           <button
             className="p-2 hover:bg-slate-100 rounded-md flex items-center space-x-1 text-red-600"
-            title="Déconnexion"
+            title={t('usersAdmin.topBar.notifications.logout')}
             onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />

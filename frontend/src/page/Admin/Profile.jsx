@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, Shield, Clock, CheckCircle } from "lucide-react"
+import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, CheckCircle } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from 'react-i18next'
 
 export default function Profile() {
+  const { t } = useTranslation()
   const [user, setUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
   const [formData, setFormData] = useState({
@@ -84,14 +86,12 @@ export default function Profile() {
     setIsSubmitting(true)
 
     try {
-      // Update user data
       await axios.put(`http://localhost:1337/api/users/${id}`, {
         username: formData.username,
         email: formData.email,
         phone: formData.phone,
       })
 
-      // Update address if it exists
       if (user.adress) {
         await axios.put(`http://localhost:1337/api/adresses/${user.adress.documentId}`, {
           data: {
@@ -104,7 +104,6 @@ export default function Profile() {
         })
       }
 
-      // Update photo if selected
       if (selectedFile) {
         const formData = new FormData()
         formData.append("files", selectedFile)
@@ -117,14 +116,13 @@ export default function Profile() {
         }
       }
 
-      // Refresh user data
       const response = await axios.get(`http://localhost:1337/api/users/${id}?populate=*`)
       setUser(response.data)
       setEditMode(false)
-      showSuccessMessage("Profil mis à jour avec succès")
+      showSuccessMessage(t('profileAdmin.messages.updateSuccess'))
     } catch (error) {
       console.error("Error updating profile:", error)
-      showSuccessMessage("Erreur lors de la mise à jour du profil")
+      showSuccessMessage(t('profileAdmin.messages.updateError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -135,33 +133,30 @@ export default function Profile() {
     setIsSubmitting(true)
     setPasswordError("")
 
-    // Validate passwords
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError("Les mots de passe ne correspondent pas")
+      setPasswordError(t('profileAdmin.password.errors.mismatch'))
       setIsSubmitting(false)
       return
     }
 
     if (passwordData.newPassword.length < 6) {
-      setPasswordError("Le mot de passe doit contenir au moins 6 caractères")
+      setPasswordError(t('profileAdmin.password.errors.minLength'))
       setIsSubmitting(false)
       return
     }
 
     try {
-      // First verify current password
       const verifyResponse = await axios.post("http://localhost:1337/api/auth/local", {
         identifier: user.email,
         password: passwordData.currentPassword,
       })
 
       if (!verifyResponse.data.jwt) {
-        setPasswordError("Mot de passe actuel incorrect")
+        setPasswordError(t('profileAdmin.password.errors.incorrect'))
         setIsSubmitting(false)
         return
       }
 
-      // If current password is correct, update to new password
       await axios.put(`http://localhost:1337/api/users/${id}`, {
         password: passwordData.newPassword,
       })
@@ -171,13 +166,13 @@ export default function Profile() {
         newPassword: "",
         confirmPassword: "",
       })
-      showSuccessMessage("Mot de passe mis à jour avec succès")
+      showSuccessMessage(t('profileAdmin.messages.passwordSuccess'))
     } catch (error) {
       console.error("Error updating password:", error)
       if (error.response?.status === 400) {
-        setPasswordError("Mot de passe actuel incorrect")
+        setPasswordError(t('profileAdmin.password.errors.incorrect'))
       } else {
-        showSuccessMessage("Erreur lors de la mise à jour du mot de passe")
+        showSuccessMessage(t('profileAdmin.messages.passwordError'))
       }
     } finally {
       setIsSubmitting(false)
@@ -195,8 +190,8 @@ export default function Profile() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Profil</h1>
-          <p className="text-gray-500">Gérer vos informations personnelles et paramètres</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('profileAdmin.title')}</h1>
+          <p className="text-gray-500">{t('profileAdmin.subtitle')}</p>
         </div>
       </div>
 
@@ -217,14 +212,14 @@ export default function Profile() {
                 onClick={() => setActiveTab("profile")}
               >
                 <User className="mr-2 h-4 w-4" />
-                Informations personnelles
+                {t('profileAdmin.personalInfo.title')}
               </button>
               <button
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "password" ? "bg-[#c8c2fd] text-[#6D28D9]" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("password")}
               >
                 <Lock className="mr-2 h-4 w-4" />
-                Mot de passe
+                {t('profileAdmin.password.title')}
               </button>
             </div>
           </div>
@@ -238,14 +233,14 @@ export default function Profile() {
               <div>
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-semibold text-gray-800">Informations personnelles</h2>
+                    <h2 className="text-lg font-semibold text-gray-800">{t('profileAdmin.personalInfo.title')}</h2>
                     {!editMode && (
                       <button
                         className="flex items-center text-sm text-[#6D28D9] hover:text-[#5b21b6]"
                         onClick={() => setEditMode(true)}
                       >
                         <Edit className="h-4 w-4 mr-1" />
-                        Modifier
+                        {t('profileAdmin.personalInfo.edit')}
                       </button>
                     )}
                   </div>
@@ -289,7 +284,7 @@ export default function Profile() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                                Nom d'utilisateur
+                                {t('profileAdmin.personalInfo.username')}
                               </label>
                               <input
                                 id="username"
@@ -303,7 +298,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
+                                {t('profileAdmin.personalInfo.email')}
                               </label>
                               <input
                                 id="email"
@@ -317,7 +312,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                                Téléphone
+                                {t('profileAdmin.personalInfo.phone')}
                               </label>
                               <input
                                 id="phone"
@@ -330,7 +325,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="addressLine1" className="block text-sm font-medium text-gray-700">
-                                Adresse ligne 1
+                                {t('profileAdmin.editMode.addressLine1')}
                               </label>
                               <input
                                 id="addressLine1"
@@ -343,7 +338,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="addressLine2" className="block text-sm font-medium text-gray-700">
-                                Adresse ligne 2
+                                {t('profileAdmin.editMode.addressLine2')}
                               </label>
                               <input
                                 id="addressLine2"
@@ -356,7 +351,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                                Ville
+                                {t('profileAdmin.editMode.city')}
                               </label>
                               <input
                                 id="city"
@@ -369,7 +364,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                Pays
+                                {t('profileAdmin.editMode.country')}
                               </label>
                               <input
                                 id="country"
@@ -382,7 +377,7 @@ export default function Profile() {
                             </div>
                             <div className="space-y-2">
                               <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">
-                                Code postal
+                                {t('profileAdmin.editMode.postalCode')}
                               </label>
                               <input
                                 id="postalCode"
@@ -413,7 +408,7 @@ export default function Profile() {
                               }}
                               disabled={isSubmitting}
                             >
-                              Annuler
+                              {t('profileAdmin.editMode.cancel')}
                             </button>
                             <button
                               type="submit"
@@ -421,11 +416,11 @@ export default function Profile() {
                               disabled={isSubmitting}
                             >
                               {isSubmitting ? (
-                                <span>Enregistrement...</span>
+                                <span>{t('profileAdmin.editMode.saving')}</span>
                               ) : (
                                 <>
                                   <Save className="mr-2 h-4 w-4" />
-                                  Enregistrer
+                                  {t('profileAdmin.editMode.save')}
                                 </>
                               )}
                             </button>
@@ -436,39 +431,39 @@ export default function Profile() {
                           <div className="flex items-center">
                             <User className="h-5 w-5 text-gray-400 mr-2" />
                             <div>
-                              <p className="text-sm text-gray-500">Nom d'utilisateur</p>
+                              <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.username')}</p>
                               <p className="font-medium">{user.username}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
                             <Mail className="h-5 w-5 text-gray-400 mr-2" />
                             <div>
-                              <p className="text-sm text-gray-500">Email</p>
+                              <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.email')}</p>
                               <p className="font-medium">{user.email}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
                             <Phone className="h-5 w-5 text-gray-400 mr-2" />
                             <div>
-                              <p className="text-sm text-gray-500">Téléphone</p>
-                              <p className="font-medium">{user.phone || "Non renseigné"}</p>
+                              <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.phone')}</p>
+                              <p className="font-medium">{user.phone || t('profileAdmin.personalInfo.phoneNotSet')}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
                             <MapPin className="h-5 w-5 text-gray-400 mr-2" />
                             <div>
-                              <p className="text-sm text-gray-500">Adresse</p>
+                              <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.address')}</p>
                               <p className="font-medium">
                                 {user.adress
                                   ? `${user.adress.addressLine1}, ${user.adress.addressLine2}, ${user.adress.city}, ${user.adress.country}, ${user.adress.postalCode}`
-                                  : "Non renseigné"}
+                                  : t('profileAdmin.personalInfo.addressNotSet')}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center">
                             <Calendar className="h-5 w-5 text-gray-400 mr-2" />
                             <div>
-                              <p className="text-sm text-gray-500">Date d'inscription</p>
+                              <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.registrationDate')}</p>
                               <p className="font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
                             </div>
                           </div>
@@ -484,14 +479,14 @@ export default function Profile() {
             {activeTab === "password" && (
               <div>
                 <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">Changer de mot de passe</h2>
+                  <h2 className="text-lg font-semibold text-gray-800">{t('profileAdmin.password.title')}</h2>
                 </div>
                 <div className="p-6">
                   <form onSubmit={handlePasswordSubmit}>
                     <div className="space-y-4 max-w-md">
                       <div className="space-y-2">
                         <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-                          Mot de passe actuel
+                          {t('profileAdmin.password.currentPassword')}
                         </label>
                         <input
                           id="currentPassword"
@@ -505,7 +500,7 @@ export default function Profile() {
                       </div>
                       <div className="space-y-2">
                         <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                          Nouveau mot de passe
+                          {t('profileAdmin.password.newPassword')}
                         </label>
                         <input
                           id="newPassword"
@@ -519,7 +514,7 @@ export default function Profile() {
                       </div>
                       <div className="space-y-2">
                         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                          Confirmer le nouveau mot de passe
+                          {t('profileAdmin.password.confirmPassword')}
                         </label>
                         <input
                           id="confirmPassword"
@@ -541,11 +536,11 @@ export default function Profile() {
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? (
-                            <span>Mise à jour en cours...</span>
+                            <span>{t('profileAdmin.password.updating')}</span>
                           ) : (
                             <>
                               <Lock className="mr-2 h-4 w-4" />
-                              Mettre à jour le mot de passe
+                              {t('profileAdmin.password.update')}
                             </>
                           )}
                         </button>

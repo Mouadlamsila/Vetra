@@ -6,7 +6,17 @@ import { statsAr } from './pages/stats';
 import { paymentAr } from './pages/payment';
 import { helpAr } from './pages/help';
 import { settingsAr } from './pages/settings';
+import dashboardAdmin from './admin/dashboard';
+import sidebarAdmin from './admin/sidebar';
+import usersAdmin from './admin/users';
 import ownerAr from './pages/owner/ar';
+import storesAdmin from './admin/stores';
+import productsAdmin from './admin/products';
+import categoriesAdmin from './admin/categories';
+import supportAdmin from './admin/support';
+import settingsAdmin from './admin/settings';
+import profileAdmin from './admin/profile';
+
 const ar = {
   Home: "الرئيسية",
   Features: "الميزات",
@@ -120,7 +130,7 @@ const ar = {
   techDirector: "المدير التقني",
   marketingDirector: "مدير التسويق",
   designLead: "مدير التصميم",
-  sophieBio: "شغوفة بالابتكار والتصميم، أسست الشركة برؤية لإنشاء منتجات تغير حياة المستخدمين اليومية.",
+  sophieBio: "شغوفة بالابتكار والتصميم، أسست الشركة برؤية إنشاء منتجات تغير حياة المستخدمين اليومية.",
   thomasBio: "مع أكثر من 15 عاماً من الخبرة في التطوير، يشرف على جميع الابتكارات التقنية في الشركة.",
   emmaBio: "تجلب إبداعها ورؤيتها الاستراتيجية لتعريف منتجاتنا في جميع أنحاء العالم.",
   lucasBio: "يجمع بين الجمال والوظائف لإنشاء واجهات مستخدم استثنائية وبديهية.",
@@ -293,6 +303,15 @@ const ar = {
   payment: paymentAr,
   help: helpAr,
   settings: settingsAr,
-  owner: ownerAr
+  owner: ownerAr,
+  dashboardAdmin: dashboardAdmin.ar.dashboardAdmin,
+  sidebarAdmin: sidebarAdmin.ar.sidebarAdmin,
+  usersAdmin: usersAdmin.ar.usersAdmin,
+  storesAdmin: storesAdmin.ar.storesAdmin,
+  productsAdmin: productsAdmin.ar.productsAdmin,
+  categoriesAdmin: categoriesAdmin.ar.categoriesAdmin,
+  supportAdmin: supportAdmin.ar.supportAdmin,
+  settingsAdmin: settingsAdmin.ar.settingsAdmin,
+  profileAdmin: profileAdmin.ar.profileAdmin,
 };
 export default ar; 

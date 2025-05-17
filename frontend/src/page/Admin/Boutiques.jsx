@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react"
 import { Eye, X, Check, PlayCircle, StopCircle, Trash2, MapPin, Phone, Mail, Calendar, Tag } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from 'react-i18next'
 
 export default function Stores() {
+  const { t } = useTranslation()
   const [stores, setStores] = useState([])
   const [selectedStore, setSelectedStore] = useState(null)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
@@ -113,16 +115,16 @@ export default function Stores() {
     }
   }
 
-  // Format status badge
+  // Get store status badge
   const getStoreStatusBadge = (status) => {
     switch (status) {
       case "active":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Actif</span>
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">{t('storesAdmin.status.active')}</span>
       case "suspended":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Suspendu</span>
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">{t('storesAdmin.status.suspended')}</span>
       case "pending":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">{t('storesAdmin.status.pending')}</span>
         )
       default:
         return <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{status}</span>
@@ -163,14 +165,14 @@ export default function Stores() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des boutiques</h1>
-          <p className="text-gray-500">Gérer les boutiques de la marketplace</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('storesAdmin.title')}</h1>
+          <p className="text-gray-500">{t('storesAdmin.subtitle')}</p>
         </div>
       </div>
 
       {/* Pending Store Approvals */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Boutiques en attente d'approbation</h2>
+        <h2 className="text-lg font-semibold text-gray-800">{t('storesAdmin.pendingApprovals.title')}</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {pendingStores.length > 0 ? (
@@ -265,7 +267,7 @@ export default function Stores() {
                     onClick={() => openViewModal(store)}
                   >
                     <Eye className="mr-1 h-4 w-4" />
-                    Détails
+                    {t('storesAdmin.pendingApprovals.details')}
                   </button>
 
                   <div className="flex items-center space-x-2">
@@ -274,21 +276,23 @@ export default function Stores() {
                       onClick={() => openConfirmModal(store, "approve")}
                     >
                       <Check className="mr-1 h-4 w-4" />
-                      Approuver
+                      {t('storesAdmin.pendingApprovals.approve')}
                     </button>
                     <button
                       className="flex items-center px-3 py-1 text-sm border border-red-300 rounded-md text-red-600 hover:bg-red-50"
                       onClick={() => openConfirmModal(store, "reject")}
                     >
                       <X className="mr-1 h-4 w-4" />
-                      Refuser
+                      {t('storesAdmin.pendingApprovals.reject')}
                     </button>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-8 text-gray-500">Aucune boutique en attente d'approbation</div>
+            <div className="col-span-full text-center py-8 text-gray-500">
+              {t('storesAdmin.pendingApprovals.noStores')}
+            </div>
           )}
         </div>
       </div>
@@ -296,14 +300,14 @@ export default function Stores() {
       {/* All Stores Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Toutes les boutiques</h2>
+          <h2 className="text-lg font-semibold text-gray-800">{t('storesAdmin.allStores.title')}</h2>
         </div>
 
         <div className="p-4 border-b border-gray-200 flex flex-wrap gap-4">
           <div className="w-full md:w-auto flex-1">
             <input
               type="text"
-              placeholder="Rechercher une boutique..."
+              placeholder={t('storesAdmin.allStores.search.placeholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -316,10 +320,10 @@ export default function Stores() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="">Tous les statuts</option>
-              <option value="active">Actives</option>
-              <option value="suspended">Suspendues</option>
-              <option value="pending">En attente</option>
+              <option value="">{t('storesAdmin.allStores.search.status.all')}</option>
+              <option value="active">{t('storesAdmin.allStores.search.status.active')}</option>
+              <option value="suspended">{t('storesAdmin.allStores.search.status.suspended')}</option>
+              <option value="pending">{t('storesAdmin.allStores.search.status.pending')}</option>
             </select>
           </div>
         </div>
@@ -328,41 +332,23 @@ export default function Stores() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Boutique
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.store')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Propriétaire
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.owner')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Catégorie
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.category')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Emplacement
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.location')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Statut
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.status')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -432,7 +418,7 @@ export default function Stores() {
                     <div className="flex items-center space-x-2">
                       <button 
                         className="text-gray-500 hover:text-gray-700" 
-                        title="Voir la boutique"
+                        title={t('storesAdmin.allStores.table.actions.view')}
                         onClick={() => openViewModal(store)}
                       >
                         <Eye className="h-4 w-4" />
@@ -440,7 +426,7 @@ export default function Stores() {
                       {store.statusBoutique === "active" ? (
                         <button
                           className="text-red-600 hover:text-red-900"
-                          title="Suspendre"
+                          title={t('storesAdmin.allStores.table.actions.disable')}
                           onClick={() => openConfirmModal(store, "disable")}
                         >
                           <StopCircle className="h-4 w-4" />
@@ -449,14 +435,14 @@ export default function Stores() {
                         <>
                           <button
                             className="text-green-600 hover:text-green-900 mr-2"
-                            title="Activer"
+                            title={t('storesAdmin.allStores.table.actions.enable')}
                             onClick={() => openConfirmModal(store, "enable")}
                           >
                             <PlayCircle className="h-4 w-4" />
                           </button>
                           <button
                             className="text-red-600 hover:text-red-900"
-                            title="Supprimer"
+                            title={t('storesAdmin.allStores.table.actions.delete')}
                             onClick={() => openConfirmModal(store, "delete")}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -473,7 +459,7 @@ export default function Stores() {
 
         {filteredStores.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Aucune boutique trouvée</p>
+            <p className="text-gray-500">{t('storesAdmin.allStores.noStores')}</p>
           </div>
         )}
       </div>
@@ -502,27 +488,11 @@ export default function Stores() {
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      {confirmAction === "approve"
-                        ? "Confirmer l'approbation"
-                        : confirmAction === "reject"
-                          ? "Confirmer le rejet"
-                          : confirmAction === "disable"
-                            ? "Confirmer la suspension"
-                            : confirmAction === "delete"
-                              ? "Confirmer la suppression"
-                              : "Confirmer l'activation"}
+                      {t(`storesAdmin.modals.confirm.${confirmAction}.title`)}
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        {confirmAction === "approve"
-                          ? `Êtes-vous sûr de vouloir approuver la boutique "${selectedStore?.nom}" ? Une notification sera envoyée au propriétaire.`
-                          : confirmAction === "reject"
-                            ? `Êtes-vous sûr de vouloir rejeter la boutique "${selectedStore?.nom}" ? Une notification sera envoyée au propriétaire.`
-                            : confirmAction === "disable"
-                              ? `Êtes-vous sûr de vouloir suspendre la boutique "${selectedStore?.nom}" ? Elle ne sera plus visible sur la marketplace.`
-                              : confirmAction === "delete"
-                                ? `Êtes-vous sûr de vouloir supprimer définitivement la boutique "${selectedStore?.nom}" ? Cette action est irréversible.`
-                                : `Êtes-vous sûr de vouloir activer la boutique "${selectedStore?.nom}" ? Elle sera à nouveau visible sur la marketplace.`}
+                        {t(`storesAdmin.modals.confirm.${confirmAction}.message`, { name: selectedStore?.nom })}
                       </p>
                     </div>
                   </div>
@@ -534,24 +504,14 @@ export default function Stores() {
                   className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${
                     confirmAction === "approve" || confirmAction === "enable"
                       ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-                      : confirmAction === "delete"
-                        ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                        : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                      : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
                   }`}
                   onClick={handleConfirmAction}
                   disabled={isSubmitting}
                 >
                   {isSubmitting
-                    ? "Traitement..."
-                    : confirmAction === "approve"
-                      ? "Approuver"
-                      : confirmAction === "reject"
-                        ? "Rejeter"
-                        : confirmAction === "disable"
-                          ? "Suspendre"
-                          : confirmAction === "delete"
-                            ? "Supprimer"
-                            : "Activer"}
+                    ? t('storesAdmin.modals.confirm.buttons.processing')
+                    : t(`storesAdmin.modals.confirm.buttons.${confirmAction}`)}
                 </button>
                 <button
                   type="button"
@@ -559,7 +519,7 @@ export default function Stores() {
                   onClick={() => setConfirmModalOpen(false)}
                   disabled={isSubmitting}
                 >
-                  Annuler
+                  {t('storesAdmin.modals.confirm.buttons.cancel')}
                 </button>
               </div>
             </div>
@@ -622,12 +582,12 @@ export default function Stores() {
                   {/* Store Details */}
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Description</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.description')}</h4>
                       <p className="text-gray-900">{selectedStore.description}</p>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Catégorie</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.category')}</h4>
                       <div className="flex items-center">
                         <Tag className="h-4 w-4 text-gray-400 mr-2" />
                         <span className="text-gray-900 capitalize">{selectedStore.category}</span>
@@ -635,7 +595,7 @@ export default function Stores() {
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Emplacement</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.location')}</h4>
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 text-gray-400 mr-2" />
                         <span className="text-gray-900">{selectedStore.emplacement}</span>
@@ -643,7 +603,7 @@ export default function Stores() {
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Date de création</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.creationDate')}</h4>
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 text-gray-400 mr-2" />
                         <span className="text-gray-900">
@@ -655,7 +615,7 @@ export default function Stores() {
 
                   {/* Owner Details */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-medium text-gray-500 mb-2">Propriétaire</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.owner')}</h4>
                     <div className="flex items-center space-x-3">
                       <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
                         {selectedStore.owner?.id && getOwnerPhotoUrl(selectedStore.owner.id) ? (
@@ -688,7 +648,7 @@ export default function Stores() {
                     {/* Location Details */}
                     {selectedStore.location && selectedStore.location.length > 0 && (
                       <div className="mt-4">
-                        <h4 className="text-sm font-medium text-gray-500 mb-2">Adresse</h4>
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.address')}</h4>
                         <div className="bg-gray-50 p-3 rounded-md">
                           <p className="text-sm text-gray-900">
                             {selectedStore.location[0].addressLine1}
@@ -707,10 +667,10 @@ export default function Stores() {
                 {/* Banner Image */}
                 {selectedStore.banniere?.formats?.large?.url && (
                   <div className="mt-6">
-                    <h4 className="text-sm font-medium text-gray-500 mb-2">Bannière</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.banner')}</h4>
                     <img
                       src={`http://localhost:1337${selectedStore.banniere.formats.large.url}`}
-                      alt={`Bannière ${selectedStore.nom}`}
+                      alt={`${t('storesAdmin.modals.view.banner')} ${selectedStore.nom}`}
                       className="w-full h-48 object-cover rounded-lg"
                     />
                   </div>

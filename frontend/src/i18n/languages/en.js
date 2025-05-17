@@ -6,7 +6,17 @@ import { statsEn } from './pages/stats';
 import { paymentEn } from './pages/payment';
 import { helpEn } from './pages/help';
 import { settingsEn } from './pages/settings';
+import dashboardAdmin from './admin/dashboard';
+import sidebarAdmin from './admin/sidebar';
+import usersAdmin from './admin/users';
 import ownerEn from './pages/owner/en';
+import storesAdmin from './admin/stores';
+import productsAdmin from './admin/products';
+import categoriesAdmin from './admin/categories';
+import supportAdmin from './admin/support';
+import settingsAdmin from './admin/settings';
+import profileAdmin from './admin/profile';
+
 const en = {
   Home: "Home",
   Features: "Features",
@@ -289,7 +299,16 @@ const en = {
   payment: paymentEn,
   help: helpEn,
   settings: settingsEn,
-  owner: ownerEn
+  owner: ownerEn,
+  dashboardAdmin: dashboardAdmin.en.dashboardAdmin,
+  sidebarAdmin: sidebarAdmin.en.sidebarAdmin,
+  usersAdmin: usersAdmin.en.usersAdmin,
+  storesAdmin: storesAdmin.en.storesAdmin,
+  productsAdmin: productsAdmin.en.productsAdmin,
+  categoriesAdmin: categoriesAdmin.en.categoriesAdmin,
+  supportAdmin: supportAdmin.en.supportAdmin,
+  settingsAdmin: settingsAdmin.en.settingsAdmin,
+  profileAdmin: profileAdmin.en.profileAdmin,
 };
 
 export default en; 

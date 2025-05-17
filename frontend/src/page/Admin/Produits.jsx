@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react"
 import { ShoppingBag, Search, Eye, Trash2, Filter, Tag, Store, Package, Info, DollarSign, Box, AlertCircle, Ruler, Truck, X } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from 'react-i18next'
 
 export default function Products() {
+  const { t } = useTranslation()
   const [products, setProducts] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -123,8 +125,8 @@ export default function Products() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des produits</h1>
-          <p className="text-gray-500">Gérer tous les produits disponibles sur la marketplace</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('productsAdmin.title')}</h1>
+          <p className="text-gray-500">{t('productsAdmin.subtitle')}</p>
         </div>
       </div>
 
@@ -135,7 +137,7 @@ export default function Products() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Rechercher un produit..."
+                placeholder={t('productsAdmin.search.placeholder')}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,7 +152,7 @@ export default function Products() {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <option value="">Toutes les catégories</option>
+              <option value="">{t('productsAdmin.search.filters.category.label')}</option>
               {getCategoriesWithProducts().map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -165,7 +167,7 @@ export default function Products() {
               value={storeFilter}
               onChange={(e) => setStoreFilter(e.target.value)}
             >
-              <option value="">Toutes les boutiques</option>
+              <option value="">{t('productsAdmin.search.filters.store.label')}</option>
               {stores.map((store) => (
                 <option key={store.id} value={store.id}>
                   {store.nom}
@@ -179,7 +181,7 @@ export default function Products() {
             onClick={resetFilters}
           >
             <Filter className="mr-2 h-4 w-4" />
-            Réinitialiser
+            {t('productsAdmin.search.reset')}
           </button>
         </div>
       </div>
@@ -190,47 +192,26 @@ export default function Products() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Produit
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.product')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Prix
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.price')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Boutique
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.store')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Catégorie
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.category')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Stock
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.stock')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Ajouté le
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.addedOn')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('productsAdmin.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -252,7 +233,7 @@ export default function Products() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-700">{product.name}</p>
-                        <p className="text-gray-500 text-xs">ID: #{product.id}</p>
+                        <p className="text-gray-500 text-xs">{t('productsAdmin.table.id', { id: product.id })}</p>
                       </div>
                     </div>
                   </td>
@@ -270,7 +251,7 @@ export default function Products() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : 'Non catégorisé'}
+                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : '-'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -279,7 +260,9 @@ export default function Products() {
                         ? "bg-red-100 text-red-800"
                         : "bg-green-100 text-green-800"
                     }`}>
-                      {product.stock} unités
+                      {product.stock === 0 
+                        ? t('productsAdmin.status.outOfStock')
+                        : t(product.stock <= product.lowStockAlert ? 'productsAdmin.status.lowStock' : 'productsAdmin.status.inStock', { count: product.stock })}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -289,14 +272,12 @@ export default function Products() {
                     <div className="flex items-center space-x-2">
                       <button 
                         className="text-gray-500 hover:text-gray-700" 
-                        title="Voir le produit"
                         onClick={() => openViewModal(product)}
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
                         className="text-red-600 hover:text-red-900"
-                        title="Supprimer le produit"
                         onClick={() => openDeleteModal(product)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -311,7 +292,7 @@ export default function Products() {
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Aucun produit trouvé</p>
+            <p className="text-gray-500">{t('productsAdmin.noProducts')}</p>
           </div>
         )}
       </div>
@@ -333,11 +314,12 @@ export default function Products() {
                     <Trash2 className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">Supprimer le produit</h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      {t('productsAdmin.modals.delete.title')}
+                    </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Êtes-vous sûr de vouloir supprimer le produit "{selectedProduct?.name}" ? Cette action est
-                        irréversible.
+                        {t('productsAdmin.modals.delete.message', { name: selectedProduct?.name })}
                       </p>
                     </div>
                   </div>
@@ -350,7 +332,7 @@ export default function Products() {
                   onClick={handleDeleteProduct}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Suppression..." : "Supprimer"}
+                  {isSubmitting ? t('productsAdmin.modals.delete.buttons.processing') : t('productsAdmin.modals.delete.buttons.confirm')}
                 </button>
                 <button
                   type="button"
@@ -358,7 +340,7 @@ export default function Products() {
                   onClick={() => setDeleteModalOpen(false)}
                   disabled={isSubmitting}
                 >
-                  Annuler
+                  {t('productsAdmin.modals.delete.buttons.cancel')}
                 </button>
               </div>
             </div>
@@ -394,7 +376,7 @@ export default function Products() {
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">{selectedProduct.name}</h3>
                       <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                        {selectedProduct.category ? categories.find(cat => cat.id === selectedProduct.category.id)?.name : 'Non catégorisé'}
+                        {selectedProduct.category ? categories.find(cat => cat.id === selectedProduct.category.id)?.name : '-'}
                       </span>
                     </div>
                   </div>
@@ -410,12 +392,12 @@ export default function Products() {
                   {/* Product Details */}
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Description</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.description')}</h4>
                       <p className="text-gray-900">{selectedProduct.description}</p>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Prix et Stock</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.priceAndStock')}</h4>
                       <div className="space-y-2">
                         <div className="flex items-center">
                           <DollarSign className="h-4 w-4 text-gray-400 mr-2" />
@@ -433,20 +415,20 @@ export default function Products() {
                               ? "text-red-600"
                               : "text-green-600"
                           }`}>
-                            {selectedProduct.stock} unités en stock
+                            {t('productsAdmin.modals.view.stockCount')}: {selectedProduct.stock}
                           </span>
                         </div>
                         <div className="flex items-center">
                           <AlertCircle className="h-4 w-4 text-gray-400 mr-2" />
                           <span className="text-sm text-gray-600">
-                            Alerte de stock bas: {selectedProduct.lowStockAlert} unités
+                            {t('productsAdmin.modals.view.lowStockAlert')}: {selectedProduct.lowStockAlert}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Dimensions et Poids</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.dimensionsAndWeight')}</h4>
                       <div className="space-y-2">
                         {selectedProduct.dimensions && selectedProduct.dimensions[0] && (
                           <div className="flex items-center">
@@ -459,25 +441,25 @@ export default function Products() {
                         <div className="flex items-center">
                           <Package className="h-4 w-4 text-gray-400 mr-2" />
                           <span className="text-sm text-gray-600">
-                            Poids: {selectedProduct.weight} kg
+                            {t('productsAdmin.modals.view.weight')}: {selectedProduct.weight} kg
                           </span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Informations supplémentaires</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.additionalInfo')}</h4>
                       <div className="space-y-2">
                         <div className="flex items-center">
                           <Tag className="h-4 w-4 text-gray-400 mr-2" />
                           <span className="text-sm text-gray-600">
-                            SKU: {selectedProduct.sku}
+                            {t('productsAdmin.modals.view.sku')}: {selectedProduct.sku}
                           </span>
                         </div>
                         <div className="flex items-center">
                           <Truck className="h-4 w-4 text-gray-400 mr-2" />
                           <span className="text-sm text-gray-600">
-                            Classe d'expédition: {selectedProduct.shippingClass}
+                            {t('productsAdmin.modals.view.shippingClass')}: {selectedProduct.shippingClass}
                           </span>
                         </div>
                       </div>
@@ -488,7 +470,7 @@ export default function Products() {
                   <div className="space-y-4">
                     {selectedProduct.boutique && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-500 mb-2">Boutique</h4>
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.store')}</h4>
                         <div className="bg-gray-50 p-3 rounded-md">
                           <p className="font-medium text-gray-900">{selectedProduct.boutique.nom}</p>
                           <p className="text-sm text-gray-600">{selectedProduct.boutique.description}</p>
@@ -500,7 +482,7 @@ export default function Products() {
                     {/* Additional Images */}
                     {selectedProduct.imgsAdditional && selectedProduct.imgsAdditional.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-500 mb-2">Images supplémentaires</h4>
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.additionalImages')}</h4>
                         <div className="grid grid-cols-2 gap-2">
                           {selectedProduct.imgsAdditional.map((img) => (
                             <div key={img.id} className="relative aspect-square">

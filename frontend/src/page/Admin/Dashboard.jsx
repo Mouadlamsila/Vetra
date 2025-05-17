@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Users, Store, ShoppingBag, DollarSign, ArrowUp, ArrowDown, Download } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import {
   LineChart,
   Line,
@@ -18,6 +19,7 @@ import {
 import axios from "axios"
 
 export default function Dashboard() {
+  const { t } = useTranslation()
   const [dashboardStats, setDashboardStats] = useState({
     users: 0,
     stores: 0,
@@ -235,6 +237,7 @@ export default function Dashboard() {
 const COLORS = ["#1e3a8a", "#10b981", "#f59e0b", "#ef4444", "#6D28D9"]
 
   const StatsCard = ({ title, value, percentChange, icon, iconColor }) => {
+  const { t } = useTranslation()
   const isPositive = percentChange >= 0
 
   return (
@@ -245,7 +248,7 @@ const COLORS = ["#1e3a8a", "#10b981", "#f59e0b", "#ef4444", "#6D28D9"]
             <p className="text-2xl font-bold mt-1">{value.toLocaleString()}</p>
           <div className={`flex items-center mt-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
             {isPositive ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
-            <span className="text-xs font-medium">{Math.abs(percentChange)}% cette semaine</span>
+            <span className="text-xs font-medium">{Math.abs(percentChange)}% {t('dashboardAdmin.stats.thisWeek')}</span>
           </div>
         </div>
           <div className={` ${iconColor}  `}>{icon}</div>
@@ -255,12 +258,13 @@ const COLORS = ["#1e3a8a", "#10b981", "#f59e0b", "#ef4444", "#6D28D9"]
 }
 
 const SalesChart = () => {
+  const { t } = useTranslation()
   const chartData = timeRange === "monthly" ? monthlyData : timeRange === "weekly" ? weeklyData : dailyData
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 col-span-2">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold">Croissance des ventes</h3>
+        <h3 className="text-lg font-semibold">{t('dashboardAdmin.charts.salesGrowth')}</h3>
         <div className="flex items-center space-x-2">
           <button
             className={`px-3 py-1 text-xs rounded-full ${
@@ -268,7 +272,7 @@ const SalesChart = () => {
             }`}
             onClick={() => setTimeRange("monthly")}
           >
-            Mensuelle
+            {t('dashboardAdmin.charts.timeRanges.monthly')}
           </button>
           <button
             className={`px-3 py-1 text-xs rounded-full ${
@@ -276,7 +280,7 @@ const SalesChart = () => {
             }`}
             onClick={() => setTimeRange("weekly")}
           >
-            Hebdomadaire
+            {t('dashboardAdmin.charts.timeRanges.weekly')}
           </button>
           <button
             className={`px-3 py-1 text-xs rounded-full ${
@@ -284,7 +288,7 @@ const SalesChart = () => {
             }`}
             onClick={() => setTimeRange("daily")}
           >
-            Journalière
+            {t('dashboardAdmin.charts.timeRanges.daily')}
           </button>
         </div>
       </div>
@@ -339,10 +343,11 @@ const SalesChart = () => {
 }
 
 const ProductDistributionChart = () => {
+  const { t } = useTranslation()
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold">Distribution des produits</h3>
+        <h3 className="text-lg font-semibold">{t('dashboardAdmin.charts.productDistribution')}</h3>
       </div>
       <div className="h-[300px]">
           
@@ -381,15 +386,16 @@ const ProductDistributionChart = () => {
 }
 
   const RecentOrders = () => {
+  const { t } = useTranslation()
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold">Commandes récentes</h3>
+          <h3 className="text-lg font-semibold">{t('dashboardAdmin.recentOrders.title')}</h3>
           <button 
             className="text-[#6D28D9] text-sm font-medium hover:text-[#5b21b6]"
             onClick={() => window.location.href = '/admin/orders'}
           >
-            Voir tout
+            {t('dashboardAdmin.recentOrders.viewAll')}
           </button>
       </div>
       <div className="space-y-4">
@@ -404,13 +410,13 @@ const ProductDistributionChart = () => {
                   />
                 ) : (
                   <div className="h-full w-full bg-[#c8c2fd] flex items-center justify-center text-[#6D28D9]">
-                    <span className="text-sm font-medium">{order.customer?.username?.charAt(0) || 'C'}</span>
+                    <span className="text-sm font-medium">{order.customer?.username?.charAt(0) || t('dashboardAdmin.recentOrders.orderDetails.client')}</span>
                   </div>
                 )}
             </div>
             <div>
               <p className="text-sm">
-                  <span className="font-medium">{order.customer?.username || 'Client'}</span> a passé une commande de{' '}
+                  <span className="font-medium">{order.customer?.username || t('dashboardAdmin.recentOrders.orderDetails.client')}</span> {t('dashboardAdmin.recentOrders.orderDetails.placed')}
                   <span className="font-medium">{order.totalAmount?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
@@ -444,8 +450,8 @@ const ProductDistributionChart = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Tableau de bord</h1>
-          <p className="text-gray-500">Vue d'ensemble des performances de la marketplace</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('dashboardAdmin.title')}</h1>
+          <p className="text-gray-500">{t('dashboardAdmin.subtitle')}</p>
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
           <select 
@@ -453,10 +459,10 @@ const ProductDistributionChart = () => {
             value={selectedTimeRange}
             onChange={(e) => setSelectedTimeRange(e.target.value)}
           >
-            <option value="30">Derniers 30 jours</option>
-            <option value="7">Derniers 7 jours</option>
-            <option value="90">Ce trimestre</option>
-            <option value="365">Cette année</option>
+            <option value="30">{t('dashboardAdmin.timeRanges.last30Days')}</option>
+            <option value="7">{t('dashboardAdmin.timeRanges.last7Days')}</option>
+            <option value="90">{t('dashboardAdmin.timeRanges.thisQuarter')}</option>
+            <option value="365">{t('dashboardAdmin.timeRanges.thisYear')}</option>
           </select>
           <button className="p-2 border border-gray-300 rounded-md">
             <Download className="h-4 w-4" />
@@ -467,28 +473,28 @@ const ProductDistributionChart = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Utilisateurs"
+          title={t('dashboardAdmin.stats.users')}
           value={dashboardStats.users}
           percentChange={12.5}
           icon={<Users className="h-10 w-15 bg-[#c8c2fd] rounded-full p-3" />}
           iconColor="text-[#6D28D9]"
         />
         <StatsCard
-          title="Boutiques"
+          title={t('dashboardAdmin.stats.stores')}
           value={dashboardStats.stores}
           percentChange={7.2}
           icon={<Store className="h-10 w-15 bg-[#c8c2fd] rounded-full p-3" />}
           iconColor="text-[#6D28D9]"
         />
         <StatsCard
-          title="Produits"
+          title={t('dashboardAdmin.stats.products')}
           value={dashboardStats.products}
           percentChange={18.3}
           icon={<ShoppingBag className="h-10 w-15 bg-[#c8c2fd] rounded-full p-3" />}
           iconColor="text-[#6D28D9]"
         />
         <StatsCard
-          title="Revenus"
+          title={t('dashboardAdmin.stats.revenue')}
           value={dashboardStats.revenue}
           percentChange={-3.4}
           icon={<DollarSign className="h-10 w-15 bg-[#c8c2fd] rounded-full p-3" />}

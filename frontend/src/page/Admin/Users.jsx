@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react"
 import { Eye, Pencil, UserMinus, UserCheck, Trash2, MapPin, Phone, Mail, Calendar, Tag, Building, FileText } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 export default function Users() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
@@ -70,13 +72,19 @@ export default function Users() {
   }
 
   // Format status badge
-  const getUserStatusBadge = (blocked) => {
-    return blocked ? (
-      <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Bloqué</span>
-    ) : (
-      <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Actif</span>
-    )
-  }
+  const getUserStatusBadge = (isBlocked) => {
+    return (
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-full ${
+          isBlocked
+            ? "bg-red-100 text-red-800"
+            : "bg-green-100 text-green-800"
+        }`}
+      >
+        {isBlocked ? t('usersAdmin.status.blocked') : t('usersAdmin.status.active')}
+      </span>
+    );
+  };
 
   const openBlockModal = (user, action) => {
     setSelectedUser(user)
@@ -406,8 +414,8 @@ export default function Users() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h1>
-          <p className="text-gray-500">Gérer tous les utilisateurs de la plateforme</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('usersAdmin.title')}</h1>
+          <p className="text-gray-500">{t('usersAdmin.subtitle')}</p>
         </div>
         <button
           onClick={() => setAddUserModalOpen(true)}
@@ -423,7 +431,7 @@ export default function Users() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Ajouter
+            {t('usersAdmin.addUser')}
           </span>
         </button>
       </div>
@@ -433,7 +441,7 @@ export default function Users() {
         <div className="w-full md:w-auto flex-1">
           <input
             type="text"
-            placeholder="Rechercher un utilisateur..."
+            placeholder={t('usersAdmin.search.placeholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -446,9 +454,9 @@ export default function Users() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="">Tous les statuts</option>
-            <option value="active">Actifs</option>
-            <option value="blocked">Bloqués</option>
+            <option value="">{t('usersAdmin.search.status.all')}</option>
+            <option value="active">{t('usersAdmin.search.status.active')}</option>
+            <option value="blocked">{t('usersAdmin.search.status.blocked')}</option>
           </select>
         </div>
       </div>
@@ -476,43 +484,43 @@ export default function Users() {
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Utilisateur
+                  {t('usersAdmin.table.user')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Email
+                  {t('usersAdmin.table.email')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Téléphone
+                  {t('usersAdmin.table.phone')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Rôle
+                  {t('usersAdmin.table.role')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Statut
+                  {t('usersAdmin.table.status')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Date d'inscription
+                  {t('usersAdmin.table.registrationDate')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Actions
+                  {t('usersAdmin.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -547,7 +555,7 @@ export default function Users() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-700">{user.username}</p>
-                          <p className="text-gray-500 text-xs">ID: #{user.id}</p>
+                          <p className="text-gray-500 text-xs">{t('usersAdmin.table.id', { id: user.id })}</p>
                         </div>
                       </div>
                     </td>
@@ -570,14 +578,14 @@ export default function Users() {
                       <div className="flex items-center space-x-2">
                         <button
                           className="text-gray-500 hover:text-gray-700"
-                          title="Voir le profil"
+                          title={t('usersAdmin.actions.viewProfile')}
                           onClick={() => openViewModal(user)}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           className="text-gray-500 hover:text-gray-700"
-                          title="Modifier"
+                          title={t('usersAdmin.actions.edit')}
                           onClick={() => openEditModal(user)}
                         >
                           <Pencil className="h-4 w-4" />
@@ -585,7 +593,7 @@ export default function Users() {
                         {!user.blocked ? (
                           <button
                             className="text-red-600 hover:text-red-900"
-                            title="Bloquer"
+                            title={t('usersAdmin.actions.block')}
                             onClick={() => openBlockModal(user, "block")}
                           >
                             <UserMinus className="h-4 w-4" />
@@ -593,7 +601,7 @@ export default function Users() {
                         ) : (
                           <button
                             className="text-green-600 hover:text-green-900"
-                            title="Débloquer"
+                            title={t('usersAdmin.actions.unblock')}
                             onClick={() => openBlockModal(user, "unblock")}
                           >
                             <UserCheck className="h-4 w-4" />
@@ -601,7 +609,7 @@ export default function Users() {
                         )}
                         <button
                           className="text-red-600 hover:text-red-900"
-                          title="Supprimer"
+                          title={t('usersAdmin.actions.delete')}
                           onClick={() => {
                             setSelectedUser(user)
                             setConfirmAction("delete")
@@ -621,7 +629,7 @@ export default function Users() {
 
         {filteredUsers.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Aucun utilisateur trouvé</p>
+            <p className="text-gray-500">{t('usersAdmin.noUsers')}</p>
           </div>
         )}
       </div>
@@ -642,13 +650,13 @@ export default function Users() {
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg leading-6 font-medium text-gray-900">
-                        Détails de l'utilisateur
+                        {t('usersAdmin.modals.view.title')}
                       </h3>
                       <button
                         onClick={() => setViewModalOpen(false)}
                         className="text-gray-400 hover:text-gray-500"
                       >
-                        <span className="sr-only">Fermer</span>
+                        <span className="sr-only">Close</span>
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -678,31 +686,32 @@ export default function Users() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-4">
+                          <h5 className="font-medium text-gray-900">{t('usersAdmin.modals.view.basicInfo')}</h5>
                           <div className="flex items-center space-x-2">
                             <Mail className="h-5 w-5 text-gray-400" />
                             <span className="text-sm text-gray-600">{selectedUser.email}</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Phone className="h-5 w-5 text-gray-400" />
-                            <span className="text-sm text-gray-600">{selectedUser.phone || 'Non renseigné'}</span>
+                            <span className="text-sm text-gray-600">{selectedUser.phone || '-'}</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Calendar className="h-5 w-5 text-gray-400" />
                             <span className="text-sm text-gray-600">
-                              Inscrit le {new Date(selectedUser.createdAt).toLocaleDateString()}
+                              {new Date(selectedUser.createdAt).toLocaleDateString()}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Tag className="h-5 w-5 text-gray-400" />
                             <span className="text-sm text-gray-600">
-                              Statut: {selectedUser.blocked ? 'Bloqué' : 'Actif'}
+                              {t('usersAdmin.modals.view.status')}: {selectedUser.blocked ? t('usersAdmin.status.blocked') : t('usersAdmin.status.active')}
                             </span>
                           </div>
                         </div>
 
                         {selectedUser.adress && (
                           <div className="space-y-4">
-                            <h5 className="font-medium text-gray-900">Adresse</h5>
+                            <h5 className="font-medium text-gray-900">{t('usersAdmin.modals.view.address')}</h5>
                             <div className="flex items-start space-x-2">
                               <MapPin className="h-5 w-5 text-gray-400 mt-1" />
                               <div className="text-sm text-gray-600">
@@ -717,18 +726,18 @@ export default function Users() {
 
                         {selectedUser.business_survey && (
                           <div className="space-y-4">
-                            <h5 className="font-medium text-gray-900">Informations Business</h5>
+                            <h5 className="font-medium text-gray-900">{t('usersAdmin.modals.view.businessInfo')}</h5>
                             <div className="space-y-2">
                               <div className="flex items-center space-x-2">
                                 <Building className="h-5 w-5 text-gray-400" />
                                 <span className="text-sm text-gray-600">
-                                  Expérience: {selectedUser.business_survey.has_previous_store ? 'Oui' : 'Non'}
+                                  {t('usersAdmin.modals.edit.businessInfo.hasPreviousStore')}: {selectedUser.business_survey.has_previous_store ? 'Yes' : 'No'}
                                 </span>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <FileText className="h-5 w-5 text-gray-400" />
                                 <span className="text-sm text-gray-600">
-                                  Durée: {selectedUser.business_survey.business_duration}
+                                  {t('usersAdmin.modals.edit.businessInfo.businessDuration')}: {selectedUser.business_survey.business_duration}
                                 </span>
                               </div>
                             </div>
@@ -738,7 +747,7 @@ export default function Users() {
 
                       {selectedUser.boutiques && selectedUser.boutiques.length > 0 && (
                         <div className="mt-6">
-                          <h5 className="font-medium text-gray-900 mb-3">Boutiques</h5>
+                          <h5 className="font-medium text-gray-900 mb-3">{t('usersAdmin.modals.view.stores')}</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {selectedUser.boutiques.map((boutique) => (
                               <div key={boutique.id} className="bg-gray-50 p-4 rounded-lg">
@@ -780,13 +789,13 @@ export default function Users() {
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg leading-6 font-medium text-gray-900">
-                        Modifier l'utilisateur
+                        {t('usersAdmin.modals.edit.title')}
                       </h3>
                       <button
                         onClick={() => setEditModalOpen(false)}
                         className="text-gray-400 hover:text-gray-500"
                       >
-                        <span className="sr-only">Fermer</span>
+                        <span className="sr-only">Close</span>
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -796,7 +805,7 @@ export default function Users() {
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                            Nom d'utilisateur
+                            {t('usersAdmin.modals.edit.username')}
                           </label>
                           <input
                             type="text"
@@ -810,7 +819,7 @@ export default function Users() {
                         </div>
                         <div>
                           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
+                            {t('usersAdmin.modals.edit.email')}
                           </label>
                           <input
                             type="email"
@@ -824,7 +833,7 @@ export default function Users() {
                         </div>
                         <div>
                           <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                            Téléphone
+                            {t('usersAdmin.modals.edit.phone')}
                           </label>
                           <input
                             type="tel"
@@ -837,7 +846,7 @@ export default function Users() {
                         </div>
                         <div>
                           <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                            Rôle
+                            {t('usersAdmin.modals.edit.role')}
                           </label>
                           <select
                             name="role"
@@ -846,8 +855,8 @@ export default function Users() {
                             onChange={handleInputChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                           >
-                            <option value="1">Owner</option>
-                            <option value="4">User</option>
+                            <option value="1">{t('usersAdmin.modals.edit.roles.owner')}</option>
+                            <option value="4">{t('usersAdmin.modals.edit.roles.user')}</option>
                           </select>
                         </div>
                       </div>
@@ -857,7 +866,7 @@ export default function Users() {
                           className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                           disabled={isSubmitting}
                         >
-                          {isSubmitting ? "Mise à jour..." : "Mettre à jour"}
+                          {isSubmitting ? t('usersAdmin.modals.edit.buttons.updating') : t('usersAdmin.modals.edit.buttons.update')}
                         </button>
                         <button
                           type="button"
@@ -865,7 +874,7 @@ export default function Users() {
                           onClick={() => setEditModalOpen(false)}
                           disabled={isSubmitting}
                         >
-                          Annuler
+                          {t('usersAdmin.modals.edit.buttons.cancel')}
                         </button>
                       </div>
                     </form>
@@ -878,42 +887,28 @@ export default function Users() {
       )}
 
       {/* Confirmation Modal */}
-      {confirmModalOpen && (
+      {confirmModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-              &#8203;
-            </span>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    {confirmAction === "block" ? (
-                      <UserMinus className="h-6 w-6 text-red-600" />
-                    ) : confirmAction === "delete" ? (
-                      <Trash2 className="h-6 w-6 text-red-600" />
-                    ) : (
-                      <UserCheck className="h-6 w-6 text-green-600" />
-                    )}
+                    <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      {confirmAction === "block"
-                        ? "Bloquer l'utilisateur"
-                        : confirmAction === "delete"
-                          ? "Supprimer l'utilisateur"
-                          : "Débloquer l'utilisateur"}
+                      {t(`usersAdmin.modals.confirm.${confirmAction}.title`)}
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        {confirmAction === "block"
-                          ? "Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus se connecter à son compte."
-                          : confirmAction === "delete"
-                            ? "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
-                            : "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra à nouveau se connecter à son compte."}
+                        {t(`usersAdmin.modals.confirm.${confirmAction}.message`, { username: selectedUser.username })}
                       </p>
                     </div>
                   </div>
@@ -922,20 +917,17 @@ export default function Users() {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${confirmAction === "block" || confirmAction === "delete"
-                      ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                      : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                    }`}
-                  onClick={confirmAction === "delete" ? handleDeleteUser : handleConfirmAction}
+                  className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${
+                    confirmAction === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'
+                  } text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    confirmAction === 'delete' ? 'focus:ring-red-500' : 'focus:ring-purple-500'
+                  } sm:ml-3 sm:w-auto sm:text-sm`}
+                  onClick={handleConfirmAction}
                   disabled={isSubmitting}
                 >
                   {isSubmitting
-                    ? "Traitement..."
-                    : confirmAction === "block"
-                      ? "Bloquer"
-                      : confirmAction === "delete"
-                        ? "Supprimer"
-                        : "Débloquer"}
+                    ? t(`usersAdmin.modals.confirm.${confirmAction}.buttons.processing`)
+                    : t(`usersAdmin.modals.confirm.${confirmAction}.buttons.confirm`)}
                 </button>
                 <button
                   type="button"
@@ -943,7 +935,7 @@ export default function Users() {
                   onClick={() => setConfirmModalOpen(false)}
                   disabled={isSubmitting}
                 >
-                  Annuler
+                  {t('usersAdmin.modals.confirm.buttons.cancel')}
                 </button>
               </div>
             </div>
@@ -963,9 +955,9 @@ export default function Users() {
               <form onSubmit={handleAddUser}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Ajouter un utilisateur</h3>
+                    <h3 className="text-lg font-medium text-gray-900">{t('usersAdmin.modals.add.title')}</h3>
                     <button type="button" onClick={() => setAddUserModalOpen(false)} className="text-gray-400 hover:text-gray-500">
-                      <span className="sr-only">Fermer</span>
+                      <span className="sr-only">Close</span>
                       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
@@ -975,10 +967,10 @@ export default function Users() {
                   <div className="space-y-4">
                     {/* Basic Information */}
                     <div className="space-y-4">
-                      <h4 className="text-sm font-medium text-gray-900">Informations de base</h4>
+                      <h4 className="text-sm font-medium text-gray-900">{t('usersAdmin.modals.edit.basicInfo')}</h4>
                       <div className="grid grid-cols-1 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+                          <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.username')}</label>
                           <input
                             type="text"
                             name="username"
@@ -989,7 +981,7 @@ export default function Users() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Email</label>
+                          <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.email')}</label>
                           <input
                             type="email"
                             name="email"
@@ -1000,7 +992,7 @@ export default function Users() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                          <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.add.password')}</label>
                           <input
                             type="password"
                             name="password"
@@ -1011,20 +1003,20 @@ export default function Users() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                          <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.role')}</label>
                           <select
                             name="role"
                             value={newUserData.role}
                             onChange={handleNewUserInputChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                           >
-                            <option value="4">User</option>
-                            <option value="1">Owner</option>
+                            <option value="4">{t('usersAdmin.modals.edit.roles.user')}</option>
+                            <option value="1">{t('usersAdmin.modals.edit.roles.owner')}</option>
                           </select>
                         </div>
                         {newUserData.role === "1" &&
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">Téléphone</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.phone')}</label>
                             <input
                               type="tel"
                               name="phone"
@@ -1039,10 +1031,10 @@ export default function Users() {
                     {/* Address Information */}
                     {newUserData.role === "1" &&
                       <div className="space-y-4">
-                        <h4 className="text-sm font-medium text-gray-900">Adresse</h4>
+                        <h4 className="text-sm font-medium text-gray-900">{t('usersAdmin.modals.edit.address.title')}</h4>
                         <div className="grid grid-cols-1 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">Adresse ligne 1</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.address.line1')}</label>
                             <input
                               type="text"
                               name="addressLine1"
@@ -1052,7 +1044,7 @@ export default function Users() {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">Adresse ligne 2</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.address.line2')}</label>
                             <input
                               type="text"
                               name="addressLine2"
@@ -1063,7 +1055,7 @@ export default function Users() {
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700">Ville</label>
+                              <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.address.city')}</label>
                               <input
                                 type="text"
                                 name="city"
@@ -1073,7 +1065,7 @@ export default function Users() {
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700">Code postal</label>
+                              <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.address.postalCode')}</label>
                               <input
                                 type="text"
                                 name="postalCode"
@@ -1084,7 +1076,7 @@ export default function Users() {
                             </div>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">Pays</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('usersAdmin.modals.edit.address.country')}</label>
                             <input
                               type="text"
                               name="country"
@@ -1099,7 +1091,7 @@ export default function Users() {
                     {/* Business Survey (Only for Owners) */}
                     {newUserData.role === "1" && (
                       <div className="space-y-4">
-                        <h4 className="text-sm font-medium text-gray-900">Informations Business</h4>
+                        <h4 className="text-sm font-medium text-gray-900">{t('usersAdmin.modals.edit.businessInfo.title')}</h4>
                         <div className="space-y-4">
                           <div className="flex items-center">
                             <input
@@ -1110,7 +1102,7 @@ export default function Users() {
                               className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                             />
                             <label className="ml-2 block text-sm text-gray-700">
-                              A déjà eu une boutique
+                              {t('usersAdmin.modals.edit.businessInfo.hasPreviousStore')}
                             </label>
                           </div>
                           <div className="flex items-center">
@@ -1122,7 +1114,7 @@ export default function Users() {
                               className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                             />
                             <label className="ml-2 block text-sm text-gray-700">
-                              Livraison requise
+                              {t('usersAdmin.modals.edit.businessInfo.deliveryRequired')}
                             </label>
                           </div>
                           <div className="flex items-center">
@@ -1134,12 +1126,12 @@ export default function Users() {
                               className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                             />
                             <label className="ml-2 block text-sm text-gray-700">
-                              A des fournisseurs
+                              {t('usersAdmin.modals.edit.businessInfo.hasSuppliers')}
                             </label>
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700">
-                              Temps disponible quotidien
+                              {t('usersAdmin.modals.edit.businessInfo.dailyTimeAvailable')}
                             </label>
                             <select
                               name="daily_time_available"
@@ -1147,15 +1139,15 @@ export default function Users() {
                               onChange={handleNewUserInputChange}
                               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                             >
-                              <option value="1-2 hours">1-2 heures</option>
-                              <option value="3-4 hours">3-4 heures</option>
-                              <option value="5-6 hours">5-6 heures</option>
-                              <option value="7+ hours">7+ heures</option>
+                              <option value="1-2 hours">{t('usersAdmin.modals.edit.businessInfo.timeOptions.1-2')}</option>
+                              <option value="3-4 hours">{t('usersAdmin.modals.edit.businessInfo.timeOptions.3-4')}</option>
+                              <option value="5-6 hours">{t('usersAdmin.modals.edit.businessInfo.timeOptions.5-6')}</option>
+                              <option value="7+ hours">{t('usersAdmin.modals.edit.businessInfo.timeOptions.7+')}</option>
                             </select>
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700">
-                              Durée de l'activité
+                              {t('usersAdmin.modals.edit.businessInfo.businessDuration')}
                             </label>
                             <select
                               name="business_duration"
@@ -1163,10 +1155,10 @@ export default function Users() {
                               onChange={handleNewUserInputChange}
                               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                             >
-                              <option value="just_starting">Je débute</option>
-                              <option value="less_than_1_year">Moins d'un an</option>
-                              <option value="1_to_3_years">1 à 3 ans</option>
-                              <option value="more_than_3_years">Plus de 3 ans</option>
+                              <option value="just_starting">{t('usersAdmin.modals.edit.businessInfo.durationOptions.justStarting')}</option>
+                              <option value="less_than_1_year">{t('usersAdmin.modals.edit.businessInfo.durationOptions.lessThan1Year')}</option>
+                              <option value="1_to_3_years">{t('usersAdmin.modals.edit.businessInfo.durationOptions.1to3Years')}</option>
+                              <option value="more_than_3_years">{t('usersAdmin.modals.edit.businessInfo.durationOptions.moreThan3Years')}</option>
                             </select>
                           </div>
                         </div>
@@ -1181,7 +1173,7 @@ export default function Users() {
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Création..." : "Créer"}
+                    {isSubmitting ? t('usersAdmin.modals.add.buttons.creating') : t('usersAdmin.modals.add.buttons.create')}
                   </button>
                   <button
                     type="button"
@@ -1189,7 +1181,7 @@ export default function Users() {
                     onClick={() => setAddUserModalOpen(false)}
                     disabled={isSubmitting}
                   >
-                    Annuler
+                    {t('usersAdmin.modals.add.buttons.cancel')}
                   </button>
                 </div>
               </form>

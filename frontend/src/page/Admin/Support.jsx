@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { HeadphonesIcon, Send, Clock, CheckCircle, AlertCircle, MessageCircle } from "lucide-react"
+import { useTranslation } from 'react-i18next'
 
 // Mock data for support requests
 const initialSupportRequests = [
@@ -81,6 +82,7 @@ const initialSupportMessages = [
 ]
 
 export default function Support() {
+  const { t } = useTranslation()
   const [supportRequests, setSupportRequests] = useState(initialSupportRequests)
   const [supportMessages, setSupportMessages] = useState(initialSupportMessages)
   const [selectedRequest, setSelectedRequest] = useState(null)
@@ -221,8 +223,8 @@ export default function Support() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Support client</h1>
-          <p className="text-gray-500">Gérer les demandes de support et les signalements</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('supportAdmin.title')}</h1>
+          <p className="text-gray-500">{t('supportAdmin.subtitle')}</p>
         </div>
       </div>
 
@@ -230,7 +232,7 @@ export default function Support() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
           <div>
-            <p className="text-sm text-gray-500">Demandes ouvertes</p>
+            <p className="text-sm text-gray-500">{t('supportAdmin.stats.openRequests.title')}</p>
             <p className="text-2xl font-bold mt-1">{countByStatus("open")}</p>
           </div>
           <div className="bg-blue-100 text-blue-600 rounded-full p-3">
@@ -240,7 +242,7 @@ export default function Support() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
           <div>
-            <p className="text-sm text-gray-500">En cours</p>
+            <p className="text-sm text-gray-500">{t('supportAdmin.stats.inProgress.title')}</p>
             <p className="text-2xl font-bold mt-1">{countByStatus("in_progress")}</p>
           </div>
           <div className="bg-yellow-100 text-yellow-600 rounded-full p-3">
@@ -250,7 +252,7 @@ export default function Support() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
           <div>
-            <p className="text-sm text-gray-500">Résolues</p>
+            <p className="text-sm text-gray-500">{t('supportAdmin.stats.resolved.title')}</p>
             <p className="text-2xl font-bold mt-1">{countByStatus("resolved")}</p>
           </div>
           <div className="bg-green-100 text-green-600 rounded-full p-3">
@@ -260,7 +262,7 @@ export default function Support() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
           <div>
-            <p className="text-sm text-gray-500">Urgentes</p>
+            <p className="text-sm text-gray-500">{t('supportAdmin.stats.urgent.title')}</p>
             <p className="text-2xl font-bold mt-1">{countByStatus("urgent")}</p>
           </div>
           <div className="bg-red-100 text-red-600 rounded-full p-3">
@@ -277,25 +279,25 @@ export default function Support() {
               className={`px-4 py-3 text-sm font-medium ${activeTab === "all" ? "text-purple-600 border-b-2 border-purple-600" : "text-gray-500 hover:text-gray-700"}`}
               onClick={() => setActiveTab("all")}
             >
-              Toutes les demandes
+              {t('supportAdmin.filters.all')}
             </button>
             <button
               className={`px-4 py-3 text-sm font-medium ${activeTab === "open" ? "text-purple-600 border-b-2 border-purple-600" : "text-gray-500 hover:text-gray-700"}`}
               onClick={() => setActiveTab("open")}
             >
-              Ouvertes
+              {t('supportAdmin.filters.open')}
             </button>
             <button
               className={`px-4 py-3 text-sm font-medium ${activeTab === "in_progress" ? "text-purple-600 border-b-2 border-purple-600" : "text-gray-500 hover:text-gray-700"}`}
               onClick={() => setActiveTab("in_progress")}
             >
-              En cours
+              {t('supportAdmin.filters.inProgress')}
             </button>
             <button
               className={`px-4 py-3 text-sm font-medium ${activeTab === "urgent" ? "text-purple-600 border-b-2 border-purple-600" : "text-gray-500 hover:text-gray-700"}`}
               onClick={() => setActiveTab("urgent")}
             >
-              Urgentes
+              {t('supportAdmin.filters.urgent')}
             </button>
           </div>
         </div>
@@ -303,7 +305,7 @@ export default function Support() {
         <div className="p-4 border-b border-gray-200">
           <input
             type="text"
-            placeholder="Rechercher une demande..."
+            placeholder={t('supportAdmin.search.placeholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           />
         </div>
@@ -312,35 +314,20 @@ export default function Support() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Titre
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('supportAdmin.table.columns.request')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Utilisateur
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('supportAdmin.table.columns.user')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Statut
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('supportAdmin.table.columns.status')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Date
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('supportAdmin.table.columns.date')}
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('supportAdmin.table.columns.actions')}
                 </th>
               </tr>
             </thead>
@@ -357,7 +344,7 @@ export default function Support() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-700">{request.title}</p>
-                          <p className="text-gray-500 text-xs">ID: #{request.id}</p>
+                          <p className="text-gray-500 text-xs">{t('supportAdmin.table.columns.id', { id: request.id })}</p>
                         </div>
                       </div>
                     </td>
@@ -382,7 +369,7 @@ export default function Support() {
                         onClick={() => viewDetails(request)}
                       >
                         <MessageCircle className="mr-2 h-4 w-4" />
-                        Répondre
+                        {t('supportAdmin.actions.reply')}
                       </button>
                     </td>
                   </tr>
@@ -394,7 +381,7 @@ export default function Support() {
 
         {filteredRequests.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Aucune demande trouvée</p>
+            <p className="text-gray-500">{t('supportAdmin.table.noRequests')}</p>
           </div>
         )}
       </div>
@@ -420,7 +407,7 @@ export default function Support() {
                         className={`p-1 rounded-md ${selectedRequest?.status === "open" ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600"}`}
                         disabled={selectedRequest?.status === "open"}
                         onClick={() => handleStatusChange("open")}
-                        title="Marquer comme ouvert"
+                        title={t('supportAdmin.status.open')}
                       >
                         <Clock className="h-4 w-4" />
                       </button>
@@ -428,7 +415,7 @@ export default function Support() {
                         className={`p-1 rounded-md ${selectedRequest?.status === "in_progress" ? "bg-yellow-100 text-yellow-600" : "bg-gray-100 text-gray-600 hover:bg-yellow-100 hover:text-yellow-600"}`}
                         disabled={selectedRequest?.status === "in_progress"}
                         onClick={() => handleStatusChange("in_progress")}
-                        title="Marquer comme en cours"
+                        title={t('supportAdmin.status.in_progress')}
                       >
                         <MessageCircle className="h-4 w-4" />
                       </button>
@@ -436,7 +423,7 @@ export default function Support() {
                         className={`p-1 rounded-md ${selectedRequest?.status === "resolved" ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600"}`}
                         disabled={selectedRequest?.status === "resolved"}
                         onClick={() => handleStatusChange("resolved")}
-                        title="Marquer comme résolu"
+                        title={t('supportAdmin.status.resolved')}
                       >
                         <CheckCircle className="h-4 w-4" />
                       </button>
@@ -444,7 +431,7 @@ export default function Support() {
                         className={`p-1 rounded-md ${selectedRequest?.status === "urgent" ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600"}`}
                         disabled={selectedRequest?.status === "urgent"}
                         onClick={() => handleStatusChange("urgent")}
-                        title="Marquer comme urgent"
+                        title={t('supportAdmin.status.urgent')}
                       >
                         <AlertCircle className="h-4 w-4" />
                       </button>
@@ -504,7 +491,7 @@ export default function Support() {
                         })
                       ) : (
                         <div className="text-center py-4">
-                          <p className="text-gray-500">Aucun message pour l'instant</p>
+                          <p className="text-gray-500">{t('supportAdmin.chat.noMessages')}</p>
                         </div>
                       )}
                     </div>
@@ -512,13 +499,13 @@ export default function Support() {
                     <form onSubmit={handleSendReply}>
                       <div className="mb-4">
                         <label htmlFor="reply" className="block text-sm font-medium text-gray-700 mb-1">
-                          Votre réponse
+                          {t('supportAdmin.modals.reply.label')}
                         </label>
                         <textarea
                           id="reply"
                           rows="3"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
-                          placeholder="Entrez votre message..."
+                          placeholder={t('supportAdmin.modals.reply.placeholder')}
                           value={replyMessage}
                           onChange={(e) => setReplyMessage(e.target.value)}
                           disabled={selectedRequest?.status === "resolved" || isSubmitting}
@@ -531,7 +518,7 @@ export default function Support() {
                           onClick={() => setDetailsOpen(false)}
                           disabled={isSubmitting}
                         >
-                          Fermer
+                          {t('supportAdmin.modals.reply.buttons.close')}
                         </button>
                         <button
                           type="submit"
@@ -539,11 +526,11 @@ export default function Support() {
                           disabled={!replyMessage.trim() || selectedRequest?.status === "resolved" || isSubmitting}
                         >
                           {isSubmitting ? (
-                            <span>Envoi en cours...</span>
+                            <span>{t('supportAdmin.chat.sending')}</span>
                           ) : (
                             <>
                               <Send className="mr-2 h-4 w-4" />
-                              Envoyer
+                              {t('supportAdmin.modals.reply.buttons.send')}
                             </>
                           )}
                         </button>
