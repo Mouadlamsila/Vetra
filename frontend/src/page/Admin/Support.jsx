@@ -90,6 +90,7 @@ export default function Support() {
   const [replyMessage, setReplyMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState("all")
+  const language = localStorage.getItem("lang")
 
   // Get user details (normally would be fetched from the API)
   const getUserDetails = (userId) => {
@@ -314,19 +315,19 @@ export default function Support() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('supportAdmin.table.columns.request')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('supportAdmin.table.columns.user')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('supportAdmin.table.columns.status')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('supportAdmin.table.columns.date')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('supportAdmin.table.columns.actions')}
                 </th>
               </tr>
@@ -339,7 +340,7 @@ export default function Support() {
                   <tr key={request.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                        <div className={`h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 ${language === "ar" ? "ml-3" : "mr-3" }`}>
                           <HeadphonesIcon className="h-5 w-5" />
                         </div>
                         <div>
@@ -349,8 +350,8 @@ export default function Support() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 mr-2">
+                      <div className="flex items-center justify-start">
+                        <div className={`h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600  ${language === "ar" ? "ml-2" : "mr-2"}`}>
                           <span className="text-xs font-medium">{user.initials}</span>
                         </div>
                         <div>
@@ -359,16 +360,16 @@ export default function Support() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(request.status)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">{getStatusBadge(request.status)}</td>
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       <span className="text-sm">{formatDate(request.createdAt)}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap flex justify-center text-sm font-medium">
                       <button
                         className="flex items-center px-3 py-1 text-sm border border-purple-300 rounded-md text-purple-600 hover:bg-purple-50"
                         onClick={() => viewDetails(request)}
                       >
-                        <MessageCircle className="mr-2 h-4 w-4" />
+                        <MessageCircle className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                         {t('supportAdmin.actions.reply')}
                       </button>
                     </td>

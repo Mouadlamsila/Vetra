@@ -18,6 +18,7 @@ export default function Stores() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [users, setUsers] = useState([])
+  const Languages = localStorage.getItem("lang")
 
   // Fetch stores and users from API
   useEffect(() => {
@@ -332,23 +333,23 @@ export default function Stores() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-10 py-3 text-start  text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('storesAdmin.allStores.table.store')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-10 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('storesAdmin.allStores.table.owner')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('storesAdmin.allStores.table.category')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('storesAdmin.allStores.table.location')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('storesAdmin.allStores.table.status')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('storesAdmin.allStores.table.actions')}
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('storesAdmin.allStores.table.actions.name')}
                 </th>
               </tr>
             </thead>
@@ -357,7 +358,7 @@ export default function Stores() {
                 <tr key={store.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                      <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-3" : "mr-3"}`}>
                         {store.logo?.formats?.thumbnail?.url ? (
                           <img
                             src={`http://localhost:1337${store.logo.formats.thumbnail.url}`}
@@ -389,7 +390,7 @@ export default function Stores() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 mr-2">
+                      <div className={`h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 ${Languages === "ar" ? "ml-2" : "mr-2"}`}>
                         {store.owner?.id && getOwnerPhotoUrl(store.owner.id) ? (
                           <img
                             src={getOwnerPhotoUrl(store.owner.id)}
@@ -405,17 +406,19 @@ export default function Stores() {
                       <span className="text-sm">{store.owner?.email || 'N/A'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm capitalize">{store.category}</span>
+                  <td className="px-6 text-center py-4 whitespace-nowrap">
+                    <span className="text-sm capitalize">
+                      {t(`storesAdmin.allStores.table.categories.${store.category?.toLowerCase() || 'other'}`)}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 text-center py-4 whitespace-nowrap">
                     <span className="text-sm">{store.emplacement}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 text-center py-4 whitespace-nowrap">
                     {getStoreStatusBadge(store.statusBoutique)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
+                  <td className="px-6  py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center justify-center w-full space-x-2">
                       <button 
                         className="text-gray-500 hover:text-gray-700" 
                         title={t('storesAdmin.allStores.table.actions.view')}
@@ -434,7 +437,7 @@ export default function Stores() {
                       ) : store.statusBoutique === "suspended" ? (
                         <>
                           <button
-                            className="text-green-600 hover:text-green-900 mr-2"
+                            className={`text-green-600 hover:text-green-900 ${Languages === "ar" ? "ml-2" :"mr-2"} `}
                             title={t('storesAdmin.allStores.table.actions.enable')}
                             onClick={() => openConfirmModal(store, "enable")}
                           >

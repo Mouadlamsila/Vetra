@@ -18,7 +18,12 @@ export default {
     status: "Statut",
     registrationDate: "Date d'inscription",
     actions: "Actions",
-    id: "ID: #{{id}}"
+    id: "ID: #{{id}}",
+    roles: {
+      owner: "Propriétaire",
+      user: "Utilisateur",
+      admin: "Administrateur"
+    }
   },
   status: {
     active: "Actif",
@@ -99,11 +104,19 @@ export default {
     confirm: {
       block: {
         title: "Bloquer l'utilisateur",
-        message: "Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus se connecter à son compte."
+        message: "Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus se connecter à son compte.",
+        buttons: {
+          confirm: "Bloquer",
+          processing: "Traitement...",
+        }
       },
       unblock: {
         title: "Débloquer l'utilisateur",
-        message: "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra à nouveau se connecter à son compte."
+        message: "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra à nouveau se connecter à son compte.",
+        buttons: {
+          confirm: "Débloquer",
+          processing: "Traitement...",
+        }
       },
       delete: {
         title: "Supprimer l'utilisateur",

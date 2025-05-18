@@ -27,8 +27,24 @@ export default {
       category: "Category",
       location: "Location",
       status: "Status",
-      actions: "Actions",
-      id: "ID: #{{id}}"
+      id: "ID: #{{id}}",
+      categories: {
+        clothing: "Clothing",
+        electronics: "Electronics",
+        food: "Food & Beverages",
+        health: "Health & Beauty",
+        beauty: "Health & Beauty",
+        home: "Home & Garden",
+        sports: "Sports & Outdoors",
+        other: "Other"
+      },
+      actions: {
+        name: "Actions",
+        view: "View store details",
+        enable: "Enable store",
+        disable: "Disable store",
+        delete: "Delete store"
+      }
     },
     noStores: "No stores found"
   },

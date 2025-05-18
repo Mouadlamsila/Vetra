@@ -6,7 +6,8 @@ export default {
     category: "Catégorie",
     id: "ID: #{{id}}",
     createdAt: "Créé le",
-    actions: "Actions"
+    actions: "Actions",
+    documentId: "ID: #{{id}}"
   },
   form: {
     name: {

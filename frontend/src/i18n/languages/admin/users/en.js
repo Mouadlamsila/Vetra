@@ -18,7 +18,12 @@ export default {
     status: "Status",
     registrationDate: "Registration Date",
     actions: "Actions",
-    id: "ID: #{{id}}"
+    id: "ID: #{{id}}",
+    roles: {
+      owner: "Owner",
+      user: "User",
+      admin: "Administrator"
+    }
   },
   status: {
     active: "Active",
@@ -99,11 +104,19 @@ export default {
     confirm: {
       block: {
         title: "Block User",
-        message: "Are you sure you want to block this user? They will no longer be able to log into their account."
+        message: "Are you sure you want to block this user? They will no longer be able to log into their account.",
+        buttons: {
+          confirm: "Block",
+          processing: "Processing...",
+        }
       },
       unblock: {
         title: "Unblock User",
-        message: "Are you sure you want to unblock this user? They will be able to log into their account again."
+        message: "Are you sure you want to unblock this user? They will be able to log into their account again.",
+        buttons: {
+          confirm: "Unblock",
+          processing: "Processing...",
+        }
       },
       delete: {
         title: "Delete User",

@@ -27,6 +27,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const [title, setTitle] = useState(t('usersAdmin.topBar.titles.dashboard'));
+  const language = localStorage.getItem('lang');
 
   useEffect(() => {
     fetchNotifications();
@@ -104,8 +105,8 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <header className="bg-white border-b py-3 border-slate-200 sticky top-0 ">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="bg-white border-b py-3 border-slate-200 sticky top-0 " >
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between" >
         <button
           className="md:hidden p-2 hover:bg-slate-100  rounded-md"
           onClick={onMenuClick}
@@ -119,7 +120,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           {title}
         </div>
 
-        <div className="flex items-center space-x-4 ml-auto">
+        <div className={`flex items-center space-x-4 ${language === 'ar' ? 'mr-auto' : 'ml-auto'}`}>
           
           <div className="relative">
             <button 

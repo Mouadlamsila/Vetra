@@ -31,6 +31,7 @@ export default function Profile() {
   const [previewUrl, setPreviewUrl] = useState(null)
   const [passwordError, setPasswordError] = useState("")
   const id = localStorage.getItem("IDUser")
+  const language = localStorage.getItem("lang")
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -211,14 +212,14 @@ export default function Profile() {
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "profile" ? "bg-[#c8c2fd] text-[#6D28D9]" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("profile")}
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                 {t('profileAdmin.personalInfo.title')}
               </button>
               <button
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "password" ? "bg-[#c8c2fd] text-[#6D28D9]" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("password")}
               >
-                <Lock className="mr-2 h-4 w-4" />
+                <Lock className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                 {t('profileAdmin.password.title')}
               </button>
             </div>
@@ -239,7 +240,7 @@ export default function Profile() {
                         className="flex items-center text-sm text-[#6D28D9] hover:text-[#5b21b6]"
                         onClick={() => setEditMode(true)}
                       >
-                        <Edit className="h-4 w-4 mr-1" />
+                        <Edit className={`h-4 w-4 ${language === "ar" ? "ml-1" : "mr-1"}`} />
                         {t('profileAdmin.personalInfo.edit')}
                       </button>
                     )}
@@ -419,7 +420,7 @@ export default function Profile() {
                                 <span>{t('profileAdmin.editMode.saving')}</span>
                               ) : (
                                 <>
-                                  <Save className="mr-2 h-4 w-4" />
+                                  <Save className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                                   {t('profileAdmin.editMode.save')}
                                 </>
                               )}
@@ -429,28 +430,28 @@ export default function Profile() {
                       ) : (
                         <div className="space-y-4">
                           <div className="flex items-center">
-                            <User className="h-5 w-5 text-gray-400 mr-2" />
+                            <User className={`h-5 w-5 text-gray-400 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.username')}</p>
                               <p className="font-medium">{user.username}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <Mail className="h-5 w-5 text-gray-400 mr-2" />
+                            <Mail className={`h-5 w-5 text-gray-400 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.email')}</p>
                               <p className="font-medium">{user.email}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <Phone className="h-5 w-5 text-gray-400 mr-2" />
+                            <Phone className={`h-5 w-5 text-gray-400 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.phone')}</p>
                               <p className="font-medium">{user.phone || t('profileAdmin.personalInfo.phoneNotSet')}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <MapPin className="h-5 w-5 text-gray-400 mr-2" />
+                            <MapPin className={`h-5 w-5 text-gray-400 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.address')}</p>
                               <p className="font-medium">
@@ -461,7 +462,7 @@ export default function Profile() {
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <Calendar className="h-5 w-5 text-gray-400 mr-2" />
+                            <Calendar className={`h-5 w-5 text-gray-400 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.registrationDate')}</p>
                               <p className="font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
@@ -539,7 +540,7 @@ export default function Profile() {
                             <span>{t('profileAdmin.password.updating')}</span>
                           ) : (
                             <>
-                              <Lock className="mr-2 h-4 w-4" />
+                              <Lock className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                               {t('profileAdmin.password.update')}
                             </>
                           )}

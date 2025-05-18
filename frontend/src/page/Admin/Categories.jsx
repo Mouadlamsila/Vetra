@@ -17,6 +17,7 @@ export default function Categories() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [refresh, setRefresh] = useState(false)
+  const language = localStorage.getItem("lang")
 
   // Fetch categories from API
   useEffect(() => {
@@ -192,7 +193,7 @@ export default function Categories() {
             setCreateModalOpen(true)
           }}
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
           {t('categoriesAdmin.addCategory')}
         </button>
       </div>
@@ -239,16 +240,16 @@ export default function Categories() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('categoriesAdmin.table.category')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('categoriesAdmin.table.createdAt')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('categoriesAdmin.table.actions')}
                 </th>
               </tr>
@@ -258,7 +259,7 @@ export default function Categories() {
                 <tr key={category.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                      <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${language === "ar" ? "ml-3" : "mr-3"}`}>
                         {category.photo?.url ? (
                           <img
                             src={`http://localhost:1337${category.photo.url}`}
@@ -271,22 +272,22 @@ export default function Categories() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-700 capitalize">{category.name}</p>
-                        <p className="text-gray-500 text-xs">Document ID: {category.documentId}</p>
+                        <p className="text-gray-500 text-xs">{t('categoriesAdmin.table.documentId', {id :category.documentId})}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#c8c2fd] text-[#6D28D9]">
                       #{category.id}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="text-sm text-gray-600">
                       {new Date(category.createdAt).toLocaleDateString()}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-center space-x-2">
                       <button
                         className="text-gray-500 hover:text-gray-700"
                         title={t('categoriesAdmin.modals.edit.title')}

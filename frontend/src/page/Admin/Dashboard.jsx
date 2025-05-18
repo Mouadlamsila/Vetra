@@ -36,6 +36,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null)
   const [timeRange, setTimeRange] = useState("monthly")
   const [selectedTimeRange, setSelectedTimeRange] = useState("30")
+  const language = localStorage.getItem('lang');
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -201,8 +202,8 @@ export default function Dashboard() {
         // Process product distribution data
         const categoryCount = {}
         productsWithCategoriesResponse.data.data.forEach(product => {
-          if (product.categories) {
-            categoryCount[product.categories] = (categoryCount[product.categories] || 0) + 1
+          if (product.category?.name) {
+            categoryCount[product.category.name] = (categoryCount[product.category.name] || 0) + 1
           }
         })
         
@@ -344,17 +345,58 @@ const SalesChart = () => {
 
 const ProductDistributionChart = () => {
   const { t } = useTranslation()
+
+  // Translate category names
+  const translatedData = productDistributionData.map(item => ({
+    ...item,
+    // Use the category name directly since it's already a string
+    name: item.name || t('storesAdmin.allStores.table.categories.other'),
+    value: item.value,
+    color: item.color
+  }))
+
+  const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+    const RADIAN = Math.PI / 180
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+    const x = cx + radius * Math.cos(-midAngle * RADIAN)
+    const y = cy + radius * Math.sin(-midAngle * RADIAN)
+
+    return percent > 0.05 ? (
+      <text
+        x={x}
+        y={y}
+        fill="#fff"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xs font-medium"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    ) : null
+  }
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-2 border border-gray-200 rounded-md shadow-sm">
+          <p className="text-sm font-medium">{payload[0].name}</p>
+          <p className="text-sm text-gray-600">{`${payload[0].value.toFixed(1)}%`}</p>
+        </div>
+      )
+    }
+    return null
+  }
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold">{t('dashboardAdmin.charts.productDistribution')}</h3>
       </div>
       <div className="h-[300px]">
-          
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={productDistributionData}
+              data={translatedData}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -362,22 +404,27 @@ const ProductDistributionChart = () => {
               innerRadius={60}
               fill="#8884d8"
               dataKey="value"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={CustomLabel}
             >
-              {productDistributionData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+              {translatedData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.color || COLORS[index % COLORS.length]} 
+                  strokeWidth={1}
+                  stroke="#ffffff"
+                />
               ))}
             </Pie>
-            <RechartsTooltip
-                formatter={(value, name) => [`${value.toFixed(1)}%`, name]}
-              contentStyle={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #e2e8f0",
-                borderRadius: "0.375rem",
-                boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-              }}
+            <RechartsTooltip content={CustomTooltip} />
+            <Legend 
+              layout="vertical" 
+              verticalAlign="middle" 
+              align="right" 
+              wrapperStyle={{ paddingLeft: "20px" }}
+              formatter={(value) => (
+                <span className="text-sm text-gray-600">{value}</span>
+              )}
             />
-            <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ paddingLeft: "20px" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -401,7 +448,7 @@ const ProductDistributionChart = () => {
       <div className="space-y-4">
           {recentOrders.map((order) => (
             <div key={order.id} className="flex items-start pb-4 border-b border-gray-100 last:border-0">
-              <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
+              <div className={`h-10 w-10 rounded-full overflow-hidden ${language === 'ar' ? 'ml-3' : 'mr-3'}`}>
                 {userPhotos[order.customer?.id] ? (
                   <img 
                     src={`http://localhost:1337${userPhotos[order.customer.id].url}`}

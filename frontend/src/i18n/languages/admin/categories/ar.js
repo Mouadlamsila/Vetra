@@ -6,7 +6,8 @@ export default {
     category: "الفئة",
     id: "المعرف: #{{id}}",
     createdAt: "تم الإنشاء في",
-    actions: "الإجراءات"
+    actions: "الإجراءات",
+    documentId: "المعرف: #{{id}}"
   },
   form: {
     name: {

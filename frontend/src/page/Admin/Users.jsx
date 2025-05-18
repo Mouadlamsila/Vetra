@@ -43,7 +43,7 @@ export default function Users() {
     daily_time_available: "1-2 hours",
     business_duration: "just_starting"
   })
-
+  const language = localStorage.getItem('lang');
   // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
@@ -482,43 +482,43 @@ export default function Users() {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.user')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.email')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.phone')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.role')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.status')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.registrationDate')}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {t('usersAdmin.table.actions')}
                 </th>
@@ -540,9 +540,9 @@ export default function Users() {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 mr-3">
+                    <td className="py-4 flex justify-start w-full  whitespace-nowrap">
+                      <div className="flex  items-center">
+                        <div className={`h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 ${language ==="ar" ? "ml-3" : "mr-3" } `}>
                           {user.photo?.formats?.thumbnail?.url ? (
                             <img
                               src={`http://localhost:1337${user.photo.formats.thumbnail.url}`}
@@ -565,17 +565,17 @@ export default function Users() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm">{user.phone || '-'}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                        {user.role?.name || 'User'}
+                        {t(`usersAdmin.table.roles.${(user.role?.name || 'user').toLowerCase()}`)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getUserStatusBadge(user.blocked)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">{getUserStatusBadge(user.blocked)}</td>
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       <span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
+                    <td className="px-6 py-4  whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center justify-center w-full space-x-2">
                         <button
                           className="text-gray-500 hover:text-gray-700"
                           title={t('usersAdmin.actions.viewProfile')}

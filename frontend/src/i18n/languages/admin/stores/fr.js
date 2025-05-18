@@ -27,8 +27,24 @@ export default {
       category: "Catégorie",
       location: "Emplacement",
       status: "Statut",
-      actions: "Actions",
-      id: "ID: #{{id}}"
+      id: "ID: #{{id}}",
+      categories: {
+        clothing: "Vêtements",
+        electronics: "Électronique",
+        food: "Alimentation & Boissons",
+        health: "Santé & Beauté",
+        beauty: "Santé & Beauté",
+        home: "Maison & Jardin",
+        sports: "Sports & Loisirs",
+        other: "Autre"
+      },
+      actions: {
+        name: "Actions",
+        view: "Voir les détails de la boutique",
+        enable: "Activer la boutique",
+        disable: "Désactiver la boutique",
+        delete: "Supprimer la boutique"
+      }
     },
     noStores: "Aucune boutique trouvée"
   },

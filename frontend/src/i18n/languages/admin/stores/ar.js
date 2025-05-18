@@ -27,8 +27,25 @@ export default {
       category: "الفئة",
       location: "الموقع",
       status: "الحالة",
-      actions: "الإجراءات",
-      id: "معرف: #{{id}}"
+ 
+      id: "معرف: #{{id}}",
+      categories: {
+        clothing: "ملابس",
+        electronics: "إلكترونيات",
+        food: "طعام ومشروبات",
+        health: "صحة وجمال",
+        beauty: "صحة وجمال",
+        home: "منزل وحديقة",
+        sports: "رياضة وأنشطة خارجية",
+        other: "أخرى"
+      },
+      actions: {
+        name: "الإجراءات",
+        view: "عرض تفاصيل المتجر",
+        enable: "تفعيل المتجر",
+        disable: "تعطيل المتجر",
+        delete: "حذف المتجر"
+      }
     },
     noStores: "لم يتم العثور على متاجر"
   },

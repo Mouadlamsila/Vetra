@@ -18,6 +18,7 @@ export default function Products() {
   const [error, setError] = useState(null)
   const [viewModalOpen, setViewModalOpen] = useState(false)
   const [categories, setCategories] = useState([])
+  const language = localStorage.getItem("lang")
 
   // Fetch products and categories from API
   useEffect(() => {
@@ -192,25 +193,25 @@ export default function Products() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.product')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.price')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.store')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.category')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.stock')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.addedOn')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('productsAdmin.table.actions')}
                 </th>
               </tr>
@@ -220,7 +221,7 @@ export default function Products() {
                 <tr key={product.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                      <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${language === "ar" ? "ml-3" : "mr-3"}`}>
                         {product.imgMain?.formats?.thumbnail?.url ? (
                           <img
                             src={`http://localhost:1337${product.imgMain.formats.thumbnail.url}`}
@@ -237,10 +238,10 @@ export default function Products() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="font-medium">{formatCurrency(product.prix)}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     {product.boutique ? (
                       <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                         {product.boutique.nom}
@@ -249,12 +250,12 @@ export default function Products() {
                       <span className="text-gray-400 text-sm">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
                       {product.category ? categories.find(cat => cat.id === product.category.id)?.name : '-'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                       product.stock <= product.lowStockAlert
                         ? "bg-red-100 text-red-800"
@@ -265,11 +266,11 @@ export default function Products() {
                         : t(product.stock <= product.lowStockAlert ? 'productsAdmin.status.lowStock' : 'productsAdmin.status.inStock', { count: product.stock })}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="text-sm">{new Date(product.createdAt).toLocaleDateString()}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-center space-x-2">
                       <button 
                         className="text-gray-500 hover:text-gray-700" 
                         onClick={() => openViewModal(product)}

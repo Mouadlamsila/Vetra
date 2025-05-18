@@ -17,6 +17,7 @@ const initialSettings = {
 
 export default function Settings() {
   const { t, i18n } = useTranslation()
+  const language = localStorage.getItem("lang")
   const [form, setForm] = useState({
     ...initialSettings,
     language: i18n.language // Initialize with current language
@@ -60,21 +61,21 @@ export default function Settings() {
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "localization" ? "bg-purple-50 text-purple-700" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("localization")}
               >
-                <Globe className="mr-2 h-4 w-4" />
+                <Globe className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                 {t('settingsAdmin.tabs.localization')}
               </button>
               <button
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "notifications" ? "bg-purple-50 text-purple-700" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("notifications")}
               >
-                <Bell className="mr-2 h-4 w-4" />
+                <Bell className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                 {t('settingsAdmin.tabs.notifications')}
               </button>
               <button
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeTab === "permissions" ? "bg-purple-50 text-purple-700" : "text-gray-700 hover:bg-gray-100"}`}
                 onClick={() => setActiveTab("permissions")}
               >
-                <Shield className="mr-2 h-4 w-4" />
+                <Shield className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                 {t('settingsAdmin.tabs.permissions')}
               </button>
             </div>
@@ -261,7 +262,7 @@ export default function Settings() {
                     <span>{t('settingsAdmin.buttons.saving')}</span>
                   ) : (
                     <>
-                      <Save className="mr-2 h-4 w-4" />
+                      <Save className={`${language === "ar" ? "ml-2" : "mr-2"} h-4 w-4`} />
                       {t('settingsAdmin.buttons.save')}
                     </>
                   )}
