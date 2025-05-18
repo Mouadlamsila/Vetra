@@ -67,23 +67,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         isOpen ? "fixed inset-0" : "hidden md:block"
       }`}
     >
-      <Link to={'/'} className="p-4 flex items-center justify-center border-b border-[#c8c2fd]">
-        <div className="flex items-center justify-start space-x-2">
+      <div className="p-4 flex items-center justify-between border-b border-[#c8c2fd]">
+
+    
+      <Link to={'/'} >
+        <div className=" sm:flex hidden items-center justify-start space-x-2">
           <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
         </div>
+        <div className="flex   sm:hidden  items-center justify-start space-x-2">
+          <img src="/img/logo/v.png" alt="logo" className="w-[50%] h-[50%] " />
+        </div>
+      </Link>
         <button className="md:hidden text-white" onClick={onClose}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-      </Link>
-      
+        </div>
       <nav className="py-4">
         <ul>
           {navItems.map((item) => (
             <li key={item.href}>
               <Link 
                 to={item.href}
+                onClick={onClose}
                 className={`flex items-center space-x-2 px-4 py-3 transition-colors ${
                   location.pathname === item.href
                     ? "bg-[#6D28D9] text-white"

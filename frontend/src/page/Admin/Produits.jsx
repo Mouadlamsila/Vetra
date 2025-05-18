@@ -139,11 +139,11 @@ export default function Products() {
               <input
                 type="text"
                 placeholder={t('productsAdmin.search.placeholder')}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className={`w-full ${language === "ar" ? " pr-10 pl-4" : " pr-4 pl-10"}  py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Search className={`absolute right-3 top-3 h-4 w-4 text-gray-400 ${language === "ar" ? "right-3" : "left-3"}`} />
             </div>
           </div>
 
@@ -181,7 +181,7 @@ export default function Products() {
             className="ml-auto flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             onClick={resetFilters}
           >
-            <Filter className="mr-2 h-4 w-4" />
+            <Filter className={`${language === "ar" ? "ml-2":"mr-2"} h-4 w-4`} />
             {t('productsAdmin.search.reset')}
           </button>
         </div>

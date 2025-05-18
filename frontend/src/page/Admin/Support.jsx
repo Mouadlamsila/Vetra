@@ -4,94 +4,94 @@ import { useState } from "react"
 import { HeadphonesIcon, Send, Clock, CheckCircle, AlertCircle, MessageCircle } from "lucide-react"
 import { useTranslation } from 'react-i18next'
 
-// Mock data for support requests
-const initialSupportRequests = [
-  {
-    id: 1,
-    title: "Problème de paiement",
-    userId: 2,
-    status: "open",
-    message: "Je n'arrive pas à finaliser mon paiement, une erreur s'affiche à chaque fois.",
-    createdAt: "2023-06-15T10:30:00Z",
-  },
-  {
-    id: 2,
-    title: "Produit non reçu",
-    userId: 3,
-    status: "in_progress",
-    message: "J'ai commandé il y a 2 semaines et je n'ai toujours pas reçu ma commande.",
-    createdAt: "2023-06-10T14:20:00Z",
-  },
-  {
-    id: 3,
-    title: "Demande de remboursement",
-    userId: 4,
-    status: "resolved",
-    message: "Je souhaite être remboursé pour ma commande #12345 car le produit est défectueux.",
-    createdAt: "2023-06-08T09:15:00Z",
-  },
-  {
-    id: 4,
-    title: "Compte bloqué",
-    userId: 5,
-    status: "urgent",
-    message: "Mon compte a été bloqué sans raison, je ne peux plus me connecter.",
-    createdAt: "2023-06-05T16:45:00Z",
-  },
-  {
-    id: 5,
-    title: "Question sur livraison",
-    userId: 6,
-    status: "open",
-    message: "Quels sont les délais de livraison pour la France métropolitaine ?",
-    createdAt: "2023-06-03T11:10:00Z",
-  },
-]
 
-// Mock data for support messages
-const initialSupportMessages = [
-  {
-    id: 1,
-    requestId: 2,
-    userId: 3,
-    message: "Bonjour, j'ai commandé il y a 2 semaines et je n'ai toujours pas reçu ma commande #54321.",
-    createdAt: "2023-06-10T14:20:00Z",
-  },
-  {
-    id: 2,
-    requestId: 2,
-    userId: 1,
-    message: "Bonjour, merci pour votre message. Pouvez-vous me confirmer votre adresse de livraison ?",
-    createdAt: "2023-06-11T09:30:00Z",
-  },
-  {
-    id: 3,
-    requestId: 2,
-    userId: 3,
-    message: "Mon adresse est 123 rue de Paris, 75001 Paris.",
-    createdAt: "2023-06-11T10:15:00Z",
-  },
-  {
-    id: 4,
-    requestId: 2,
-    userId: 1,
-    message:
-      "Merci pour ces informations. Je viens de vérifier et votre colis est en cours de livraison. Vous devriez le recevoir d'ici 2 jours ouvrés.",
-    createdAt: "2023-06-11T11:05:00Z",
-  },
-]
+// Mock data for support requests
 
 export default function Support() {
   const { t } = useTranslation()
-  const [supportRequests, setSupportRequests] = useState(initialSupportRequests)
-  const [supportMessages, setSupportMessages] = useState(initialSupportMessages)
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [replyMessage, setReplyMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState("all")
   const language = localStorage.getItem("lang")
-
+  
+  const initialSupportRequests = [
+    {
+      id: 1,
+      title: t('supportAdmin.table.title'),
+      userId: 2,
+      status: "open",
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-15T10:30:00Z",
+    },
+    {
+      id: 2,
+      title: t('supportAdmin.table.title'),
+      userId: 3,
+      status: "in_progress",
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-10T14:20:00Z",
+    },
+    {
+      id: 3,
+      title: t('supportAdmin.table.title'),
+      userId: 4,
+      status: "resolved",
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-08T09:15:00Z",
+    },
+    {
+      id: 4,
+      title: t('supportAdmin.table.title'),
+      userId: 5,
+      status: "urgent",
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-05T16:45:00Z",
+    },
+    {
+      id: 5,
+      title: t('supportAdmin.table.title'),
+      userId: 6,
+      status: "open",
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-03T11:10:00Z",
+    },
+  ]
+  
+  // Mock data for support messages
+  const initialSupportMessages = [
+    {
+      id: 1,
+      requestId: 2,
+      userId: 3,
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-10T14:20:00Z",
+    },
+    {
+      id: 2,
+      requestId: 2,
+      userId: 1,
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-11T09:30:00Z",
+    },
+    {
+      id: 3,
+      requestId: 2,
+      userId: 3,
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-11T10:15:00Z",
+    },
+    {
+      id: 4,
+      requestId: 2,
+      userId: 1,
+      message: t('supportAdmin.chat.placeholder'),
+      createdAt: "2023-06-11T11:05:00Z",
+    },
+  ]
+  const [supportMessages, setSupportMessages] = useState(initialSupportMessages)
+  const [supportRequests, setSupportRequests] = useState(initialSupportRequests)
   // Get user details (normally would be fetched from the API)
   const getUserDetails = (userId) => {
     // This is a mock function - in a real app, you'd fetch this from the API
@@ -116,15 +116,15 @@ export default function Support() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "open":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">Ouvert</span>
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">{t('supportAdmin.status.open')}</span>
       case "in_progress":
         return (
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">En cours</span>
+          <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">{t('supportAdmin.status.in_progress')}</span>
         )
       case "resolved":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Résolu</span>
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">{t('supportAdmin.status.resolved')}</span>
       case "urgent":
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Urgent</span>
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">{t('supportAdmin.status.urgent')}</span>
       default:
         return <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{status}</span>
     }

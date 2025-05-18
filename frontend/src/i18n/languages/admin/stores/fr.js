@@ -8,7 +8,9 @@ export default {
     submittedOn: "Soumis le",
     details: "Détails",
     approve: "Approuver",
-    reject: "Refuser"
+    reject: "Refuser",
+    pending: "En attente",
+    submitted: "Soumis le"
   },
   allStores: {
     title: "Toutes les boutiques",

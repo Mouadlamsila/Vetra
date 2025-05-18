@@ -8,7 +8,9 @@ export default {
     submittedOn: "تم التقديم في",
     details: "التفاصيل",
     approve: "موافقة",
-    reject: "رفض"
+    reject: "رفض",
+    pending: "قيد الانتظار",
+    submitted: "تم التقديم في"
   },
   allStores: {
     title: "جميع المتاجر",

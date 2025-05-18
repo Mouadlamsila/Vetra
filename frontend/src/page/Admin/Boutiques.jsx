@@ -182,7 +182,7 @@ export default function Stores() {
                 <div className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
-                      <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                      <div className={`h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-3" : "mr-3"}`}>
                         {store.logo?.formats?.thumbnail?.url ? (
                           <img
                             src={`http://localhost:1337${store.logo.formats.thumbnail.url}`}
@@ -212,17 +212,17 @@ export default function Stores() {
                       </div>
                     </div>
                     <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
-                      En attente
+                      {t('storesAdmin.pendingApprovals.pending')}
                     </span>
                   </div>
 
                   <p className="mt-3 text-sm text-gray-600">{store.description}</p>
 
                   <div className="mt-3 flex items-center text-xs text-gray-500">
-                    <span className="flex items-center mr-3">
+                    <span className={`flex items-center ${Languages === "ar" ? "ml-3" : "mr-3"} `}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3 mr-1"
+                        className={`h-3 w-3 ${Languages === "ar" ? "ml-1" : "mr-1"}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -245,7 +245,7 @@ export default function Stores() {
                     <span className="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3 mr-1"
+                        className={`h-3 w-3 ${Languages === "ar" ? "ml-1" : "mr-1"}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -257,7 +257,7 @@ export default function Stores() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      Soumis le {new Date(store.createdAt).toLocaleDateString()}
+                      {t('storesAdmin.pendingApprovals.submitted')}  {new Date(store.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export default function Stores() {
                     className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50"
                     onClick={() => openViewModal(store)}
                   >
-                    <Eye className="mr-1 h-4 w-4" />
+                    <Eye className={`h-4 w-4 ${Languages === "ar" ? "ml-1" : "mr-1"}`} />
                     {t('storesAdmin.pendingApprovals.details')}
                   </button>
 
@@ -276,14 +276,14 @@ export default function Stores() {
                       className="flex items-center px-3 py-1 text-sm border border-green-300 rounded-md text-green-600 hover:bg-green-50"
                       onClick={() => openConfirmModal(store, "approve")}
                     >
-                      <Check className="mr-1 h-4 w-4" />
+                      <Check className={`h-4 w-4 ${Languages === "ar" ? "ml-1" : "mr-1"}`} />
                       {t('storesAdmin.pendingApprovals.approve')}
                     </button>
                     <button
                       className="flex items-center px-3 py-1 text-sm border border-red-300 rounded-md text-red-600 hover:bg-red-50"
                       onClick={() => openConfirmModal(store, "reject")}
                     >
-                      <X className="mr-1 h-4 w-4" />
+                      <X className={`h-4 w-4 ${Languages === "ar" ? "ml-1" : "mr-1"}`} />
                       {t('storesAdmin.pendingApprovals.reject')}
                     </button>
                   </div>
@@ -544,7 +544,7 @@ export default function Stores() {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center">
-                    <div className="h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                    <div className={`h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-4" : "mr-4"}`}>
                       {selectedStore.logo?.formats?.thumbnail?.url ? (
                         <img
                           src={`http://localhost:1337${selectedStore.logo.formats.thumbnail.url}`}
@@ -569,7 +569,7 @@ export default function Stores() {
                       )}
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">{selectedStore.nom}</h3>
+                      <h3 className="text-xl text-start font-semibold text-gray-900">{selectedStore.nom}</h3>
                       {getStoreStatusBadge(selectedStore.statusBoutique)}
                     </div>
                   </div>
@@ -585,30 +585,30 @@ export default function Stores() {
                   {/* Store Details */}
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.description')}</h4>
-                      <p className="text-gray-900">{selectedStore.description}</p>
+                      <h4 className="text-sm font-medium text-start text-gray-500 mb-2">{t('storesAdmin.modals.view.description')}</h4>
+                      <p className="text-gray-900 text-start">{selectedStore.description}</p>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.category')}</h4>
+                      <h4 className="text-sm font-medium text-start text-gray-500 mb-2">{t('storesAdmin.modals.view.category')}</h4>
                       <div className="flex items-center">
-                        <Tag className="h-4 w-4 text-gray-400 mr-2" />
+                        <Tag className={`h-4 w-4 text-gray-400 ${Languages === "ar" ? "ml-2" : "mr-2"}`} />
                         <span className="text-gray-900 capitalize">{selectedStore.category}</span>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.location')}</h4>
+                      <h4 className="text-sm font-medium text-start text-gray-500 mb-2">{t('storesAdmin.modals.view.location')}</h4>
                       <div className="flex items-center">
-                        <MapPin className="h-4 w-4 text-gray-400 mr-2" />
+                        <MapPin className={`h-4 w-4 text-gray-400 ${Languages === "ar" ? "ml-2" : "mr-2"}`} />
                         <span className="text-gray-900">{selectedStore.emplacement}</span>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.creationDate')}</h4>
+                      <h4 className="text-sm font-medium text-start text-gray-500 mb-2">{t('storesAdmin.modals.view.creationDate')}</h4>
                       <div className="flex items-center">
-                        <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                        <Calendar className={`h-4 w-4 text-gray-400 ${Languages === "ar" ? "ml-2" : "mr-2"}`} />
                         <span className="text-gray-900">
                           {new Date(selectedStore.createdAt).toLocaleDateString()}
                         </span>
@@ -618,7 +618,7 @@ export default function Stores() {
 
                   {/* Owner Details */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.owner')}</h4>
+                    <h4 className="text-sm text-start font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.owner')}</h4>
                     <div className="flex items-center space-x-3">
                       <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
                         {selectedStore.owner?.id && getOwnerPhotoUrl(selectedStore.owner.id) ? (
@@ -636,12 +636,12 @@ export default function Stores() {
                       <div>
                         <p className="font-medium text-gray-900">{selectedStore.owner?.username}</p>
                         <div className="flex items-center text-sm text-gray-500">
-                          <Mail className="h-4 w-4 mr-1" />
+                          <Mail className={`h-4 w-4 ${Languages === "ar" ? "ml-1" : "mr-1"}`} />
                           {selectedStore.owner?.email}
                         </div>
                         {selectedStore.owner?.phone && (
                           <div className="flex items-center text-sm text-gray-500">
-                            <Phone className="h-4 w-4 mr-1" />
+                            <Phone className={`h-4 w-4 ${Languages === "ar" ? "ml-1" : "mr-1"}`} />
                             {selectedStore.owner.phone}
                           </div>
                         )}

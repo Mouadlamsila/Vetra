@@ -31,7 +31,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if(location.pathname === "/admin"){
@@ -81,6 +81,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
     localStorage.setItem("location", "login");
     navigate("/login");
   };
+  
 
   const handleLanguageChange = (newLanguage: string) => {
     changeLanguage(newLanguage);
@@ -103,6 +104,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
     navigate('/admin/stores');
     setShowNotifications(false);
   };
+  
 
   return (
     <header className="bg-white border-b py-3 border-slate-200 sticky top-0 " >
@@ -116,7 +118,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           </svg>
         </button>
 
-        <div className="font-medium text-4xl">
+        <div className="font-medium sm:block hidden text-4xl">
           {title}
         </div>
 
@@ -132,7 +134,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
             </button>
 
             {showLangMenu && (
-              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white  border-[1.9px] border-[#c8c2fd]">
+              <div className={`absolute ${language === "ar" ? "left-0" : "right-0"} mt-2 w-48 rounded-md shadow-lg bg-white  border-[1.9px] border-[#c8c2fd]`}>
                 <div className="py-1" role="menu" aria-orientation="vertical">
                   <button
                     onClick={() => handleLanguageChange('en')}
@@ -167,14 +169,14 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                <span className={`absolute -top-1 ${language === "ar" ? "-left-1" : "-right-1"} bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center`}>
                   {unreadCount}
                 </span>
               )}
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white border-[1.9px] border-[#c8c2fd]">
+              <div className={`absolute ${language === "ar" ? "left-0" : "right-0"} mt-2 w-80 rounded-md shadow-lg bg-white border-[1.9px] border-[#c8c2fd]`}>
                 <div className="py-2">
                   <h3 className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-[#c8c2fd]">
                     {t('usersAdmin.topBar.notifications.title')}
@@ -184,7 +186,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
                       notifications.map((notification) => (
                         <button
                           key={notification.id}
-                          className={`w-full text-left px-4 py-3 hover:bg-gray-50 flex items-start space-x-3 ${
+                          className={`w-full text-start px-4 py-3 hover:bg-gray-50 flex items-start space-x-3 ${
                             !notification.read ? 'bg-purple-50' : ''
                           }`}
                           onClick={() => handleNotificationClick(notification)}
