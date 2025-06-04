@@ -13,13 +13,13 @@ export default function Header() {
   const [categories, setCategories] = useState([])
   const id = localStorage.getItem("IDBoutique")
   const userId = localStorage.getItem("IDUser")
-  
+  const idOwner = localStorage.getItem("idOwner");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${userId}&populate=*`)
+        const boutiqueResponse = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutiques(boutiqueResponse.data.data)
 
         // Fetch products with populated categories
@@ -43,7 +43,7 @@ export default function Header() {
     }
 
     fetchData()
-  }, [id, userId])
+  }, [id, idOwner])
 console.log(boutiques)
   // Get categories that have products in this boutique
   const getCategoriesWithProducts = () => {

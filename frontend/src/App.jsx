@@ -10,6 +10,7 @@ import ViewRoute from "./page/View/App";
 import HomeView from "./page/View/pages/Home";
 import Owner from "./page/Owner";
 import RouteAdmin from "./page/Admin/Route";
+import Stores from "./page/Stores";
 
 // Protected Route component for Owner registration
 const ProtectedOwnerRoute = () => {
@@ -88,6 +89,7 @@ function AppContent() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/stores" element={<Stores />} />
         <Route path="/to-owner" element={<ProtectedOwnerRoute />} />
         <Route path="/controll/*" element={<ProtectedControllRoute />}>
           <Route index element={<Middle />} />

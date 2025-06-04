@@ -120,10 +120,10 @@ export default function Header() {
                             <div className={`${makeStyle === "about" ? "w-full" : "w-[4px]"} h-0.5 group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
                         </ScrollLink>
                     ) : (
-                        <p onClick={() => handleNavigate('/#about', 'about')} className={`${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
+                        <div onClick={() => handleNavigate('/#about', 'about')} className={`${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
                             {t('AboutUs')}
                             <div className={`${makeStyle === "about" ? "w-full" : "w-[4px]"} h-0.5 group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
-                        </p>
+                        </div>
                     )}
                     {location.pathname === '/' ? (
                         <ScrollLink to="contact" onClick={() => setMakeStyle("contact")} spy={true} smooth={true} offset={-100} className={`${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
@@ -131,11 +131,16 @@ export default function Header() {
                             <div className={`${makeStyle === "contact" ? "w-full" : "w-[4px]"} h-0.5 group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
                         </ScrollLink>
                     ) : (
-                        <p onClick={() => handleNavigate('/#contact', 'contact') } className={`${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
+                        <div onClick={() => handleNavigate('/#contact', 'contact')} className={`${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
                             {t('Contact')}
                             <div className={`${makeStyle === "contact" ? "w-full" : "w-[4px]"} h-0.5 group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
-                        </p>
+                        </div>
                     )}
+
+                    <LinkDom to="/stores" onClick={() => setMakeStyle("stores")} className={`${makeStyle === "stores" ? "text-[#c8c2fd]" : "text-[#FFFFFF]"} group hover:text-[#c8c2fd] cursor-pointer duration-300 transition-all ease-in-out`}>
+                        {t('Stores')}
+                        <div className={`${makeStyle === "stores" ? "w-full" : "w-[4px]"} h-0.5 group-hover:w-full transition-all ease-in-out duration-300 bg-[#c8c2fd]`}></div>
+                    </LinkDom>
 
                 </ul>
             </div>
@@ -275,7 +280,7 @@ export default function Header() {
                                         </motion.li>
                                     </ScrollLink>
                                 ) : (
-                                    <p
+                                    <div
                                         onClick={() => handleNavigate('/#about', 'about')}
                                     >
                                         <motion.li
@@ -285,9 +290,9 @@ export default function Header() {
                                             transition={{ duration: 0.3, delay: 0.2 }}
                                             className="flex justify-center p-3 text-[#E5E7EB] items-center"
                                         >
-                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('AboutUs')}</p>
+                                            <div className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "about" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('AboutUs')}</div>
                                         </motion.li>
-                                    </p>
+                                    </div>
                                 )}
 
                                 {location.pathname === '/' ? (
@@ -312,8 +317,7 @@ export default function Header() {
                                         </motion.li>
                                     </ScrollLink>
                                 ) : (
-                                    <p
-                                      
+                                    <div
                                         onClick={() => {
                                             handleNavigate('/#contact', 'contact')
                                         }}
@@ -325,10 +329,28 @@ export default function Header() {
                                             transition={{ duration: 0.3, delay: 0.3 }}
                                             className="flex justify-center p-3 text-[#E5E7EB] items-center"
                                         >
-                                            <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Contact')}</p>
+                                            <div className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "contact" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Contact')}</div>
                                         </motion.li>
-                                    </p>
+                                    </div>
                                 )}
+
+                                <LinkDom
+                                    to="/stores"
+                                    onClick={() => {
+                                        setMakeStyle("stores");
+                                        setMenu(false);
+                                    }}
+                                >
+                                    <motion.li
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3, delay: 0.35 }}
+                                        className="flex justify-center p-3 text-[#E5E7EB] items-center"
+                                    >
+                                        <p className={`z-50 transition-all duration-500 ease-in-out text-2xl font-medium ${makeStyle === "stores" ? "text-[#c8c2fd]" : "text-[#E5E7EB]"}`}>{t('Stores')}</p>
+                                    </motion.li>
+                                </LinkDom>
 
                                 {!userID ? (
                                     <LinkDom
