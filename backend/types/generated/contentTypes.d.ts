@@ -494,6 +494,37 @@ export interface ApiBusinessSurveysBusinessSurveys
   };
 }
 
+export interface ApiCartCart extends Struct.CollectionTypeSchema {
+  collectionName: 'carts';
+  info: {
+    description: '';
+    displayName: 'cart';
+    pluralName: 'carts';
+    singularName: 'cart';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::cart.cart'> &
+      Schema.Attribute.Private;
+    product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qte: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiCategorieProductCategorieProduct
   extends Struct.CollectionTypeSchema {
   collectionName: 'categorie_products';
@@ -643,6 +674,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     boutique: Schema.Attribute.Relation<'manyToOne', 'api::boutique.boutique'>;
+    cart: Schema.Attribute.Relation<'oneToOne', 'api::cart.cart'>;
     category: Schema.Attribute.Relation<
       'oneToOne',
       'api::categorie-product.categorie-product'
@@ -1159,6 +1191,7 @@ export interface PluginUsersPermissionsUser
       'oneToOne',
       'api::business-surveys.business-surveys'
     >;
+    carts: Schema.Attribute.Relation<'oneToMany', 'api::cart.cart'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
@@ -1215,6 +1248,7 @@ declare module '@strapi/strapi' {
       'api::adress.adress': ApiAdressAdress;
       'api::boutique.boutique': ApiBoutiqueBoutique;
       'api::business-surveys.business-surveys': ApiBusinessSurveysBusinessSurveys;
+      'api::cart.cart': ApiCartCart;
       'api::categorie-product.categorie-product': ApiCategorieProductCategorieProduct;
       'api::country.country': ApiCountryCountry;
       'api::order-item.order-item': ApiOrderItemOrderItem;

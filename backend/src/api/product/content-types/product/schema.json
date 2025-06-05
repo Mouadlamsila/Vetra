@@ -94,6 +94,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::categorie-product.categorie-product"
+    },
+    "cart": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::cart.cart",
+      "mappedBy": "product"
     }
   }
 }

@@ -7,11 +7,12 @@ import { FaPaypal } from "react-icons/fa";
 export default function Footer() {
   const id = localStorage.getItem("IDBoutique");
   const userId = localStorage.getItem("IDUser");
+  const ownerId = localStorage.getItem("idOwner");
   const [boutique, setBoutique] = useState(null);
   const [owner, setOwner] = useState(null);
   
   useEffect(() => {
-    axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${userId}&populate=*`)
+    axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${ownerId}&populate=*`)
       .then((res) => {
         setBoutique(res.data.data)
         setOwner(res.data.data.owner)

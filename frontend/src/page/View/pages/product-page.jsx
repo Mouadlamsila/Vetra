@@ -26,6 +26,9 @@ export default function ProductPage() {
   const [categoryProduct, setCategoryProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [relatedProducts, setRelatedProducts] = useState([])
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [cartMessage, setCartMessage] = useState("")
+  const [cartItems, setCartItems] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +66,74 @@ export default function ProductPage() {
     fetchRelatedProducts()
   }, [categoryProduct, id])
 
+  // Fetch cart items to check stock
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const userId = localStorage.getItem("IDUser")
+      if (!userId) return;
+      
+      try {
+        const response = await axios.get(`http://localhost:1337/api/carts?filters[user][id][$eq]=${userId}&populate[product][populate]=*`);
+        setCartItems(response.data.data);
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      }
+    };
+
+    fetchCartItems();
+  }, []);
+
+  // Calculate available stock considering items in cart
+  const getAvailableStock = () => {
+    if (!product?.stock) return 0;
+    const cartQuantity = cartItems
+      .filter(item => item.product?.documentId === product.documentId)
+      .reduce((sum, item) => sum + item.qte, 0);
+    return product.stock - cartQuantity;
+  };
+
+  const handleAddToCart = async () => {
+    const userId = localStorage.getItem("IDUser")
+    if (!userId) {
+      setCartMessage("Veuillez vous connecter pour ajouter au panier")
+      return
+    }
+
+    const availableStock = getAvailableStock();
+    if (quantity > availableStock) {
+      setCartMessage(`Désolé, il ne reste que ${availableStock} unités en stock`)
+      return
+    }
+
+    setIsAddingToCart(true)
+    setCartMessage("")
+
+    try {
+      const response = await axios.post('http://localhost:1337/api/carts', {
+        data: {
+          user: userId,
+          product: id,
+          qte: quantity
+        }
+      })
+
+      if (response.data) {
+        // Update cart items immediately
+        const newCartItem = {
+          ...response.data.data,
+          product: product
+        };
+        setCartItems(prevItems => [...prevItems, newCartItem]);
+        setCartMessage("Produit ajouté au panier avec succès!")
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      setCartMessage("Erreur lors de l'ajout au panier")
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
+
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
   }
@@ -72,7 +143,8 @@ export default function ProductPage() {
   }
 
   const incrementQuantity = () => {
-    if (quantity < product.stock) {
+    const availableStock = getAvailableStock();
+    if (quantity < availableStock) {
       setQuantity(quantity + 1)
     }
   }
@@ -99,7 +171,7 @@ export default function ProductPage() {
               Accueil
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
-            <Link to={`/view/categories/${product.category?.id}`} className="hover:text-purple-700">
+            <Link to={`/view/categories/${product.category?.documentId}`} className="hover:text-purple-700">
               {product.category?.name || 'Non catégorisé'}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
@@ -183,8 +255,9 @@ export default function ProductPage() {
                   <button
                     onClick={decrementQuantity}
                     disabled={quantity <= 1}
-                    className={`h-10 w-10 rounded-l-md border border-gray-300 flex items-center justify-center ${quantity <= 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
-                      }`}
+                    className={`h-10 w-10 rounded-l-md border border-gray-300 flex items-center justify-center ${
+                      quantity <= 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
+                    }`}
                   >
                     <Minus className="h-4 w-4" />
                   </button>
@@ -193,31 +266,47 @@ export default function ProductPage() {
                   </div>
                   <button
                     onClick={incrementQuantity}
-                    disabled={quantity >= product.stock}
-                    className={`h-10 w-10 rounded-r-md border border-gray-300 flex items-center justify-center ${quantity >= product.stock ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
-                      }`}
+                    disabled={quantity >= getAvailableStock()}
+                    className={`h-10 w-10 rounded-r-md border border-gray-300 flex items-center justify-center ${
+                      quantity >= getAvailableStock() ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
+                    }`}
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  {product.stock > 10
+                  {getAvailableStock() > 10
                     ? "En stock"
-                    : product.stock > 0
-                      ? `Seulement ${product.stock} en stock`
+                    : getAvailableStock() > 0
+                      ? `Seulement ${getAvailableStock()} en stock`
                       : "Rupture de stock"}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md flex items-center justify-center">
-                <ShoppingCart className="mr-2 h-5 w-5" /> Ajouter au panier
+              <button 
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
+                className={`flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md flex items-center justify-center ${
+                  isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" /> 
+                {isAddingToCart ? 'Ajout en cours...' : 'Ajouter au panier'}
               </button>
               <button className="flex-1 border border-purple-200 text-purple-700 hover:bg-purple-50 py-3 px-4 rounded-md">
                 Acheter maintenant
               </button>
             </div>
+
+            {cartMessage && (
+              <div className={`p-3 rounded-md ${
+                cartMessage.includes('succès') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              }`}>
+                {cartMessage}
+              </div>
+            )}
 
             <div className="rounded-lg border border-gray-200 bg-white p-4">
               <div className="flex items-center gap-3">

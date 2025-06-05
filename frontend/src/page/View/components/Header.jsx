@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ChevronDown, Search, User, ShoppingCart, Menu, X, Minus, Plus } from "lucide-react"
 import axios from "axios"
 
@@ -11,10 +11,16 @@ export default function Header() {
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
   const [boutiques, setBoutiques] = useState([])
   const [categories, setCategories] = useState([])
+  const [user, setUser] = useState([])
+  const [cartItems, setCartItems] = useState([])
+  const [cartLoading, setCartLoading] = useState(true)
   const id = localStorage.getItem("IDBoutique")
-  const userId = localStorage.getItem("IDUser")
+  const IDUser = localStorage.getItem("IDUser");
   const idOwner = localStorage.getItem("idOwner");
+  const navigate = useNavigate('');
+  const [refresh , setRefresh]=useState(false);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,33 +50,102 @@ export default function Header() {
 
     fetchData()
   }, [id, idOwner])
-console.log(boutiques)
+
+  
+
   // Get categories that have products in this boutique
   const getCategoriesWithProducts = () => {
     return categories
   }
 
-  // Mock cart data
-  const cartItems = [
-    {
-      id: "1",
-      name: "Premium Wireless Headphones",
-      price: 299.99,
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e040d5bfb6f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-      quantity: 1,
-      color: "Black",
-    },
-    {
-      id: "3",
-      name: "Portable Wireless Speaker",
-      price: 149.99,
-      image:
-        "https://images.unsplash.com/photo-1606220588911-5117e04b09f9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-      quantity: 2,
-      color: "Blue",
-    },
-  ]
+
+  
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=*`);
+        setUser(res.data); // Assure-toi d'utiliser res.data, pas res
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'utilisateur :", error);
+      }
+    };
+  
+    fetchUser();
+  }, [IDUser]);
+  
+  
+  
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (!IDUser) return;
+      
+      try {
+        const response = await axios.get(`http://localhost:1337/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        setCartItems(response.data.data);
+        setCartLoading(false);
+        
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+        setCartLoading(false);
+      }
+    };
+
+    fetchCartItems();
+  }, [IDUser,refresh]);
+
+
+  const handleRemoveFromCart = async (cartItemId) => {
+    try {
+      await axios.delete(`http://localhost:1337/api/carts/${cartItemId}`);
+      // Update cart items immediately
+      setCartItems(prevItems => prevItems.filter(item => item.documentId !== cartItemId));
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+    }
+  };
+
+  const handleUpdateQuantity = async (cartItemId, newQuantity) => {
+    if (newQuantity < 1) return;
+
+    try {
+      // Get the cart item to check product stock
+      const cartItem = cartItems.find(item => item.documentId === cartItemId);
+      const productStock = cartItem?.product?.stock || 0;
+      
+      // Check if new quantity exceeds stock
+      if (newQuantity > productStock) {
+        alert(`Désolé, il ne reste que ${productStock} unités en stock`);
+        return;
+      }
+
+      await axios.put(`http://localhost:1337/api/carts/${cartItemId}`, {
+        data: {
+          qte: newQuantity
+        }
+      });
+      
+      // Update cart items immediately
+      setCartItems(prevItems => 
+        prevItems.map(item => 
+          item.documentId === cartItemId 
+            ? { ...item, qte: newQuantity }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
+    }
+  };
+
+  // Calculate total items in cart
+  const totalCartItems = cartItems.reduce((sum, item) => sum + (item?.qte || 0), 0);
+
+  // Calculate total price
+  const totalPrice = cartItems.reduce((sum, item) => {
+    const product = item?.product;
+    return sum + (product?.prix || 0) * (item?.qte || 0);
+  }, 0);
 
   return (
     <header className="sticky top-0 z-50  bg-white border-b border-gray-200">
@@ -120,33 +195,46 @@ console.log(boutiques)
                 className="hidden sm:flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
-                <User className="h-5 w-5" />
+                {user?.photo ? <div className="">
+                  <img src={`http://localhost:1337${user.photo.url}`}  className="h-9 w-9 rounded-full"/>
+                </div> : <User className="h-5 w-5" />
+                
+              }
               </button>
 
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20">
                   <div className="p-3 text-center">
-                    <p className="font-medium">Bienvenue!</p>
-                    <p className="text-sm text-gray-500">Accédez à votre compte</p>
+                    <p className="font-medium">{user.username}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
                   </div>
                   <hr />
                   <div className="p-1">
                     <Link
-                      to="/account/login"
+                      to="/controll/Profil"
                       className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      Se connecter
+                      Profile
                     </Link>
-                    <Link
-                      to="/account/register"
+
+                    {IDUser ?  <button
                       className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                      onClick={() => setUserMenuOpen(false)}
+                      onClick={() => {setUserMenuOpen(false) ; const langValue = localStorage.getItem('lang'); // Save the lang value
+                        localStorage.clear(); // Remove everything
+                        localStorage.setItem('lang', langValue); // Restore lang
+                        localStorage.setItem('location', "login"); // Restore lang
+                         navigate('/login')} }
+                    >
+                      Logout
+                    </button> :  
+                    <Link to={'/login'}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
                     >
                       S'inscrire
-                    </Link>
+                    </Link> }
                   </div>
-                  <hr />
+                  {/* <hr />
                   <div className="p-1">
                     <Link
                       to="/account/orders"
@@ -162,20 +250,21 @@ console.log(boutiques)
                     >
                       Ma liste d'envies
                     </Link>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
 
+            {/* Cart button */}
             <div className="relative">
               <button
                 className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50"
                 onClick={() => setCartOpen(!cartOpen)}
               >
                 <ShoppingCart className="h-5 w-5" />
-                {cartItems.length > 0 && (
+                {totalCartItems > 0 && (
                   <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1e3a8a] text-white text-xs flex items-center justify-center">
-                    {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                    {totalCartItems}
                   </span>
                 )}
               </button>
@@ -193,7 +282,11 @@ console.log(boutiques)
                           </button>
                         </div>
 
-                        {cartItems.length === 0 ? (
+                        {cartLoading ? (
+                          <div className="flex-1 flex items-center justify-center">
+                            <p>Chargement...</p>
+                          </div>
+                        ) : cartItems.length === 0 ? (
                           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
                             <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                               <ShoppingCart className="h-8 w-8 text-gray-400" />
@@ -208,38 +301,49 @@ console.log(boutiques)
                           <>
                             <div className="flex-1 overflow-auto py-6">
                               <div className="space-y-6 px-4">
-                                {cartItems.map((item) => (
-                                  <div key={item.id} className="flex gap-4">
-                                    <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white">
-                                      <img
-                                        src={item.image || "/placeholder.svg"}
-                                        alt={item.name}
-                                        className="object-cover w-full h-full"
-                                      />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex justify-between">
-                                        <h4 className="font-medium text-sm line-clamp-1">{item.name}</h4>
-                                        <button className="text-gray-400 hover:text-red-500">
-                                          <X className="h-4 w-4" />
-                                        </button>
+                                {cartItems.map((item) => {
+                                  const product = item?.product;
+                                  return (
+                                    <div key={item.id} className="flex gap-4">
+                                      <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white">
+                                        <img
+                                          src={product?.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
+                                          alt={product?.name}
+                                          className="object-cover w-full h-full"
+                                        />
                                       </div>
-                                      <p className="text-gray-500 text-xs">Couleur: {item.color}</p>
-                                      <div className="mt-2 flex items-center justify-between">
-                                        <div className="flex items-center border rounded-md">
-                                          <button className="p-1 px-2 text-gray-600 hover:bg-gray-100">
-                                            <Minus className="h-3 w-3" />
-                                          </button>
-                                          <span className="px-2 text-sm">{item.quantity}</span>
-                                          <button className="p-1 px-2 text-gray-600 hover:bg-gray-100">
-                                            <Plus className="h-3 w-3" />
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between">
+                                          <h4 className="font-medium text-sm line-clamp-1">{product?.name}</h4>
+                                          <button 
+                                            className="text-gray-400 hover:text-red-500"
+                                            onClick={() => handleRemoveFromCart(item.documentId)}
+                                          >
+                                            <X className="h-4 w-4" />
                                           </button>
                                         </div>
-                                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                                        <div className="mt-2 flex items-center justify-between">
+                                          <div className="flex items-center border rounded-md">
+                                            <button 
+                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100"
+                                              onClick={() => handleUpdateQuantity(item.documentId, item.qte - 1)}
+                                            >
+                                              <Minus className="h-3 w-3" />
+                                            </button>
+                                            <span className="px-2 text-sm">{item.qte}</span>
+                                            <button 
+                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100"
+                                              onClick={() => handleUpdateQuantity(item.documentId, item.qte + 1)}
+                                            >
+                                              <Plus className="h-3 w-3" />
+                                            </button>
+                                          </div>
+                                          <span className="font-medium">${(product?.prix * item.qte).toFixed(2)}</span>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
 
@@ -247,29 +351,19 @@ console.log(boutiques)
                               <div className="space-y-4">
                                 <div className="flex justify-between">
                                   <span className="text-gray-600">Sous-total</span>
-                                  <span className="font-medium">
-                                    ${cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
-                                  </span>
+                                  <span className="font-medium">${totalPrice.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-gray-600">Frais de livraison</span>
                                   <span className="font-medium">
-                                    {cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) > 100
-                                      ? "Gratuit"
-                                      : "$10.00"}
+                                    {totalPrice > 50 ? "Gratuit" : "$10.00"}
                                   </span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
                                   <span className="font-semibold">Total</span>
                                   <span className="font-bold text-lg">
-                                    $
-                                    {(
-                                      cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) +
-                                      (cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) > 100
-                                        ? 0
-                                        : 10)
-                                    ).toFixed(2)}
+                                    ${(totalPrice + (totalPrice > 50 ? 0 : 10)).toFixed(2)}
                                   </span>
                                 </div>
 

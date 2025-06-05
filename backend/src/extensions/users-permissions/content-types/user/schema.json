@@ -100,6 +100,12 @@
       "relation": "oneToOne",
       "target": "api::business-surveys.business-surveys",
       "mappedBy": "user"
+    },
+    "carts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::cart.cart",
+      "mappedBy": "user"
     }
   }
 }
