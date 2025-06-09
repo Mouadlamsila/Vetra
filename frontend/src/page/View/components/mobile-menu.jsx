@@ -1,66 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Menu, Search, X, ChevronDown } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
-// Mock navigation data
-const navigationItems = [
-  {
-    name: "Accueil",
-    href: "/",
-  },
-  {
-    name: "Catégories",
-    children: [
-      {
-        name: "Électronique",
-        href: "/categories/electronics",
-        children: [
-          { name: "Casques", href: "/categories/electronics/headphones" },
-          { name: "Enceintes", href: "/categories/electronics/speakers" },
-          { name: "Montres connectées", href: "/categories/electronics/smartwatches" },
-        ],
-      },
-      {
-        name: "Mode",
-        href: "/categories/fashion",
-        children: [
-          { name: "Hommes", href: "/categories/fashion/men" },
-          { name: "Femmes", href: "/categories/fashion/women" },
-          { name: "Accessoires", href: "/categories/fashion/accessories" },
-        ],
-      },
-      {
-        name: "Maison",
-        href: "/categories/home",
-        children: [
-          { name: "Décoration", href: "/categories/home/decor" },
-          { name: "Cuisine", href: "/categories/home/kitchen" },
-          { name: "Meubles", href: "/categories/home/furniture" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Promotions",
-    href: "/promotions",
-  },
-  {
-    name: "Nouveautés",
-    href: "/new-arrivals",
-  },
-  {
-    name: "À propos",
-    href: "/about",
-  },
-  {
-    name: "Contact",
-    href: "/contact",
-  },
-]
+
 
 export function MobileMenu() {
+  const { t } = useTranslation();
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openAccordions, setOpenAccordions] = useState([])
@@ -91,7 +39,7 @@ export function MobileMenu() {
             <div className="w-screen max-w-[300px] sm:max-w-[350px] overflow-auto">
               <div className="h-full flex flex-col bg-white shadow-xl">
                 <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="font-semibold">Menu</h2>
+                  <h2 className="font-semibold">{t('view.header.menu')}</h2>
                   <button onClick={() => setIsMenuOpen(false)}>
                     <X className="h-5 w-5" />
                   </button>
@@ -99,78 +47,63 @@ export function MobileMenu() {
 
                 <div className="py-4 overflow-y-auto">
                   <nav className="space-y-1 px-3">
-                    {navigationItems.map((item) => (
-                      <div key={item.name}>
-                        {item.children ? (
-                          <div className="border-b">
-                            <button
-                              className="flex w-full items-center justify-between py-3 px-3 hover:bg-gray-100 rounded-md"
-                              onClick={() => toggleAccordion(item.name)}
-                            >
-                              {item.name}
-                              <ChevronDown
-                                className={`h-4 w-4 transition-transform ${
-                                  openAccordions.includes(item.name) ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-                            {openAccordions.includes(item.name) && (
-                              <div className="pl-4 space-y-1 pb-2">
-                                {item.children.map((child) => (
-                                  <div key={child.name}>
-                                    {child.children ? (
-                                      <div>
-                                        <button
-                                          className="flex w-full items-center justify-between py-2 px-3 hover:bg-gray-100 rounded-md"
-                                          onClick={() => toggleSubAccordion(child.name)}
-                                        >
-                                          {child.name}
-                                          <ChevronDown
-                                            className={`h-4 w-4 transition-transform ${
-                                              openSubAccordions.includes(child.name) ? "rotate-180" : ""
-                                            }`}
-                                          />
-                                        </button>
-                                        {openSubAccordions.includes(child.name) && (
-                                          <div className="pl-4 space-y-1">
-                                            {child.children.map((subChild) => (
-                                              <Link
-                                                key={subChild.name}
-                                                to={subChild.href}
-                                                className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                                                onClick={() => setIsMenuOpen(false)}
-                                              >
-                                                {subChild.name}
-                                              </Link>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <Link
-                                        to={child.href}
-                                        className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                                        onClick={() => setIsMenuOpen(false)}
-                                      >
-                                        {child.name}
-                                      </Link>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <Link
-                            to={item.href}
-                            className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {item.name}
-                          </Link>
-                        )}
+                    <Link
+                      to="/"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      mala
+                    </Link>
+
+                    <div className="py-2">
+                      <button
+                        className="flex w-full items-center justify-between px-3 py-2 hover:bg-gray-100 rounded-md"
+                        onClick={() => {
+                          const el = document.getElementById("mobile-categories")
+                          if (el) {
+                            el.classList.toggle("hidden")
+                          }
+                        }}
+                      >
+                        {t('view.header.categories')}
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <div id="mobile-categories" className="hidden pl-4 space-y-1 mt-1">
+                        {/* Categories will be populated dynamically from the API */}
                       </div>
-                    ))}
+                    </div>
+
+                    <Link
+                      to="/promotions"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('view.header.promotions')}
+                    </Link>
+
+                    <Link
+                      to="/new-arrivals"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('view.header.newArrivals')}
+                    </Link>
+
+                    <Link
+                      to="/about"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('view.header.about')}
+                    </Link>
+
+                    <Link
+                      to="/contact"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('view.header.contact')}
+                    </Link>
                   </nav>
 
                   <div className="mt-6 px-3">
@@ -180,14 +113,14 @@ export function MobileMenu() {
                         className="block w-full bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Se connecter
+                        {t('view.header.login')}
                       </Link>
                       <Link
                         to="/account/register"
                         className="block w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        S'inscrire
+                        {t('view.header.signup')}
                       </Link>
                     </div>
                   </div>
@@ -204,7 +137,7 @@ export function MobileMenu() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
-              placeholder="Rechercher des produits..."
+              placeholder={t('view.header.searchPlaceholder')}
               className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               autoFocus
             />

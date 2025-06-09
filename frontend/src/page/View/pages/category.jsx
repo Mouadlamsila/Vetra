@@ -1,11 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Link, useParams } from "react-router-dom"
 import { ChevronRight, Heart, ShoppingCart, Star, Filter, X } from 'lucide-react'
 import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 export default function CategoryPage() {
+  const { t } = useTranslation();
   const { category } = useParams()
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
@@ -26,12 +28,29 @@ export default function CategoryPage() {
         const categoryResponse = await axios.get(`http://localhost:1337/api/categorie-products/${category}`)
         setCategoryName(categoryResponse.data.data.name)
 
-        // Then fetch products for this category and boutique
-        const productsResponse = await axios.get(
+        // Fetch products with ratings
+        const productsWithRatingsResponse = await axios.get(
+          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`
+        )
+
+        // Fetch products with all other relations
+        const productsWithRelationsResponse = await axios.get(
           `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`
         )
-        setProducts(productsResponse.data.data)
-        setFilteredProducts(productsResponse.data.data)
+
+        // Merge the results
+        const mergedProducts = productsWithRelationsResponse.data.data.map(product => {
+          const productWithRating = productsWithRatingsResponse.data.data.find(
+            p => p.id === product.id
+          )
+          return {
+            ...product,
+            rating_products: productWithRating?.rating_products || []
+          }
+        })
+
+        setProducts(mergedProducts)
+        setFilteredProducts(mergedProducts)
         setLoading(false)
       } catch (err) {
         console.error(err)
@@ -53,8 +72,13 @@ export default function CategoryPage() {
       // In stock filter
       if (inStockOnly && product.stock <= 0) return false
 
-      // Rating filter (assuming product has a rating property)
-      if (selectedRating > 0 && (!product.rating || product.rating < selectedRating)) return false
+      // Rating filter
+      if (selectedRating > 0) {
+        const averageRating = product.rating_products?.length 
+          ? product.rating_products.reduce((acc, curr) => acc + curr.stars, 0) / product.rating_products.length
+          : 0
+        if (averageRating < selectedRating) return false
+      }
 
       return true
     })
@@ -83,7 +107,7 @@ export default function CategoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center text-sm text-gray-500">
             <Link to="/view/1" className="hover:text-purple-700 transition-colors">
-              Accueil
+              {t('view.category.home')}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
             <span className="text-gray-900 font-medium">{categoryName}</span>
@@ -97,14 +121,14 @@ export default function CategoryPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{categoryName}</h1>
-              <p className="text-gray-500">{filteredProducts.length} produits trouvés</p>
+              <p className="text-gray-500">{filteredProducts.length} {t('view.category.products')}</p>
             </div>
             <button
               className="md:hidden bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-purple-800 transition-colors"
               onClick={() => setMobileFilterOpen(true)}
             >
               <Filter className="h-4 w-4" />
-              Filtrer
+              {t('view.category.filters')}
             </button>
           </div>
         </div>
@@ -115,15 +139,15 @@ export default function CategoryPage() {
           {/* Filter Sidebar - Desktop */}
           <div className="hidden md:block w-64 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm p-5 sticky top-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-6 text-gray-900">Filtres</h2>
+              <h2 className="font-bold text-lg mb-6 text-gray-900">{t('view.category.filters')}</h2>
 
               {/* Price Range Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">Prix</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.price')}</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500">Min: ${priceRange[0]}</span>
-                    <span className="text-sm text-gray-500">Max: ${priceRange[1]}</span>
+                    <span className="text-sm text-gray-500">{t('view.category.min')}: ${priceRange[0]}</span>
+                    <span className="text-sm text-gray-500">{t('view.category.max')}: ${priceRange[1]}</span>
                   </div>
                   <div className="relative pt-1">
                     <input
@@ -180,7 +204,7 @@ export default function CategoryPage() {
 
               {/* Availability Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">Disponibilité</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.availability')}</h3>
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <div className="relative">
                     <input
@@ -206,14 +230,14 @@ export default function CategoryPage() {
                     )}
                   </div>
                   <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                    En stock uniquement
+                    {t('view.category.inStockOnly')}
                   </span>
                 </label>
               </div>
 
               {/* Rating Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">Évaluation</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.rating')}</h3>
                 <div className="space-y-3">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <label key={rating} className="flex items-center gap-3 cursor-pointer group">
@@ -240,7 +264,7 @@ export default function CategoryPage() {
                             className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
                           />
                         ))}
-                        <span className="ml-1 text-sm text-gray-500">et plus</span>
+                        <span className="ml-1 text-sm text-gray-500">{t('view.category.andUp')}</span>
                       </div>
                     </label>
                   ))}
@@ -249,7 +273,7 @@ export default function CategoryPage() {
                       onClick={() => setSelectedRating(0)}
                       className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
                     >
-                      Réinitialiser
+                      {t('view.category.reset')}
                     </button>
                   )}
                 </div>
@@ -264,7 +288,7 @@ export default function CategoryPage() {
                 }}
                 className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-300"
               >
-                Réinitialiser tous les filtres
+                {t('view.category.resetAll')}
               </button>
             </div>
           </div>
@@ -279,7 +303,7 @@ export default function CategoryPage() {
                 }}
               >
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="font-bold text-lg text-gray-900">Filtres</h2>
+                  <h2 className="font-bold text-lg text-gray-900">{t('view.category.filters')}</h2>
                   <button
                     onClick={() => setMobileFilterOpen(false)}
                     className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
@@ -290,11 +314,11 @@ export default function CategoryPage() {
 
                 {/* Price Range Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">Prix</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.price')}</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Min: ${priceRange[0]}</span>
-                      <span className="text-sm text-gray-500">Max: ${priceRange[1]}</span>
+                      <span className="text-sm text-gray-500">{t('view.category.min')}: ${priceRange[0]}</span>
+                      <span className="text-sm text-gray-500">{t('view.category.max')}: ${priceRange[1]}</span>
                     </div>
                     <div className="relative pt-1">
                       <input
@@ -351,7 +375,7 @@ export default function CategoryPage() {
 
                 {/* Availability Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">Disponibilité</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.availability')}</h3>
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <div className="relative">
                       <input
@@ -377,14 +401,14 @@ export default function CategoryPage() {
                       )}
                     </div>
                     <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                      En stock uniquement
+                      {t('view.category.inStockOnly')}
                     </span>
                   </label>
                 </div>
 
                 {/* Rating Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">Évaluation</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.rating')}</h3>
                   <div className="space-y-3">
                     {[5, 4, 3, 2, 1].map((rating) => (
                       <label key={rating} className="flex items-center gap-3 cursor-pointer group">
@@ -411,7 +435,7 @@ export default function CategoryPage() {
                               className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
                             />
                           ))}
-                          <span className="ml-1 text-sm text-gray-500">et plus</span>
+                          <span className="ml-1 text-sm text-gray-500">{t('view.category.andUp')}</span>
                         </div>
                       </label>
                     ))}
@@ -420,7 +444,7 @@ export default function CategoryPage() {
                         onClick={() => setSelectedRating(0)}
                         className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
                       >
-                        Réinitialiser
+                        {t('view.category.reset')}
                       </button>
                     )}
                   </div>
@@ -432,7 +456,7 @@ export default function CategoryPage() {
                     onClick={() => setMobileFilterOpen(false)}
                     className="flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
                   >
-                    Appliquer
+                    {t('view.category.apply')}
                   </button>
                   <button
                     onClick={() => {
@@ -442,7 +466,7 @@ export default function CategoryPage() {
                     }}
                     className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-300"
                   >
-                    Réinitialiser
+                    {t('view.category.reset')}
                   </button>
                 </div>
               </div>
@@ -462,7 +486,7 @@ export default function CategoryPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
                   <X className="h-8 w-8 text-gray-500" />
                 </div>
-                <p className="text-gray-700 mb-4">Aucun produit ne correspond à vos critères de recherche.</p>
+                <p className="text-gray-700 mb-4">{t('view.category.noResults')}</p>
                 <button
                   onClick={() => {
                     setPriceRange([0, 1000])
@@ -471,7 +495,7 @@ export default function CategoryPage() {
                   }}
                   className="text-purple-700 hover:text-purple-800 font-medium hover:underline transition-colors"
                 >
-                  Réinitialiser les filtres
+                  {t('view.category.resetFilters')}
                 </button>
               </div>
             )}
@@ -483,7 +507,14 @@ export default function CategoryPage() {
 }
 
 function ProductCard({ product }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false)
+
+  const averageRating = useMemo(() => {
+    if (!product.rating_products || product.rating_products.length === 0) return 0
+    const sum = product.rating_products.reduce((acc, curr) => acc + curr.stars, 0)
+    return sum / product.rating_products.length
+  }, [product.rating_products])
 
   return (
     <div
@@ -502,7 +533,7 @@ function ProductCard({ product }) {
           </div>
           {product.stock <= 10 && (
             <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1.5 rounded-full backdrop-blur-sm">
-              {product.stock <= 5 ? "Plus que " + product.stock + " en stock!" : "Stock limité"}
+              {product.stock <= 5 ? t('view.productDetails.onlyLeft', { count: product.stock }) : t('view.productDetails.lowStock')}
             </div>
           )}
           <div
@@ -520,7 +551,22 @@ function ProductCard({ product }) {
             {product.name}
           </h3>
           <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">
-            {product.category?.name || 'Non catégorisé'}
+            {product.category?.name || t('view.category.uncategorized')}
+          </span>
+        </div>
+        <div className="flex items-center mb-3">
+          <div className="flex text-yellow-400">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`h-3.5 w-3.5 ${
+                  i < Math.floor(averageRating) ? "fill-current text-yellow-400" : "text-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="ml-2 text-xs text-gray-600">
+            ({product.rating_products?.length || 0})
           </span>
         </div>
         <div className="flex items-center justify-between">

@@ -13,8 +13,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
+  MessageSquare,
+  ArrowLeft,
 } from "lucide-react"
 import axios from "axios"
+import { toast } from "react-toastify"
+import RatingForm from "../components/RatingForm"
+import { useTranslation } from "react-i18next"
 
 const categories = [
   "fashion",
@@ -26,13 +31,10 @@ const categories = [
 ]
 
 // Function to capitalize first letter of each word
-const capitalizeCategory = (category) => {
-  return category.split(' ').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ')
-}
+
 
 export default function Stores() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategories, setSelectedCategories] = useState(["All"])
   const [sortBy, setSortBy] = useState("popular")
@@ -46,24 +48,42 @@ export default function Stores() {
   const sortDropdownRef = useRef(null)
   const itemsPerPage = 6
   const navigate = useNavigate();
+  const [userRating, setUserRating] = useState(0)
+  const [isRating, setIsRating] = useState(false)
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [selectedStore, setSelectedStore] = useState(null)
+  const lang = localStorage.getItem('lang');
 
   // Fetch stores from Strapi
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const response = await axios.get('http://localhost:1337/api/boutiques?filters[statusBoutique][$eq]=active&populate=*')
-        setStores(response.data.data)
-        setIsLoading(false)
-        console.log(response.data.data)
-      } catch (err) {
-        console.error('Error fetching stores:', err)
-        setError('Failed to fetch stores')
-        setIsLoading(false)
-      }
-    }
+        // Fetch stores with ratings
+        const ratingResponse = await axios.get('http://localhost:1337/api/boutiques?filters[statusBoutique][$eq]=active&populate[rating_boutiques][populate]=user');
+        
+        // Fetch complete store data
+        const completeResponse = await axios.get('http://localhost:1337/api/boutiques?filters[statusBoutique][$eq]=active&populate=*');
+        
+        // Merge the data
+        const mergedStores = completeResponse.data.data.map(store => {
+          const ratingStore = ratingResponse.data.data.find(ratingStore => ratingStore.id === store.id);
+          return {
+            ...store,
+            rating_boutiques: ratingStore?.rating_boutiques || []
+          };
+        });
 
-    fetchStores()
-  }, [])
+        setStores(mergedStores);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error fetching stores:', err);
+        setError('Failed to fetch stores');
+        setIsLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -82,51 +102,20 @@ export default function Stores() {
     }
   }, [])
 
-  const filteredAndSortedStores = useMemo(() => {
-    const filtered = stores.filter((store) => {
-      const matchesSearch =
-        store.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        store.description?.toLowerCase().includes(searchTerm.toLowerCase())
-
-      const matchesCategory = selectedCategories.includes("All") || selectedCategories.includes(store.category)
-
-      return matchesSearch && matchesCategory
-    })
-
-    // Sort stores
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "popular":
-          return b.rating - a.rating
-        case "newest":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        case "products":
-          return b.products?.data?.length - a.products?.data?.length
-        case "name":
-          return a.nom.localeCompare(b.nom)
-        default:
-          return 0
-      }
-    })
-
-    return filtered
-  }, [searchTerm, selectedCategories, sortBy, stores])
-
-  const totalPages = Math.ceil(filteredAndSortedStores.length / itemsPerPage)
-  const paginatedStores = filteredAndSortedStores.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-
   const handleCategoryChange = (category) => {
+    console.log(category)
     if (category === "All") {
       setSelectedCategories(["All"])
     } else {
       setSelectedCategories((prev) => {
         const isSelected = prev.includes(category)
+        const newCategories = prev.filter((c) => c !== "All")
 
         if (isSelected) {
-          const newCategories = prev.filter((c) => c !== category)
-          return newCategories.length === 0 ? ["All"] : newCategories
+          const filtered = newCategories.filter((c) => c !== category)
+          return filtered.length === 0 ? ["All"] : filtered
         } else {
-          return [...prev.filter((c) => c !== "All"), category]
+          return [...newCategories, category]
         }
       })
     }
@@ -134,48 +123,168 @@ export default function Stores() {
   }
 
   const getSortLabel = (value) => {
-    switch (value) {
-      case "popular":
-        return "Most Popular"
-      case "newest":
-        return "Newest"
-      case "products":
-        return "Most Products"
-      case "name":
-        return "Name A-Z"
-      default:
-        return "Sort By"
-    }
+    return t(`stores.sortOptions.${value}`)
   }
 
-  // Generate star rating display
-  const renderStars = (rating) => {
-    const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 >= 0.5
+  const handleRating = async (storeId, rating, opinion) => {
+    try {
+      const userId = localStorage.getItem('IDUser')
+      
+      if (!userId) {
+        toast.error(t('stores.ratings.loginToReview'))
+        return
+      }
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={`full-${i}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <div key="half" className="relative">
-          <Star className="h-4 w-4 text-yellow-400" />
-          <div className="absolute top-0 left-0 w-1/2 overflow-hidden">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-          </div>
-        </div>,
+      // Check if user has already rated this store
+      const existingRating = selectedStore.rating_boutiques?.find(
+        (rating) => rating.user?.id === parseInt(userId)
       )
+      let response
+      if (existingRating) {
+        // Update existing rating
+        response = await axios.put(`http://localhost:1337/api/rating-boutiques/${existingRating.documentId}`, {
+          data: {
+            stars: parseInt(rating),
+            opinion: opinion,
+            user: parseInt(userId),
+            boutique: storeId
+          }
+        })
+      } else {
+        // Create new rating
+        response = await axios.post('http://localhost:1337/api/rating-boutiques', {
+          data: {
+            stars: parseInt(rating),
+            opinion: opinion,
+            user: parseInt(userId),
+            boutique: storeId
+          }
+        })
+      }
+      
+      // Update the store's rating in the local state
+      setStores(prevStores => 
+        prevStores.map(store => 
+          store.id === storeId 
+            ? { 
+                ...store, 
+                rating_boutiques: existingRating
+                  ? store.rating_boutiques.map(r => 
+                      r.id === existingRating.id ? response.data.data : r
+                    )
+                  : [...(store.rating_boutiques || []), response.data.data]
+              }
+            : store
+        )
+      )
+      
+      toast.success(existingRating ? t('stores.ratings.reviewUpdateSuccess') : t('stores.ratings.reviewSuccess'))
+      window.location.reload();
+    } catch (error) {
+      console.error('Error submitting rating:', error)
+      toast.error(t('stores.ratings.reviewError'))
     }
-
-    const emptyStars = 5 - stars.length
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />)
-    }
-
-    return stars
   }
+
+  const openRatingModal = (store) => {
+    const userId = localStorage.getItem('IDUser')
+    const existingRating = store.rating_boutiques?.find(
+      rating => rating.user?.id === parseInt(userId)
+    )
+
+    setSelectedStore(store)
+    setShowRatingModal(true)
+  }
+
+  const RatingStars = ({ storeId, rating_boutiques, isInteractive = false, onStarClick }) => {
+    const [hoveredRating, setHoveredRating] = useState(0)
+
+    const averageRating = useMemo(() => {
+      if (!rating_boutiques || rating_boutiques.length === 0) return 0
+      const sum = rating_boutiques.reduce((acc, curr) => acc + curr.stars, 0)
+      return sum / rating_boutiques.length
+    }, [rating_boutiques])
+
+    const handleStarClick = (rating) => {
+      if (isInteractive && onStarClick) {
+        onStarClick(rating)
+      }
+    }
+
+    return (
+      <div className="inline-block">
+        {[1, 2, 3, 4, 5].map((rating) => (
+          <div key={rating} className="inline-block">
+            <input
+              type="radio"
+              id={`star${rating}-${storeId}`}
+              name={`rating-${storeId}`}
+              value={rating}
+              className="hidden"
+              checked={isInteractive ? ratingForm.stars === rating : averageRating >= rating}
+              onChange={() => handleStarClick(rating)}
+              disabled={!isInteractive || isRating}
+            />
+            <label
+              htmlFor={`star${rating}-${storeId}`}
+              className={`float-right cursor-pointer text-2xl transition-colors duration-300 ${
+                isInteractive 
+                  ? (hoveredRating >= rating || ratingForm.stars >= rating ? 'text-purple-600' : 'text-gray-300')
+                  : (averageRating >= rating ? 'text-purple-600' : 'text-gray-300')
+              }`}
+              onMouseEnter={() => isInteractive ? setHoveredRating(rating) : null}
+              onMouseLeave={() => isInteractive ? setHoveredRating(0) : null}
+              onClick={() => handleStarClick(rating)}
+            >
+              ★
+            </label>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const filteredAndSortedStores = useMemo(() => {
+    const filtered = stores.filter((store) => {
+      // Search term filtering
+      const searchLower = searchTerm.toLowerCase()
+      const matchesSearch = 
+        store.nom?.toLowerCase().includes(searchLower) ||
+        store.description?.toLowerCase().includes(searchLower) ||
+        store.owner?.username?.toLowerCase().includes(searchLower)
+
+      // Category filtering
+      const storeCategory = store.category?.toLowerCase()
+      const matchesCategory = 
+        selectedCategories.includes("All") || 
+        selectedCategories.some(cat => cat.toLowerCase() === storeCategory)
+
+      return matchesSearch && matchesCategory
+    })
+
+    // Sort stores
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "popular":
+          const aRating = a.rating_boutiques?.length || 0
+          const bRating = b.rating_boutiques?.length || 0
+          return bRating - aRating
+        case "newest":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        case "products":
+          const aProducts = a.products?.data?.length || 0
+          const bProducts = b.products?.data?.length || 0
+          return bProducts - aProducts
+        case "name":
+          return (a.nom || "").localeCompare(b.nom || "")
+        default:
+          return 0
+      }
+    })
+  }, [searchTerm, selectedCategories, sortBy, stores])
+
+  const totalPages = Math.ceil(filteredAndSortedStores.length / itemsPerPage)
+  const paginatedStores = filteredAndSortedStores.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   if (isLoading) {
     return (
@@ -199,9 +308,9 @@ export default function Stores() {
       <div className="bg-gradient-to-r from-purple-700 to-indigo-800 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-8 max-w-3xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6 leading-tight">Discover Amazing Stores</h1>
+            <h1 className="text-5xl font-bold mb-6 leading-tight">{t('stores.discoverStores')}</h1>
             <p className="text-xl text-purple-100 mb-8">
-              Explore our curated collection of verified online stores offering unique products and exceptional service
+              {t('stores.exploreStores')}
             </p>
 
             {/* Search Bar */}
@@ -209,7 +318,7 @@ export default function Stores() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search stores, products, or owners..."
+                placeholder={t('stores.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value)
@@ -230,11 +339,11 @@ export default function Stores() {
       </div>
 
       {/* Filters Section */}
-      <div className="container mx-auto px-4 -mt-6 mb-8">
-        <div className="bg-white rounded-xl shadow-lg p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-600">
+      <div className="container mx-auto px-4 mb-8">
+        <div className="bg-white h-full rounded-xl shadow-lg p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex h-full items-center gap-2 text-gray-600">
             <Filter className="h-5 w-5" />
-            <span className="font-medium">Filters:</span>
+            <span className="font-medium">{t('stores.filters')}:</span>
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">
@@ -244,12 +353,21 @@ export default function Stores() {
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Categories
+                {t('stores.categories')}
                 <ChevronDown className={`h-4 w-4 transition-transform ${showCategoryDropdown ? "rotate-180" : ""}`} />
               </button>
 
               {showCategoryDropdown && (
                 <div className="absolute z-10 mt-2 w-56 rounded-lg bg-white shadow-lg border border-gray-200 py-2 max-h-64 overflow-y-auto">
+                  <div
+                    onClick={() => handleCategoryChange("All")}
+                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <div className="w-5 h-5 mr-3 flex items-center justify-center">
+                      {selectedCategories.includes("All") && <Check className="h-4 w-4 text-purple-600" />}
+                    </div>
+                    <span>{t('stores.allCategories')}</span>
+                  </div>
                   {categories.map((category) => (
                     <div
                       key={category}
@@ -257,11 +375,9 @@ export default function Stores() {
                       className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
                       <div className="w-5 h-5 mr-3 flex items-center justify-center">
-                        {(category === "all"
-                          ? selectedCategories.includes("all")
-                          : selectedCategories.includes(category)) && <Check className="h-4 w-4 text-purple-600" />}
+                        {selectedCategories.includes(category) && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
-                      <span>{capitalizeCategory(category)}</span>
+                      <span>{t(`stores.categoryLabels.${category}`)}</span>
                     </div>
                   ))}
                 </div>
@@ -274,17 +390,17 @@ export default function Stores() {
                 onClick={() => setShowSortDropdown(!showSortDropdown)}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                {getSortLabel(sortBy)}
+                {t('stores.sortBy')}
                 <ChevronDown className={`h-4 w-4 transition-transform ${showSortDropdown ? "rotate-180" : ""}`} />
               </button>
 
               {showSortDropdown && (
                 <div className="absolute z-10 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200 py-2">
                   {[
-                    { value: "popular", label: "Most Popular" },
-                    { value: "newest", label: "Newest" },
-                    { value: "products", label: "Most Products" },
-                    { value: "name", label: "Name A-Z" },
+                    { value: "popular", label: t('stores.sortOptions.popular') },
+                    { value: "newest", label: t('stores.sortOptions.newest') },
+                    { value: "products", label: t('stores.sortOptions.products') },
+                    { value: "name", label: t('stores.sortOptions.name') },
                   ].map((option) => (
                     <div
                       key={option.value}
@@ -311,7 +427,7 @@ export default function Stores() {
       <div className="container mx-auto px-4 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-gray-600">
-            Showing {paginatedStores.length} of {filteredAndSortedStores.length} stores
+            {t('stores.showing')} {paginatedStores.length} {t('stores.of')} {filteredAndSortedStores.length} {t('stores.stores')}
           </p>
 
           {selectedCategories.length > 0 && !selectedCategories.includes("All") && (
@@ -321,7 +437,7 @@ export default function Stores() {
                   key={category}
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
                 >
-                  {capitalizeCategory(category)}
+                  {t(`stores.categoryLabels.${category}`)}
                   <button
                     onClick={() => handleCategoryChange(category)}
                     className="ml-1 hover:bg-purple-200 rounded-full w-5 h-5 flex items-center justify-center"
@@ -360,7 +476,7 @@ export default function Stores() {
 
                 {store.statusBoutique === "active" && (
                   <span className="absolute top-3 right-3 px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded-full flex items-center gap-1">
-                    <Check className="h-3 w-3" /> Verified
+                    <Check className="h-3 w-3" /> {t('stores.verified')}
                   </span>
                 )}
 
@@ -379,9 +495,33 @@ export default function Stores() {
               </div>
 
               <div className="p-5">
-                <div className="flex items-center gap-1 mb-3">
-                  <div className="flex">{renderStars(store.rating || 0)}</div>
-                  <span className="text-sm font-medium ml-1">{(store.rating || 0).toFixed(1)}</span>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <RatingStars 
+                      storeId={store.id} 
+                      rating_boutiques={store.rating_boutiques}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">
+                        {store.rating_boutiques && store.rating_boutiques.length > 0
+                          ? (store.rating_boutiques.reduce((acc, curr) => acc + curr.stars, 0) / store.rating_boutiques.length).toFixed(1)
+                          : '0.0'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {t('stores.ratings.ratingCount', {
+                          count: store.rating_boutiques?.length || 0,
+                          type: store.rating_boutiques?.length === 1 ? t('stores.ratings.singleRating') : t('stores.ratings.multipleRatings')
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => openRatingModal(store)}
+                    className="flex items-center gap-1 text-purple-600 hover:text-purple-800"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm">{t('stores.rateStore')}</span>
+                  </button>
                 </div>
 
                 <p className="text-gray-600 mb-4 line-clamp-2">{store.description}</p>
@@ -389,7 +529,7 @@ export default function Stores() {
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center gap-1">
                     <Package className="h-4 w-4" />
-                    <span>{store.products?.length || 0} products</span>
+                    <span>{store.products?.length || 0} {t('stores.products')}</span>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -400,7 +540,7 @@ export default function Stores() {
 
                 <div className="flex items-center justify-between">
                   <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
-                    {store.category}
+                    {t(`stores.categoryLabels.${store.category}`)}
                   </span>
 
                   <button
@@ -408,12 +548,12 @@ export default function Stores() {
                     localStorage.setItem("idOwner", store.owner.id);
                     localStorage.setItem("IDBoutique", store.documentId);
                     
-                    navigate(`/view/${store.documentId}`)
+                    navigate(`/view/${store.nom}`)
                    }}
                     className="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition-colors"
                   >
-                    Visit Store
-                    <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    {t('stores.visitStore')}
+                    {lang === 'ar' ? <ArrowLeft className="mr-1 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> :  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" /> }
                   </button>
                 </div>
               </div>
@@ -427,8 +567,8 @@ export default function Stores() {
             <div className="text-gray-400 mb-4">
               <Users className="h-16 w-16 mx-auto" />
             </div>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No stores found</h3>
-            <p className="text-gray-600 mb-6">Try adjusting your search or filter criteria</p>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">{t('stores.noStoresFound')}</h3>
+            <p className="text-gray-600 mb-6">{t('stores.tryAdjusting')}</p>
             <button
               onClick={() => {
                 setSearchTerm("")
@@ -437,7 +577,7 @@ export default function Stores() {
               }}
               className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
-              Reset Filters
+              {t('stores.resetFilters')}
             </button>
           </div>
         )}
@@ -485,6 +625,20 @@ export default function Stores() {
           </div>
         )}
       </div>
+
+      {/* Replace the old RatingModal with the new component */}
+      <RatingForm
+        showModal={showRatingModal}
+        onClose={() => {
+          setShowRatingModal(false)
+          setSelectedStore(null)
+        }}
+        selectedStore={selectedStore}
+        onRatingSubmit={handleRating}
+        existingRating={selectedStore?.rating_boutiques?.find(
+          rating => rating.user?.id === parseInt(localStorage.getItem('IDUser'))
+        )}
+      />
     </div>
   )
 }

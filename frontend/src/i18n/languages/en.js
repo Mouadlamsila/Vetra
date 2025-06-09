@@ -6,6 +6,7 @@ import { statsEn } from './pages/stats';
 import { paymentEn } from './pages/payment';
 import { helpEn } from './pages/help';
 import { settingsEn } from './pages/settings';
+import { storesEn } from './pages/store/stores';
 import dashboardAdmin from './admin/dashboard';
 import sidebarAdmin from './admin/sidebar';
 import usersAdmin from './admin/users';
@@ -23,6 +24,7 @@ const en = {
   AboutUs: "About Us",
   Services: "Services",
   Contact: "Contact",
+  Stores: "Stores",
   Login: "Login",
   welcomeBack: "Welcome Back",
   emailPlaceholder: "Email",
@@ -309,6 +311,52 @@ const en = {
   supportAdmin: supportAdmin.en.supportAdmin,
   settingsAdmin: settingsAdmin.en.settingsAdmin,
   profileAdmin: profileAdmin.en.profileAdmin,
+  stores: storesEn,
+  header: {
+    freeShipping: "Free shipping for orders over $50 | Free returns within 30 days",
+    searchPlaceholder: "Search products...",
+    search: "Search",
+    home: "Home",
+    categories: "Categories",
+    promotions: "Promotions",
+    newArrivals: "New Arrivals",
+    about: "About",
+    contact: "Contact",
+    profile: "Profile",
+    logout: "Logout",
+    signup: "Sign Up",
+    cart: "Your Cart",
+    emptyCart: "Your cart is empty",
+    emptyCartDesc: "Discover our products and add them to your cart",
+    continueShopping: "Continue Shopping",
+    subtotal: "Subtotal",
+    shipping: "Shipping",
+    total: "Total",
+    free: "Free",
+    checkout: "Checkout",
+    continue: "Continue",
+    loading: "Loading...",
+    quantity: "Quantity",
+    remove: "Remove",
+    language: "Language",
+    menu: "Menu",
+    login: "Login",
+    welcome: "Welcome",
+    goTo: "Go to",
+    favorites: "Favorites",
+    emptyFavorites: "Your favorites list is empty",
+    emptyFavoritesDesc: "Add products to your favorites to see them here",
+    addToFavorites: "Add to favorites",
+    removeFromFavorites: "Remove from favorites",
+    loginToFavorite: "Please login to add products to favorites",
+    addedToFavorites: "Product added to favorites",
+    removedFromFavorites: "Product removed from favorites",
+    favoriteError: "Error updating favorites",
+    addToCart: "Add to Cart",
+    addedToCart: "Product added to cart",
+    addedToFavorites: "Product added to favorites",
+    removedFromCart: "Product removed from cart",
+  },
 };
 
 export default en; 

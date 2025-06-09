@@ -8,6 +8,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear()
     const location = useLocation();
     const language = localStorage.getItem("lang");
+    const userId = localStorage.getItem("IDUser");
 
 
 
@@ -116,7 +117,13 @@ const Footer = () => {
                         <p className="text-gray-300 mb-6">{t('joinUsers')}</p>
                         {/* Séparateur */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button
+                            {userId ?  <button
+                                className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
+                                onClick={() => {window.location.href = '/controll/Profil' ; localStorage.setItem("location", "login")}}
+                            >
+                                {t('dashboard.profile')}
+                            </button>  : 
+                            <div className=""><button
                                 className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
                                 onClick={() => {window.location.href = '/login' ; localStorage.setItem("location", "login")}}
                             >
@@ -127,7 +134,8 @@ const Footer = () => {
                                 onClick={() => {window.location.href = '/register' ; localStorage.setItem("location", "login")}}
                             >
                                 {t('createAccount')}
-                            </button>
+                            </button></div> 
+                            }
                         </div>
                     </div>
                 </div>

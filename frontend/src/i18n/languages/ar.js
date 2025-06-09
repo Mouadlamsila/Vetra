@@ -6,6 +6,7 @@ import { statsAr } from './pages/stats';
 import { paymentAr } from './pages/payment';
 import { helpAr } from './pages/help';
 import { settingsAr } from './pages/settings';
+import { storesAr } from './pages/store/stores';
 import dashboardAdmin from './admin/dashboard';
 import sidebarAdmin from './admin/sidebar';
 import usersAdmin from './admin/users';
@@ -23,6 +24,7 @@ const ar = {
   AboutUs: "معلومات عنا",
   Services: "خطوات",
   Contact: "اتصل",
+  Stores: "متاجر",
   Login: "تسجيل الدخول",
   welcomeBack: "مرحباً بعودتك",
   emailPlaceholder: "البريد الإلكتروني",
@@ -313,5 +315,51 @@ const ar = {
   supportAdmin: supportAdmin.ar.supportAdmin,
   settingsAdmin: settingsAdmin.ar.settingsAdmin,
   profileAdmin: profileAdmin.ar.profileAdmin,
+  stores: storesAr,
+  header: {
+    freeShipping: "شحن مجاني للطلبات التي تزيد عن 50 دولار | إرجاع مجاني خلال 30 يومًا",
+    searchPlaceholder: "البحث عن المنتجات...",
+    search: "بحث",
+    home: "الرئيسية",
+    categories: "الفئات",
+    promotions: "العروض",
+    newArrivals: "الوافدون الجدد",
+    about: "حول",
+    contact: "اتصل بنا",
+    profile: "الملف الشخصي",
+    logout: "تسجيل الخروج",
+    signup: "إنشاء حساب",
+    cart: "سلة التسوق",
+    emptyCart: "سلة التسوق فارغة",
+    emptyCartDesc: "اكتشف منتجاتنا وأضفها إلى سلة التسوق",
+    continueShopping: "مواصلة التسوق",
+    subtotal: "المجموع الفرعي",
+    shipping: "الشحن",
+    total: "المجموع",
+    free: "مجاني",
+    checkout: "إتمام الشراء",
+    continue: "متابعة",
+    loading: "جاري التحميل...",
+    quantity: "الكمية",
+    remove: "إزالة",
+    language: "اللغة",
+    menu: "القائمة",
+    login: "تسجيل الدخول",
+    welcome: "مرحباً بك",
+    goTo: "اذهب إلى",
+    favorites: "المفضلة",
+    emptyFavorites: "قائمة المفضلة فارغة",
+    emptyFavoritesDesc: "أضف منتجات إلى المفضلة لرؤيتها هنا",
+    addToFavorites: "إضافة إلى المفضلة",
+    removeFromFavorites: "إزالة من المفضلة",
+    loginToFavorite: "يرجى تسجيل الدخول لإضافة منتجات إلى المفضلة",
+    addedToFavorites: "تمت إضافة المنتج إلى المفضلة",
+    removedFromFavorites: "تمت إزالة المنتج من المفضلة",
+    favoriteError: "خطأ في تحديث المفضلة",
+    addToCart: "إضافة إلى السلة",
+    addedToCart: "تمت إضافة المنتج إلى السلة",
+    addedToFavorites: "تمت إضافة المنتج إلى المفضلة",
+    removeFromCart: "إزالة من السلة",
+  },
 };
 export default ar; 

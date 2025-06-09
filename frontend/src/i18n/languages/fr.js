@@ -6,6 +6,7 @@ import { statsFr } from './pages/stats';
 import { paymentFr } from './pages/payment';
 import { helpFr } from './pages/help';
 import { settingsFr } from './pages/settings';
+import { storesFr } from './pages/store/stores';
 import dashboardAdmin from './admin/dashboard';
 import sidebarAdmin from './admin/sidebar';
 import usersAdmin from './admin/users';
@@ -23,6 +24,7 @@ const fr = {
   AboutUs: "À propos",
   Services: "Services",
   Contact: "Contact",
+  Stores: "Boutiques",
   Login: "Connexion",
   welcomeBack: "Bienvenue",
   emailPlaceholder: "Email",
@@ -309,6 +311,52 @@ const fr = {
   supportAdmin: supportAdmin.fr.supportAdmin,
   settingsAdmin: settingsAdmin.fr.settingsAdmin,
   profileAdmin: profileAdmin.fr.profileAdmin,
+  stores: storesFr,
+  header: {
+    freeShipping: "Livraison gratuite pour les commandes supérieures à 50€ | Retours gratuits sous 30 jours",
+    searchPlaceholder: "Rechercher des produits...",
+    search: "Rechercher",
+    home: "Accueil",
+    categories: "Catégories",
+    promotions: "Promotions",
+    newArrivals: "Nouveautés",
+    about: "À propos",
+    contact: "Contact",
+    profile: "Profil",
+    logout: "Déconnexion",
+    signup: "S'inscrire",
+    cart: "Votre Panier",
+    emptyCart: "Votre panier est vide",
+    emptyCartDesc: "Découvrez nos produits et ajoutez-les à votre panier",
+    continueShopping: "Continuer vos achats",
+    subtotal: "Sous-total",
+    shipping: "Frais de livraison",
+    total: "Total",
+    free: "Gratuit",
+    checkout: "Commander",
+    continue: "Continuer",
+    loading: "Chargement...",
+    quantity: "Quantité",
+    remove: "Supprimer",
+    language: "Langue",
+    menu: "Menu",
+    login: "Connexion",
+    welcome: "Bienvenue",
+    goTo: "Aller à",
+    favorites: "Favoris",
+    emptyFavorites: "Votre liste de favoris est vide",
+    emptyFavoritesDesc: "Ajoutez des produits à vos favoris pour les voir ici",
+    addToFavorites: "Ajouter aux favoris",
+    removeFromFavorites: "Retirer des favoris",
+    loginToFavorite: "Veuillez vous connecter pour ajouter des produits aux favoris",
+    addedToFavorites: "Produit ajouté aux favoris",
+    removedFromFavorites: "Produit retiré des favoris",
+    favoriteError: "Erreur lors de la mise à jour des favoris",
+    addToCart: "Ajouter au panier",
+    addedToCart: "Produit ajouté au panier",
+    addedToFavorites: "Produit ajouté aux favoris",
+    removedFromCart: "Produit retiré du panier",
+  },
 };
 
 export default fr; 

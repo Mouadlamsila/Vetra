@@ -1,14 +1,20 @@
 "use client"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ChevronDown, Search, User, ShoppingCart, Menu, X, Minus, Plus } from "lucide-react"
+import { ChevronDown, Search, User, ShoppingCart, Menu, X, Minus, Plus, Globe, Heart } from "lucide-react"
 import axios from "axios"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { useTranslation } from "react-i18next"
+import { changeLanguage } from "../../../i18n/i18n"
 
 export default function Header() {
+  const { t, i18n } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
   const [boutiques, setBoutiques] = useState([])
   const [categories, setCategories] = useState([])
   const [user, setUser] = useState([])
@@ -18,9 +24,17 @@ export default function Header() {
   const IDUser = localStorage.getItem("IDUser");
   const idOwner = localStorage.getItem("idOwner");
   const navigate = useNavigate('');
-  const [refresh , setRefresh]=useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const lang = localStorage.getItem('lang');
+  const [favorites, setFavorites] = useState([])
+  const [favoritesOpen, setFavoritesOpen] = useState(false)
+  const [favoritesLoading, setFavoritesLoading] = useState(true)
 
-  
+  const handleLanguageChange = (lng) => {
+    changeLanguage(lng);
+    setLanguageMenuOpen(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,7 +46,7 @@ export default function Header() {
         const productsResponse = await axios.get(
           `http://localhost:1337/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
         )
-        
+
         // Extract unique categories from products
         const uniqueCategories = Array.from(
           new Map(
@@ -41,7 +55,7 @@ export default function Header() {
               .map(product => [product.category.id, product.category])
           ).values()
         )
-        
+
         setCategories(uniqueCategories)
       } catch (err) {
         console.error(err)
@@ -51,15 +65,10 @@ export default function Header() {
     fetchData()
   }, [id, idOwner])
 
-  
-
   // Get categories that have products in this boutique
   const getCategoriesWithProducts = () => {
     return categories
   }
-
-
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -70,21 +79,21 @@ export default function Header() {
         console.error("Erreur lors de la récupération de l'utilisateur :", error);
       }
     };
-  
+
     fetchUser();
   }, [IDUser]);
-  
-  
-  
+
+
+
   useEffect(() => {
     const fetchCartItems = async () => {
       if (!IDUser) return;
-      
+
       try {
         const response = await axios.get(`http://localhost:1337/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
         setCartItems(response.data.data);
         setCartLoading(false);
-        
+
       } catch (error) {
         console.error('Error fetching cart items:', error);
         setCartLoading(false);
@@ -92,16 +101,49 @@ export default function Header() {
     };
 
     fetchCartItems();
-  }, [IDUser,refresh]);
+  }, [IDUser, refresh]);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!IDUser) return;
+
+      try {
+        const response = await axios.get(`http://localhost:1337/api/favorite-products?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        setFavorites(response.data.data);
+        setFavoritesLoading(false);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+        setFavoritesLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [IDUser, refresh]);
 
   const handleRemoveFromCart = async (cartItemId) => {
     try {
       await axios.delete(`http://localhost:1337/api/carts/${cartItemId}`);
       // Update cart items immediately
       setCartItems(prevItems => prevItems.filter(item => item.documentId !== cartItemId));
+      toast.success("Produit retiré du panier", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setTimeout(()=>window.location.reload(),1000);
     } catch (error) {
       console.error('Error removing item from cart:', error);
+      toast.error("Erreur lors de la suppression du produit", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -112,10 +154,17 @@ export default function Header() {
       // Get the cart item to check product stock
       const cartItem = cartItems.find(item => item.documentId === cartItemId);
       const productStock = cartItem?.product?.stock || 0;
-      
+
       // Check if new quantity exceeds stock
       if (newQuantity > productStock) {
-        alert(`Désolé, il ne reste que ${productStock} unités en stock`);
+        toast.error(`Désolé, il ne reste que ${productStock} unités en stock`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         return;
       }
 
@@ -124,17 +173,33 @@ export default function Header() {
           qte: newQuantity
         }
       });
-      
+
       // Update cart items immediately
-      setCartItems(prevItems => 
-        prevItems.map(item => 
-          item.documentId === cartItemId 
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.documentId === cartItemId
             ? { ...item, qte: newQuantity }
             : item
         )
       );
+      toast.success("Quantité mise à jour", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error('Error updating cart quantity:', error);
+      toast.error("Erreur lors de la mise à jour de la quantité", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -147,11 +212,38 @@ export default function Header() {
     return sum + (product?.prix || 0) * (item?.qte || 0);
   }, 0);
 
+  const handleRemoveFromFavorites = async (favoriteId) => {
+    try {
+      await axios.delete(`http://localhost:1337/api/favorite-products/${favoriteId}`);
+      setFavorites(prevFavorites => prevFavorites.filter(item => item.documentId !== favoriteId));
+      toast.success(t('header.removedFromFavorites'), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setTimeout(()=>window.location.reload(),1000);
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      toast.error(t('header.errorRemovingFavorite'), {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50  bg-white border-b border-gray-200">
+      <ToastContainer />
       {/* Top bar */}
       <div className="bg-[#1e3a8a] text-white py-2 text-center text-sm">
-        <p>Livraison gratuite pour toute commande supérieure à 50€ | Retours gratuits sous 30 jours</p>
+        <p>{t('header.freeShipping')}</p>
       </div>
 
       {/* Main header */}
@@ -164,9 +256,9 @@ export default function Header() {
             </button>
 
             <Link to={`/view/${id}`} className="flex items-center gap-2">
-              <img 
-                src={boutiques?.logo?.url ? `http://localhost:1337${boutiques.logo.url}` : "/placeholder.svg"} 
-                alt={boutiques?.nom || "ShopEase"} 
+              <img
+                src={boutiques?.logo?.url ? `http://localhost:1337${boutiques.logo.url}` : "/placeholder.svg"}
+                alt={boutiques?.nom || "ShopEase"}
                 className="w-6 h-6 object-cover"
               />
               <span className="font-bold text-xl hidden sm:inline-block">{boutiques?.nom}</span>
@@ -174,83 +266,222 @@ export default function Header() {
           </div>
 
           {/* Search bar - desktop only */}
-          <div className="hidden md:block flex-1 max-w-xl mx-4">
+          <div className="hidden md:block flex-1 max-w-xl mx-4 ">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className={` ${lang === 'ar' ? 'right-3' : 'left-3'} absolute  top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4`} />
               <input
                 type="text"
-                placeholder="Rechercher des produits..."
-                className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                placeholder={t('header.searchPlaceholder')}
+                className={`${lang === 'ar' ? 'pr-10 pl-12' : 'pl-10 pr-12'} w-full  py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]`}
               />
-              <button className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm">
-                Rechercher
+              <button className={`absolute ${lang === 'ar' ? 'left-1' : 'right-1'}  top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm`}>
+                {t('header.search')}
               </button>
             </div>
           </div>
 
           {/* User actions */}
           <div className="flex items-center gap-2">
+            {/* Language Selector */}
+            <div className="relative">
+              <button
+                className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
+                onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
+              >
+                <Globe className="h-5 w-5" />
+              </button>
+
+              {languageMenuOpen && (
+                <div className={`${lang === 'ar' ? 'left-0' : 'right-0'} absolute  mt-2 w-32 bg-white rounded-md shadow-lg border overflow-hidden z-20`}>
+                  <div className="p-1">
+                    <button
+                      onClick={() => handleLanguageChange('en')}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                    >
+                      English
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('fr')}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                    >
+                      Français
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('ar')}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                    >
+                      العربية
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* User menu */}
             <div className="relative">
               <button
                 className="hidden sm:flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 {user?.photo ? <div className="">
-                  <img src={`http://localhost:1337${user.photo.url}`}  className="h-9 w-9 rounded-full"/>
-                </div> : <User className="h-5 w-5" />
-                
-              }
+                  <img src={`http://localhost:1337${user.photo.url}`} className="h-9 w-9 rounded-full" />
+                </div> : <User className="h-5 w-5" />}
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20">
-                  <div className="p-3 text-center">
-                    <p className="font-medium">{user.username}</p>
-                    <p className="text-sm text-gray-500">{user.email}</p>
+                <div className={`absolute ${lang === 'ar' ? 'left-0' : 'right-0'}  mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20`}>
+
+                  <div className={`p-3 ${user ? 'text-center' : 'text-start'} `}>
+                    <p className=" font-medium">{user?.username || t('header.welcome')}</p>
+                    <p className="text-sm text-gray-500">{user?.email || ''}</p>
                   </div>
                   <hr />
                   <div className="p-1">
-                    <Link
+                    {IDUser ? <Link
                       to="/controll/Profil"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      Profile
-                    </Link>
+                      {t('header.profile')}
+                    </Link> : <Link
+                      to="/Login"
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      {t('header.login')}
+                    </Link>}
 
-                    {IDUser ?  <button
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                      onClick={() => {setUserMenuOpen(false) ; const langValue = localStorage.getItem('lang'); // Save the lang value
-                        localStorage.clear(); // Remove everything
-                        localStorage.setItem('lang', langValue); // Restore lang
-                        localStorage.setItem('location', "login"); // Restore lang
-                         navigate('/login')} }
-                    >
-                      Logout
-                    </button> :  
-                    <Link to={'/login'}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                    >
-                      S'inscrire
-                    </Link> }
+
+
+                    {IDUser ? (
+                      <button
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          const langValue = localStorage.getItem('lang');
+                          localStorage.clear();
+                          localStorage.setItem('lang', langValue);
+                          localStorage.setItem('location', "login");
+                          navigate('/login');
+                        }}
+                      >
+                        {t('header.logout')}
+                      </button>
+                    ) : (
+                      <Link
+                        to="/register"
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                      >
+                        {t('header.signup')}
+                      </Link>
+                    )}
                   </div>
-                  {/* <hr />
-                  <div className="p-1">
-                    <Link
-                      to="/account/orders"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      Mes commandes
-                    </Link>
-                    <Link
-                      to="/wishlist"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      Ma liste d'envies
-                    </Link>
-                  </div> */}
+                </div>
+              )}
+            </div>
+
+            {/* Favorites button */}
+            <div className="relative">
+              <button
+                className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                onClick={() => setFavoritesOpen(!favoritesOpen)}
+              >
+                <Heart className="h-5 w-5" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1e3a8a] text-white text-xs flex items-center justify-center">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+
+              {favoritesOpen && (
+                <div className="fixed inset-0 z-50 overflow-hidden">
+                  <div className="absolute inset-0 bg-black/50" onClick={() => setFavoritesOpen(false)}></div>
+                  <div className={`fixed inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} max-w-full flex`}>
+                    <div className="w-screen max-w-md">
+                      <div className="h-full flex flex-col bg-white shadow-xl">
+                        <div className="flex items-center justify-between p-4 border-b">
+                          <h2 className="text-lg font-semibold">{t('header.favorites')}</h2>
+                          <button onClick={() => setFavoritesOpen(false)}>
+                            <X className="h-5 w-5" />
+                          </button>
+                        </div>
+
+                        {favoritesLoading ? (
+                          <div className="flex-1 flex items-center justify-center">
+                            {IDUser ? <p>{t('header.loading')}</p> :
+                              <div className="">
+                                <div className="">
+                                  <p className="text-center font-medium p-1.5">{t('header.goTo')}</p>
+                                </div>
+                                <Link
+                                  to="/login"
+                                  className="block bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
+                                  onClick={() => setFavoritesOpen(false)}
+                                >
+                                  {t('header.login')}
+                                </Link>
+                              </div>
+                            }
+                          </div>
+                        ) : favorites.length === 0 ? (
+                          <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+                            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                              <Heart className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <h3 className="font-medium text-lg mb-2">{t('header.emptyFavorites')}</h3>
+                            <p className="text-gray-500 mb-6">{t('header.emptyFavoritesDesc')}</p>
+                            <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
+                              <Link to="/categories/electronics">{t('header.continueShopping')}</Link>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex-1 overflow-auto py-6">
+                            <div className="space-y-6 px-4">
+                              {favorites.map((favorite) => {
+                                const product = favorite?.product;
+                                return (
+                                  <div key={favorite.id} className="flex gap-4">
+                                    <Link 
+                                      to={`/view/products/${product?.documentId}`}
+                                      className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white"
+                                      onClick={() => setFavoritesOpen(false)}
+                                    >
+                                      <img
+                                        src={product?.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
+                                        alt={product?.name}
+                                        className="object-cover w-full h-full"
+                                      />
+                                    </Link>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex justify-between">
+                                        <Link 
+                                          to={`/view/products/${product?.documentId}`} 
+                                          className="font-medium text-sm line-clamp-1 hover:text-purple-700"
+                                          onClick={() => setFavoritesOpen(false)}
+                                        >
+                                          {product?.name}
+                                        </Link>
+                                        <button
+                                          className="text-gray-400 hover:text-red-500"
+                                          onClick={() => handleRemoveFromFavorites(favorite.documentId)}
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </button>
+                                      </div>
+                                      <div className="mt-2">
+                                        <span className="font-medium">${product?.prix}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -272,11 +503,11 @@ export default function Header() {
               {cartOpen && (
                 <div className="fixed inset-0 z-50 overflow-hidden">
                   <div className="absolute inset-0 bg-black/50" onClick={() => setCartOpen(false)}></div>
-                  <div className="fixed inset-y-0 right-0 max-w-full flex">
+                  <div className={`fixed inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} max-w-full flex`}>
                     <div className="w-screen max-w-md">
                       <div className="h-full flex flex-col bg-white shadow-xl">
                         <div className="flex items-center justify-between p-4 border-b">
-                          <h2 className="text-lg font-semibold">Votre Panier</h2>
+                          <h2 className="text-lg font-semibold">{t('header.cart')}</h2>
                           <button onClick={() => setCartOpen(false)}>
                             <X className="h-5 w-5" />
                           </button>
@@ -284,17 +515,31 @@ export default function Header() {
 
                         {cartLoading ? (
                           <div className="flex-1 flex items-center justify-center">
-                            <p>Chargement...</p>
+                            {IDUser ? <p>{t('header.loading')}</p> :
+                              <div className="">
+                                <div className="">
+                                  <p className="text-center font-medium p-1.5">{t('header.goTo')}</p>
+                                </div>
+                                <Link
+                                  to="/login"
+                                  className="block  bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {t('header.login')}
+                                </Link>
+                              </div>
+                            }
+
                           </div>
                         ) : cartItems.length === 0 ? (
                           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
                             <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                               <ShoppingCart className="h-8 w-8 text-gray-400" />
                             </div>
-                            <h3 className="font-medium text-lg mb-2">Votre panier est vide</h3>
-                            <p className="text-gray-500 mb-6">Découvrez nos produits et ajoutez-les à votre panier</p>
+                            <h3 className="font-medium text-lg mb-2">{t('header.emptyCart')}</h3>
+                            <p className="text-gray-500 mb-6">{t('header.emptyCartDesc')}</p>
                             <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
-                              <Link to="/categories/electronics">Continuer vos achats</Link>
+                              <Link to="/categories/electronics">{t('header.continueShopping')}</Link>
                             </button>
                           </div>
                         ) : (
@@ -315,7 +560,7 @@ export default function Header() {
                                       <div className="flex-1 min-w-0">
                                         <div className="flex justify-between">
                                           <h4 className="font-medium text-sm line-clamp-1">{product?.name}</h4>
-                                          <button 
+                                          <button
                                             className="text-gray-400 hover:text-red-500"
                                             onClick={() => handleRemoveFromCart(item.documentId)}
                                           >
@@ -324,14 +569,14 @@ export default function Header() {
                                         </div>
                                         <div className="mt-2 flex items-center justify-between">
                                           <div className="flex items-center border rounded-md">
-                                            <button 
+                                            <button
                                               className="p-1 px-2 text-gray-600 hover:bg-gray-100"
                                               onClick={() => handleUpdateQuantity(item.documentId, item.qte - 1)}
                                             >
                                               <Minus className="h-3 w-3" />
                                             </button>
                                             <span className="px-2 text-sm">{item.qte}</span>
-                                            <button 
+                                            <button
                                               className="p-1 px-2 text-gray-600 hover:bg-gray-100"
                                               onClick={() => handleUpdateQuantity(item.documentId, item.qte + 1)}
                                             >
@@ -350,18 +595,18 @@ export default function Header() {
                             <div className="border-t pt-6 px-4">
                               <div className="space-y-4">
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Sous-total</span>
+                                  <span className="text-gray-600">{t('header.subtotal')}</span>
                                   <span className="font-medium">${totalPrice.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Frais de livraison</span>
+                                  <span className="text-gray-600">{t('header.shipping')}</span>
                                   <span className="font-medium">
-                                    {totalPrice > 50 ? "Gratuit" : "$10.00"}
+                                    {totalPrice > 50 ? t('header.free') : "$10.00"}
                                   </span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
-                                  <span className="font-semibold">Total</span>
+                                  <span className="font-semibold">{t('header.total')}</span>
                                   <span className="font-bold text-lg">
                                     ${(totalPrice + (totalPrice > 50 ? 0 : 10)).toFixed(2)}
                                   </span>
@@ -370,12 +615,12 @@ export default function Header() {
                                 <div className="grid grid-cols-2 gap-4 pt-2">
                                   <button className="border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md">
                                     <Link to="/categories/electronics" className="w-full">
-                                      Continuer
+                                      {t('header.continue')}
                                     </Link>
                                   </button>
                                   <button className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md">
                                     <Link to="/checkout" className="w-full">
-                                      Commander
+                                      {t('header.checkout')}
                                     </Link>
                                   </button>
                                 </div>
@@ -395,7 +640,7 @@ export default function Header() {
         {/* Navigation - desktop only */}
         <nav className="hidden lg:flex items-center gap-6 mt-4">
           <Link to={`/view/${id}`} className="text-sm font-medium hover:text-purple-700 transition-colors">
-            Accueil
+            {t('header.home')}
           </Link>
 
           <div className="relative">
@@ -403,7 +648,7 @@ export default function Header() {
               className="flex items-center gap-1 text-sm font-medium hover:text-purple-700 transition-colors"
               onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
             >
-              Catégories <ChevronDown className="h-4 w-4" />
+              {t('header.categories')} <ChevronDown className="h-4 w-4" />
             </button>
 
             {categoryMenuOpen && (
@@ -425,19 +670,11 @@ export default function Header() {
           </div>
 
           <Link to="/promotions" className="text-sm font-medium hover:text-purple-700 transition-colors">
-            Promotions
+            {t('header.promotions')}
           </Link>
 
-          <Link to="/new-arrivals" className="text-sm font-medium hover:text-purple-700 transition-colors">
-            Nouveautés
-          </Link>
-
-          <Link to="/about" className="text-sm font-medium hover:text-purple-700 transition-colors">
-            À propos
-          </Link>
-
-          <Link to="/contact" className="text-sm font-medium hover:text-purple-700 transition-colors">
-            Contact
+          <Link to="/view/contact" className="text-sm font-medium hover:text-purple-700 transition-colors">
+            {t('header.contact')}
           </Link>
         </nav>
       </div>
@@ -450,7 +687,7 @@ export default function Header() {
             <div className="w-screen max-w-[300px] sm:max-w-[350px]">
               <div className="h-full flex flex-col bg-white shadow-xl overflow-y-auto">
                 <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="font-semibold">Menu</h2>
+                  <h2 className="font-semibold">{t('header.menu')}</h2>
                   <button onClick={() => setMobileMenuOpen(false)}>
                     <X className="h-5 w-5" />
                   </button>
@@ -459,11 +696,11 @@ export default function Header() {
                 <div className="py-4">
                   <nav className="space-y-1 px-3">
                     <Link
-                      to="/"
+                      to={`/view/${id}`}
                       className="block py-2 px-3 hover:bg-gray-100 rounded-md"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Accueil
+                      {t('header.home')}
                     </Link>
 
                     <div className="py-2">
@@ -476,14 +713,14 @@ export default function Header() {
                           }
                         }}
                       >
-                        Catégories
+                        {t('header.categories')}
                         <ChevronDown className="h-4 w-4" />
                       </button>
                       <div id="mobile-categories" className="hidden pl-4 space-y-1 mt-1">
                         {getCategoriesWithProducts().map((category) => (
                           <Link
                             key={category.id}
-                            to={`/view/categories/${category.id}`}
+                            to={`/view/categories/${category.documentId}`}
                             className="block py-2 px-3 hover:bg-gray-100 rounded-md"
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -498,49 +735,33 @@ export default function Header() {
                       className="block py-2 px-3 hover:bg-gray-100 rounded-md"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Promotions
+                      {t('header.promotions')}
                     </Link>
 
                     <Link
-                      to="/new-arrivals"
+                      to="/view/contact"
                       className="block py-2 px-3 hover:bg-gray-100 rounded-md"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Nouveautés
-                    </Link>
-
-                    <Link
-                      to="/about"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      À propos
-                    </Link>
-
-                    <Link
-                      to="/contact"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Contact
+                      {t('header.contact')}
                     </Link>
                   </nav>
 
                   <div className="mt-6 px-3">
                     <div className="space-y-3">
                       <Link
-                        to="/account/login"
+                        to="/login"
                         className="block w-full bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Se connecter
+                        {t('header.login')}
                       </Link>
                       <Link
-                        to="/account/register"
+                        to="/register"
                         className="block w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-center"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        S'inscrire
+                        {t('header.signup')}
                       </Link>
                     </div>
                   </div>

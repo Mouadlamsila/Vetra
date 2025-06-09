@@ -106,6 +106,24 @@
       "relation": "oneToMany",
       "target": "api::cart.cart",
       "mappedBy": "user"
+    },
+    "favorite_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::favorite-product.favorite-product",
+      "mappedBy": "user"
+    },
+    "rating_boutiques": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::rating-boutique.rating-boutique",
+      "mappedBy": "user"
+    },
+    "rating_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::rating-product.rating-product",
+      "mappedBy": "user"
     }
   }
 }

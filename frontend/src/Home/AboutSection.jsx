@@ -181,7 +181,7 @@ const AboutSection = () => {
                       t('measurableImpact'),
                     ].map((value, index) => (
                       <li key={index} className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-[#6D28D9] mr-2 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className={`h-5 w-5 text-[#6D28D9] ${language==='ar' ? 'ml-2':'mr-2'}  flex-shrink-0 mt-0.5`} />
                         <span className="text-gray-700">{value}</span>
                       </li>
                     ))}

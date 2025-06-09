@@ -446,6 +446,10 @@ export interface ApiBoutiqueBoutique extends Struct.CollectionTypeSchema {
     >;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    rating_boutiques: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-boutique.rating-boutique'
+    >;
     statusBoutique: Schema.Attribute.Enumeration<
       ['active', 'pending', 'suspended']
     > &
@@ -586,6 +590,40 @@ export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFavoriteProductFavoriteProduct
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'favorite_products';
+  info: {
+    description: '';
+    displayName: 'favorite_product';
+    pluralName: 'favorite-products';
+    singularName: 'favorite-product';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::favorite-product.favorite-product'
+    > &
+      Schema.Attribute.Private;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiOrderItemOrderItem extends Struct.CollectionTypeSchema {
   collectionName: 'order_items';
   info: {
@@ -689,6 +727,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'address-line1.components-product-dimensions',
       true
     >;
+    favorite_products: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::favorite-product.favorite-product'
+    >;
     imgMain: Schema.Attribute.Media<'images'>;
     imgsAdditional: Schema.Attribute.Media<'images', true> &
       Schema.Attribute.Required;
@@ -706,6 +748,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     >;
     prix: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    rating_products: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-product.rating-product'
+    >;
     shippingClass: Schema.Attribute.Enumeration<
       [
         'free',
@@ -724,6 +770,94 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     weight: Schema.Attribute.Decimal;
+  };
+}
+
+export interface ApiRatingBoutiqueRatingBoutique
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'rating_boutiques';
+  info: {
+    description: '';
+    displayName: 'rating_boutique';
+    pluralName: 'rating-boutiques';
+    singularName: 'rating-boutique';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    boutique: Schema.Attribute.Relation<'manyToOne', 'api::boutique.boutique'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-boutique.rating-boutique'
+    > &
+      Schema.Attribute.Private;
+    opinion: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    stars: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
+export interface ApiRatingProductRatingProduct
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'rating_products';
+  info: {
+    description: '';
+    displayName: 'rating_product';
+    pluralName: 'rating-products';
+    singularName: 'rating-product';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-product.rating-product'
+    > &
+      Schema.Attribute.Private;
+    opinion: Schema.Attribute.String;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    stars: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1202,6 +1336,10 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    favorite_products: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::favorite-product.favorite-product'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1218,6 +1356,14 @@ export interface PluginUsersPermissionsUser
     photo: Schema.Attribute.Media<'images'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    rating_boutiques: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-boutique.rating-boutique'
+    >;
+    rating_products: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rating-product.rating-product'
+    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
@@ -1251,9 +1397,12 @@ declare module '@strapi/strapi' {
       'api::cart.cart': ApiCartCart;
       'api::categorie-product.categorie-product': ApiCategorieProductCategorieProduct;
       'api::country.country': ApiCountryCountry;
+      'api::favorite-product.favorite-product': ApiFavoriteProductFavoriteProduct;
       'api::order-item.order-item': ApiOrderItemOrderItem;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::rating-boutique.rating-boutique': ApiRatingBoutiqueRatingBoutique;
+      'api::rating-product.rating-product': ApiRatingProductRatingProduct;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

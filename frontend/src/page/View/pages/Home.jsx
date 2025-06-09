@@ -16,8 +16,10 @@ import {
   Award,
   Truck,
   ChevronLeft,
+  ArrowLeft,
 } from "lucide-react"
 import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 // Import Swiper styles
 import "swiper/css"
@@ -26,6 +28,7 @@ import "swiper/css/pagination"
 import "swiper/css/effect-fade"
 
 export default function HomeView() {
+  const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false)
   const [boutique, setBoutique] = useState(null)
   const [products, setProducts] = useState([])
@@ -36,6 +39,7 @@ export default function HomeView() {
   const userId = localStorage.getItem("IDUser")
   const id = localStorage.getItem("IDBoutique")
   const idOwner = localStorage.getItem("idOwner");
+  const lang = localStorage.getItem('lang');
   
   useEffect(() => {
     setIsMounted(true)
@@ -101,23 +105,23 @@ export default function HomeView() {
   const features = [
     {
       icon: <TrendingUp className="h-6 w-6" />,
-      title: "Premium Quality",
-      description: "All products are carefully selected for quality and durability",
+      title: t('view.home.features.quality.title'),
+      description: t('view.home.features.quality.description'),
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: "Fast Delivery",
-      description: "Get your products delivered within 24-48 hours",
+      title: t('view.home.features.delivery.title'),
+      description: t('view.home.features.delivery.description'),
     },
     {
       icon: <Award className="h-6 w-6" />,
-      title: "Warranty",
-      description: "All products come with a minimum 1-year warranty",
+      title: t('view.home.features.warranty.title'),
+      description: t('view.home.features.warranty.description'),
     },
     {
       icon: <Truck className="h-6 w-6" />,
-      title: "Free Shipping",
-      description: "Free shipping on orders over $50",
+      title: t('view.home.features.shipping.title'),
+      description: t('view.home.features.shipping.description'),
     },
   ]
 
@@ -148,17 +152,18 @@ export default function HomeView() {
                 >
                   <div className="absolute inset-0 bg-black/40" />
                 </div>
-                <div className="container mx-auto px-14 h-full flex items-center relative z-10">
+                <div className="container mx-auto sm:px-14 px-5 h-full flex items-center relative z-10">
                   <div className="max-w-2xl text-white">
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">{slide.title}</h1>
                     <p className="text-lg md:text-xl mb-8 opacity-90">
                       {slide.subtitle}
                     </p>
-                    <button className="group bg-white text-gray-900 hover:bg-gray-100 py-3 px-6 rounded-md flex items-center font-medium">
-                      <ShoppingCart className="mr-2 h-5 w-5" />
-                      {slide.buttonText}
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </button>
+                    <Link className="group bg-white text-gray-900 w-45 hover:bg-gray-100 py-3 px-6 rounded-md flex items-center font-medium">
+                      <ShoppingCart className={` h-5 w-5 ${lang ==='ar' ? 'ml-2':'mr-2'  } `} />
+                      {t('view.home.shopNow')}
+                      {lang === 'ar' ? <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" /> :<ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /> }
+                      
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -184,7 +189,7 @@ export default function HomeView() {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 px-15 bg-white">
+      <section className="py-12 sm:px-15 px-2  bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
@@ -201,12 +206,12 @@ export default function HomeView() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 px-15 bg-gray-50">
+      <section className="py-16 sm:px-15 px-2 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
-              <p className="text-gray-600 mt-2">Browse our wide selection of products</p>
+              <h2 className="text-3xl font-bold text-gray-900">{t('view.home.shopByCategory')}</h2>
+              <p className="text-gray-600 mt-2">{t('view.home.browseProducts')}</p>
             </div>
           </div>
 
@@ -230,10 +235,10 @@ export default function HomeView() {
                     <h3 className="text-2xl font-bold text-white mb-1">{category.name}</h3>
                     <div className="flex items-center justify-between">
                       <p className="text-white/80 text-sm">
-                        {products.filter(p => p.category?.id === category.id).length} products
+                        {products.filter(p => p.category?.id === category.id).length} {t('view.home.products')}
                       </p>
                       <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
-                        Explore
+                        {t('view.home.explore')}
                       </span>
                     </div>
                   </div>
@@ -245,12 +250,12 @@ export default function HomeView() {
       </section>
 
       {/* Products Section */}
-      <section className="py-16 px-15 bg-white">
+      <section className="py-16 sm:px-15 px-2 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-              <p className="text-gray-600 mt-2">Handpicked products for you</p>
+              <h2 className="text-3xl font-bold text-gray-900">{t('view.home.featuredProducts')}</h2>
+              <p className="text-gray-600 mt-2">{t('view.home.handpickedProducts')}</p>
             </div>
             <div className="mt-4 md:mt-0 inline-flex bg-white rounded-lg p-1 border border-[#6D28D9]">
               <button
@@ -259,7 +264,7 @@ export default function HomeView() {
                   activeTab === "all" ? "bg-[#6D28D9] text-white font-medium" : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                All
+                {t('view.home.all')}
               </button>
               {categoriesWithProducts.map((category) => (
                 <button
@@ -289,7 +294,7 @@ export default function HomeView() {
                     </div>
                     {product.stock <= 10 && (
                       <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1 rounded-full backdrop-blur-sm">
-                        {product.stock <= 5 ? "Only " + product.stock + " left in stock!" : "Low stock"}
+                        {product.stock <= 5 ? t('view.home.onlyLeft', { count: product.stock }) : t('view.home.lowStock')}
                       </div>
                     )}
                   </div>
@@ -298,7 +303,7 @@ export default function HomeView() {
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium line-clamp-1">{product.name}</h3>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : 'Non catégorisé'}
+                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t('view.category.uncategorized')}
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
