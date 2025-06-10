@@ -74,7 +74,7 @@ export default function StatsPage() {
 
         // Fetch orders for the selected period
         const ordersResponse = await axios.get(
-          `http://localhost:1337/api/orders?filters[customer][id][$eq]=${userId}&populate=*`,
+          `http://localhost:1337/api/orders?filters[user][id][$eq]=${userId}&populate=*`,
         )
         const orders = ordersResponse.data.data
 

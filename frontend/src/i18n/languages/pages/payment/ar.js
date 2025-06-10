@@ -4,6 +4,7 @@ export const paymentAr = {
     subtitle: "إدارة المدفوعات والمعاملات",
     infoMessage: "هنا يمكنك إدارة جميع المدفوعات والمعاملات",
     filters: "تصفيات",
+    loading: "جارٍ التحميل...",
     metrics: {
       totalReceived: {
         title: "إجمالي المدفوعات المستلمة",
@@ -43,7 +44,13 @@ export const paymentAr = {
         method: "الطريقة",
         amount: "المبلغ",
         status: "الحالة",
-        actions: "الإجراءات"
+        actions: "الإجراءات",
+        products: "المنتجات",
+        items: "{{nbr}} العناصر",
+        paymentInfo: "معلومات الدفع",
+        paymentMethod: "طريقة الدفع",
+        quantity: "الكمية",
+        sku: "SKU",
       }
     },
     methods: {
@@ -57,6 +64,10 @@ export const paymentAr = {
       downloadReceipt: "تحميل الإيصال",
       download: "تحميل",
       view: "عرض",
+      close : "إغلاق",
+      viewPayment: "عرض الدفع",
+      showMore: "عرض المزيد",
+      showLess: "عرض أقل",
       
     },
     noPaymentsFound: "لم يتم العثور على مدفوعات",

@@ -14,81 +14,57 @@ import {
   DollarSign,
   Calendar,
   Clock,
+  User,
+  ShoppingBag,
+  MapPin,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import axios from "axios"
 
 export default function PaymentsPage() {
   const { t } = useTranslation()
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
-  const [openActionMenu, setOpenActionMenu] = useState(null)
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [payments, setPayments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedPayment, setSelectedPayment] = useState(null)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [showAllProducts, setShowAllProducts] = useState(false)
   const lang = localStorage.getItem("lang")
+  const IDUser = localStorage.getItem("IDUser")
 
-  // Check if mobile on mount and when window resizes
+  // Fetch payments data
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+    const fetchPayments = async () => {
+      try {
+        setLoading(true)
+        const response = await axios.get(
+          `http://localhost:1337/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        setPayments(response.data.data)
+        setLoading(false)
+      } catch (err) {
+        setError(t("payment.payment.error"))
+        setLoading(false)
+        console.error("Error fetching payments:", err)
+      }
     }
 
-    // Initial check
-    checkIfMobile()
-
-    // Add event listener
-    window.addEventListener("resize", checkIfMobile)
-
-    // Cleanup
-    return () => window.removeEventListener("resize", checkIfMobile)
-  }, [])
-
-  const payments = [
-    {
-      id: "PAY-2023-001",
-      date: "2023-04-10",
-      amount: 129.99,
-      method: "card",
-      status: "completed",
-      orderId: "ORD-2023-001",
-    },
-    {
-      id: "PAY-2023-002",
-      date: "2023-04-09",
-      amount: 89.5,
-      method: "paypal",
-      status: "completed",
-      orderId: "ORD-2023-002",
-    },
-    {
-      id: "PAY-2023-003",
-      date: "2023-04-08",
-      amount: 245.75,
-      method: "card",
-      status: "pending",
-      orderId: "ORD-2023-003",
-    },
-    {
-      id: "PAY-2023-004",
-      date: "2023-04-07",
-      amount: 59.99,
-      method: "bank",
-      status: "pending",
-      orderId: "ORD-2023-004",
-    },
-    {
-      id: "PAY-2023-005",
-      date: "2023-04-06",
-      amount: 175.25,
-      method: "card",
-      status: "failed",
-      orderId: "ORD-2023-005",
-    },
-  ]
+    fetchPayments()
+  }, [IDUser, t])
 
   // Filter payments based on status and search query
   const filteredPayments = payments.filter((payment) => {
     // Filter by status
-    if (selectedStatus !== "all" && payment.status !== selectedStatus) {
+    if (selectedStatus !== "all" && payment.status_checkout !== selectedStatus) {
       return false
     }
 
@@ -96,10 +72,9 @@ export default function PaymentsPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       return (
-        payment.id.toLowerCase().includes(query) ||
-        payment.orderId.toLowerCase().includes(query) ||
-        payment.method.toLowerCase().includes(query) ||
-        payment.status.toLowerCase().includes(query)
+        payment.sessionId.toLowerCase().includes(query) ||
+        payment.amount.toString().includes(query) ||
+        payment.status_checkout.toLowerCase().includes(query)
       )
     }
 
@@ -123,22 +98,46 @@ export default function PaymentsPage() {
     return t(`payment.payment.status.${status}`)
   }
 
-  const getMethodText = (method) => {
-    return t(`payment.payment.methods.${method}`)
+  // Calculate metrics
+  const calculateMetrics = () => {
+    const totalReceived = payments
+      .filter(p => p.status_checkout === "completed")
+      .reduce((sum, p) => sum + parseFloat(p.amount), 0)
+
+    const pendingAmount = payments
+      .filter(p => p.status_checkout === "pending")
+      .reduce((sum, p) => sum + parseFloat(p.amount), 0)
+
+    const nextPayment = payments
+      .filter(p => p.status_checkout === "pending")
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]
+
+    return {
+      totalReceived,
+      pendingAmount,
+      nextPayment
+    }
   }
 
-  const handleActionClick = (paymentId) => {
-    setOpenActionMenu(openActionMenu === paymentId ? null : paymentId)
-  }
+  const metrics = calculateMetrics()
 
+  // Add handleViewDetails function
   const handleViewDetails = (paymentId) => {
-    console.log("View details for payment:", paymentId)
-    setOpenActionMenu(null)
+    const payment = payments.find(p => p.id === paymentId)
+    if (payment) {
+      setSelectedPayment(payment)
+      setIsDetailsModalOpen(true)
+    }
   }
 
+  // Add handleDownloadReceipt function
   const handleDownloadReceipt = (paymentId) => {
-    console.log("Download receipt for payment:", paymentId)
-    setOpenActionMenu(null)
+    const payment = payments.find(p => p.id === paymentId)
+    if (payment) {
+      // You can implement your download receipt logic here
+      console.log("Download receipt for payment:", payment)
+      // For example, you could generate and download a PDF receipt
+    }
   }
 
   const resetFilters = () => {
@@ -146,47 +145,33 @@ export default function PaymentsPage() {
     setSearchQuery("")
   }
 
-  // Close menu when clicking outside
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (openActionMenu && !event.target.closest(".action-menu")) {
-        setOpenActionMenu(null)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [openActionMenu])
-
   // Mobile payment card component
   const PaymentCard = ({ payment }) => (
     <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
       <div className="flex justify-between items-start mb-3">
         <div>
-          <h3 className="font-medium text-[#1e3a8a]">{payment.id}</h3>
-          <p className="text-xs text-gray-500">{payment.date}</p>
+          <h3 className="font-medium text-[#1e3a8a]">{payment.sessionId}</h3>
+          <p className="text-xs text-gray-500">{new Date(payment.createdAt).toLocaleDateString()}</p>
         </div>
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status_checkout)}`}
         >
-          {getStatusText(payment.status)}
+          {getStatusText(payment.status_checkout)}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm mb-3">
         <div>
-          <p className="text-gray-500">{t("payment.payment.table.headers.order")}</p>
-          <p className="font-medium">{payment.orderId}</p>
-        </div>
-        <div>
           <p className="text-gray-500">{t("payment.payment.table.headers.amount")}</p>
-          <p className="font-medium text-[#6D28D9]">{payment.amount.toFixed(2)} €</p>
+          <p className="font-medium text-[#6D28D9]">
+            {payment.amount} {payment.currency?.toUpperCase()}
+          </p>
         </div>
         <div>
-          <p className="text-gray-500">{t("payment.payment.table.headers.method")}</p>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
-            {getMethodText(payment.method)}
-          </span>
+          <p className="text-gray-500">{t("payment.payment.table.headers.products")}</p>
+          <p className="font-medium">
+            {t("payment.payment.table.headers.items", { nbr: payment?.products?.length || 0 })}
+          </p>
         </div>
       </div>
 
@@ -209,6 +194,37 @@ export default function PaymentsPage() {
     </div>
   )
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
+          <p className="text-[#6D28D9] font-medium">{t("payment.payment.loading")}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center justify-center space-x-2">
+          <Info className="h-5 w-5" />
+          <span>{error}</span>
+        </div>
+        <div className="mt-4 space-x-4">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors inline-flex items-center"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {t("payment.payment.retry")}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 p-4 md:p-6 bg-white">
       {/* Header */}
@@ -219,14 +235,6 @@ export default function PaymentsPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#1e3a8a]">{t("payment.payment.title")}</h1>
           <p className="text-[#6D28D9]/70">{t("payment.payment.subtitle")}</p>
-        </div>
-      </div>
-
-      {/* Info Banner */}
-      <div className="bg-[#c8c2fd]/10 rounded-lg p-4 mb-6">
-        <div className="flex items-center space-x-2 text-[#6D28D9]">
-          <Info className="h-5 w-5 flex-shrink-0" />
-          <p className="text-sm">{t("payment.payment.infoMessage")}</p>
         </div>
       </div>
 
@@ -241,7 +249,7 @@ export default function PaymentsPage() {
           </div>
           <div className="mt-2">
             <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
-              {t("payment.payment.metrics.totalReceived.value")}
+              {metrics.totalReceived.toFixed(2)} €
             </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.totalReceived.description")}</p>
           </div>
@@ -255,7 +263,7 @@ export default function PaymentsPage() {
           </div>
           <div className="mt-2">
             <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
-              {t("payment.payment.metrics.pending.value")}
+              {metrics.pendingAmount.toFixed(2)} €
             </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.pending.description")}</p>
           </div>
@@ -269,7 +277,7 @@ export default function PaymentsPage() {
           </div>
           <div className="mt-2">
             <div className="text-xl md:text-2xl font-bold text-[#1e3a8a]">
-              {t("payment.payment.metrics.nextPayment.value")}
+              {metrics.nextPayment ? `${metrics.nextPayment.amount} ${metrics.nextPayment.currency?.toUpperCase()}` : 'N/A'}
             </div>
             <p className="text-xs text-[#6D28D9]/70">{t("payment.payment.metrics.nextPayment.description")}</p>
           </div>
@@ -390,13 +398,10 @@ export default function PaymentsPage() {
                       {t("payment.payment.table.headers.date")}
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                      {t("payment.payment.table.headers.order")}
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
-                      {t("payment.payment.table.headers.method")}
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                       {t("payment.payment.table.headers.amount")}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("payment.payment.table.headers.products")}
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                       {t("payment.payment.table.headers.status")}
@@ -410,25 +415,22 @@ export default function PaymentsPage() {
                   {filteredPayments.map((payment) => (
                     <tr key={payment.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-start text-sm font-medium text-[#1e3a8a]">
-                        {payment.id}
+                        {payment.sessionId}
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">{payment.date}</td>
                       <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        {payment.orderId}
-                      </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#c8c2fd]/20 text-[#6D28D9]">
-                          {getMethodText(payment.method)}
-                        </span>
+                        {new Date(payment.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-[#6D28D9]">
-                        {payment.amount.toFixed(2)} €
+                        {payment.amount} {payment.currency?.toUpperCase()}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {t("payment.payment.table.headers.items", { nbr: payment?.products?.length || 0 })}
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status_checkout)}`}
                         >
-                          {getStatusText(payment.status)}
+                          {getStatusText(payment.status_checkout)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end">
@@ -459,6 +461,177 @@ export default function PaymentsPage() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Payment Details Modal */}
+      {isDetailsModalOpen && selectedPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full p-6 relative">
+            <button
+              onClick={() => setIsDetailsModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Payment Header */}
+            <div className="mb-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-xl font-semibold text-[#1e3a8a] mb-1">
+                    {t('payment.payment.actions.viewDetails')} - {selectedPayment.sessionId}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {new Date(selectedPayment.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span
+                  className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedPayment.status_checkout)}`}
+                >
+                  {getStatusText(selectedPayment.status_checkout)}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Payment Information */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  {t('payment.payment.table.headers.paymentInfo')}
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">{t('payment.payment.table.headers.amount')}</p>
+                    <p className="font-medium text-[#6D28D9]">
+                      {selectedPayment.amount} {selectedPayment.currency?.toUpperCase()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">{t('payment.payment.table.headers.status')}</p>
+                    <p className="font-medium">{getStatusText(selectedPayment.status_checkout)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Information */}
+              {selectedPayment.customer && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    {t('payment.payment.table.headers.customerInfo')}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">{t('payment.payment.table.headers.name')}</p>
+                      <p className="font-medium">{selectedPayment.customer.name}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{t('payment.payment.table.headers.email')}</p>
+                      <p className="font-medium">{selectedPayment.customer.email}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Shipping Address */}
+              {selectedPayment.shippingAddress && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {t('payment.payment.table.headers.shippingAddress')}
+                  </h3>
+                  <div className="space-y-2">
+                    <p className="font-medium">{selectedPayment.shippingAddress.line1}</p>
+                    {selectedPayment.shippingAddress.line2 && (
+                      <p>{selectedPayment.shippingAddress.line2}</p>
+                    )}
+                    <p>
+                      {selectedPayment.shippingAddress.city}, {selectedPayment.shippingAddress.state} {selectedPayment.shippingAddress.postal_code}
+                    </p>
+                    <p>{selectedPayment.shippingAddress.country}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Products List */}
+              {selectedPayment.products && selectedPayment.products.length > 0 && (
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-4 py-3 border-b">
+                    <h3 className="font-medium text-[#1e3a8a] flex items-center">
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      {t('payment.payment.table.headers.products')}
+                    </h3>
+                  </div>
+                  <div className="divide-y">
+                    {selectedPayment.products
+                      .slice(0, showAllProducts ? undefined : 4)
+                      .map((product) => {
+                        if (!product) return null;
+                        
+                        return (
+                          <div key={product.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={product.imgMain?.url ? 
+                                  `http://localhost:1337${product.imgMain.url}` : 
+                                  "/placeholder.svg"}
+                                alt={product.name || 'Product'}
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                              <div>
+                                <h4 className="font-medium">{product.name || 'N/A'}</h4>
+                                <p className="text-sm text-gray-500">
+                                  {t('payment.payment.table.headers.quantity')}: {selectedPayment.quantities?.[product.id] || 1}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {t('payment.payment.table.headers.sku')}: {product.sku || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium text-[#6D28D9]">
+                                {product.prix?.toFixed(2) || '0.00'} {selectedPayment.currency?.toUpperCase() || 'USD'}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                  {selectedPayment.products.length > 4 && (
+                    <div className="px-4 py-3 bg-gray-50 border-t">
+                      <button
+                        onClick={() => setShowAllProducts(!showAllProducts)}
+                        className="w-full text-center text-[#6D28D9] hover:text-[#6D28D9]/80 transition-colors font-medium"
+                      >
+                        {showAllProducts 
+                          ? t('payment.payment.actions.showLess') 
+                          : t('payment.payment.actions.showMore', { count: selectedPayment.products.length - 4 })}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                <button
+                  onClick={() => handleDownloadReceipt(selectedPayment.id)}
+                  className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('payment.payment.actions.downloadReceipt')}
+                </button>
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="inline-flex items-center px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors"
+                >
+                  {t('payment.payment.actions.close')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

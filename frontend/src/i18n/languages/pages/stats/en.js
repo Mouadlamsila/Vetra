@@ -59,7 +59,9 @@ const statsEn = {
           title: "Sales Distribution",
           subtitle: "By product category",
           tooltip: {
-            percentage: "Percentage"
+            percentage: "Percentage",
+            count : "Count",
+            products: "Products"
           }
         }
       },

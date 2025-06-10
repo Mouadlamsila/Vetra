@@ -16,6 +16,10 @@ import {
 } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
+import { Elements } from '@stripe/react-stripe-js'
+import stripePromise from '../../../utils/stripe'
+import CheckoutForm from '../../../components/CheckoutForm'
+import { toast } from 'react-hot-toast'
 
 export default function OrdersPage() {
   const { t } = useTranslation()
@@ -30,6 +34,10 @@ export default function OrdersPage() {
   const [isMobile, setIsMobile] = useState(false)
   const IDUser = localStorage.getItem("IDUser")
   const lang = localStorage.getItem("lang")
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [checkoutAmount, setCheckoutAmount] = useState(0)
+  const [orderId, setOrderId] = useState(null)
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -52,7 +60,7 @@ export default function OrdersPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `http://localhost:1337/api/orders?populate=*&filters[customer][id][$eq]=${IDUser}`,
+          `http://localhost:1337/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -87,7 +95,7 @@ export default function OrdersPage() {
       filtered = filtered.filter(
         (order) =>
           order.id.toString().toLowerCase().includes(query) ||
-          (order.customer?.data?.attributes?.username || "").toLowerCase().includes(query) ||
+          (order.user?.username || "").toLowerCase().includes(query) ||
           order.statusOrder.toLowerCase().includes(query),
       )
     }
@@ -97,15 +105,13 @@ export default function OrdersPage() {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case "Delivered":
+      case "completed":
         return "bg-green-100 text-green-800"
-      case "Shipped":
-        return "bg-blue-100 text-blue-800"
-      case "Processing":
+      case "processing":
         return "bg-yellow-100 text-yellow-800"
-      case "Pending":
+      case "pending":
         return "bg-gray-100 text-gray-800"
-      case "Cancelled":
+      case "cancelled":
         return "bg-red-100 text-red-800"
       default:
         return "bg-gray-100 text-gray-800"
@@ -113,33 +119,28 @@ export default function OrdersPage() {
   }
 
   const getStatusText = (status) => {
+    return t(`orders.orders.status.${status.toLowerCase()}`)
+  }
+
+  const getPaymentStatusBadgeClass = (status) => {
     switch (status) {
-      case "Delivered":
-        return t("orders.orders.status.delivered")
-      case "Shipped":
-        return t("orders.orders.status.shipped")
-      case "Processing":
-        return t("orders.orders.status.processing")
-      case "Pending":
-        return t("orders.orders.status.pending")
-      case "Cancelled":
-        return t("orders.orders.status.cancelled")
+      case "paid":
+        return "bg-green-100 text-green-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800"
+      case "failed":
+        return "bg-red-100 text-red-800"
       default:
-        return status
+        return "bg-gray-100 text-gray-800"
     }
   }
 
-  const handleActionClick = (orderId) => {
-    setOpenActionMenu(openActionMenu === orderId ? null : orderId)
+  const getPaymentStatusText = (status) => {
+    return t(`orders.orders.paymentStatus.${status.toLowerCase()}`)
   }
 
-  const handleViewDetails = (orderId) => {
-    console.log("View order details:", orderId)
-    setOpenActionMenu(null)
-  }
-
-  const handleViewInvoice = (orderId) => {
-    console.log("View invoice:", orderId)
+  const handleViewDetails = (order) => {
+    setSelectedOrder(order)
     setOpenActionMenu(null)
   }
 
@@ -165,13 +166,44 @@ export default function OrdersPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [openActionMenu])
 
+  const handlePaymentSuccess = async (response) => {
+    try {
+      // Show success message
+      toast.success(t('orders.paymentSuccess'))
+      
+      // Refresh orders list
+      const response = await axios.get(
+        `http://localhost:1337/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      setOrders(response.data.data)
+      setFilteredOrders(response.data.data)
+      
+      // Close checkout form
+      setShowCheckoutForm(false)
+      setSelectedOrder(null)
+    } catch (error) {
+      console.error('Error handling payment success:', error)
+      toast.error(t('orders.paymentError'))
+    }
+  }
+
+  const handlePaymentCancel = () => {
+    setShowCheckoutForm(false)
+    setSelectedOrder(null)
+  }
+
   // Mobile order card component
   const OrderCard = ({ order }) => (
     <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-medium text-[#1e3a8a]">
-            {t("orders.orders.table.ord")}-{order.id}
+            {order.orderNumber}
           </h3>
           <p className="text-xs text-gray-500">{new Date(order?.createdAt).toLocaleDateString()}</p>
         </div>
@@ -184,22 +216,40 @@ export default function OrdersPage() {
 
       <div className="grid grid-cols-2 gap-2 text-sm mb-3">
         <div>
-          <p className="text-gray-500">{t("orders.orders.table.customer")}</p>
-          <p className="font-medium">{order?.customer?.data?.attributes?.username || "N/A"}</p>
+          <p className="text-gray-500">{t("orders.orders.table.user")}</p>
+          <p className="font-medium">{order?.user?.username || "N/A"}</p>
         </div>
         <div>
-          <p className="text-gray-500">{t("orders.orders.table.items")}</p>
-          <p className="font-medium">{order?.order_items?.data?.length || 0}</p>
+          <p className="text-gray-500">{t("orders.orders.table.paymentStatus")}</p>
+          <p className="font-medium">{order?.paymentStatus}</p>
         </div>
         <div>
           <p className="text-gray-500">{t("orders.orders.table.total")}</p>
-          <p className="font-medium text-[#6D28D9]">{order?.totalAmount.toFixed(2)} €</p>
+          <p className="font-medium text-[#6D28D9]">{order?.totalAmount.toFixed(2)} {order?.currency?.toUpperCase()}</p>
+        </div>
+      </div>
+
+      {/* Products Preview */}
+      <div className="mb-3">
+        <p className="text-gray-500 mb-2">{t("orders.orders.table.products")}</p>
+        <div className="flex space-x-2 overflow-x-auto pb-2">
+          {order.products?.map((product) => (
+            <div key={product.id} className="flex-shrink-0">
+              <img
+                src={product.imgMain?.url ? 
+                  `http://localhost:1337${product.imgMain.url}` : 
+                  "/placeholder.svg"}
+                alt={product.name}
+                className="w-12 h-12 object-cover rounded-lg"
+              />
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="flex justify-end space-x-2 border-t border-gray-100 pt-3">
         <button
-          onClick={() => handleViewDetails(order.id)}
+          onClick={() => handleViewDetails(order)}
           className="inline-flex items-center px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-50"
         >
           <Eye className="h-4 w-4 mr-1" />
@@ -246,6 +296,8 @@ export default function OrdersPage() {
       </div>
     )
   }
+
+  console.log(orders)
 
   return (
     <div className="space-y-6 p-4 md:p-6 bg-white">
@@ -307,7 +359,7 @@ export default function OrdersPage() {
       {/* Filters */}
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFiltersVisible || !isMobile ? "block" : "hidden"}`}>
         <div className="relative">
-          <label className="block text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
+          <label className=" text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
             <Package className="h-4 w-4 mr-1" />
             {t("orders.orders.filterByStatus")}
           </label>
@@ -318,11 +370,10 @@ export default function OrdersPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
             >
               <option value="all">{t("orders.orders.allStatuses")}</option>
-              <option value="Pending">{t("orders.orders.status.pending")}</option>
-              <option value="Processing">{t("orders.orders.status.processing")}</option>
-              <option value="Shipped">{t("orders.orders.status.shipped")}</option>
-              <option value="Delivered">{t("orders.orders.status.delivered")}</option>
-              <option value="Cancelled">{t("orders.orders.status.cancelled")}</option>
+              <option value="pending">{t("orders.orders.status.pending")}</option>
+              <option value="processing">{t("orders.orders.status.processing")}</option>
+              <option value="completed">{t("orders.orders.status.completed")}</option>
+              <option value="cancelled">{t("orders.orders.status.cancelled")}</option>
             </select>
             <div
               className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}
@@ -377,46 +428,25 @@ export default function OrdersPage() {
               <table className="min-w-full divide-y divide-[#c8c2fd]/30">
                 <thead className="bg-[#1e3a8a]">
                   <tr>
-                    <th
-                      scope="col"
-                      className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-right" : "text-left"}`}
-                    >
-                      {t("orders.orders.table.order")}
+                    <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-right" : "text-left"}`}>
+                      {t("orders.orders.table.orderInfo")}
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      {t("orders.orders.table.date")}
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("orders.orders.table.products")}
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      {t("orders.orders.table.customer")}
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("orders.orders.table.user")}
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      {t("orders.orders.table.items")}
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                    >
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                       {t("orders.orders.table.total")}
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                    >
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                       {t("orders.orders.table.status")}
                     </th>
-                    <th
-                      scope="col"
-                      className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-left" : "text-right"}`}
-                    >
+                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      {t("orders.orders.table.paymentStatus")}
+                    </th>
+                    <th scope="col" className={`px-6 py-3 text-xs font-medium text-white uppercase tracking-wider ${lang === "ar" ? "text-left" : "text-right"}`}>
                       {t("orders.orders.table.actions")}
                     </th>
                   </tr>
@@ -425,36 +455,66 @@ export default function OrdersPage() {
                   {filteredOrders.map((order) => (
                     <tr key={order.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center justify-start gap-2">
+                        <div className="flex flex-col">
                           <span className="font-medium text-[#1e3a8a]">
-                            {t("orders.orders.table.ord")}-{order.id}
+                            {order.orderNumber}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {new Date(order?.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                        {new Date(order?.createdAt).toLocaleDateString()}
+                      <td className="px-6 py-4">
+                        <div className="flex space-x-2 justify-center">
+                          {order.products?.map((product) => (
+                            <div key={product.id} className="relative group">
+                              <img
+                                src={product.imgMain?.url ? 
+                                  `http://localhost:1337${product.imgMain.url}` : 
+                                  "/placeholder.svg"}
+                                alt={product.name}
+                                className="w-12 h-12 object-cover rounded-lg"
+                              />
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block">
+                                <div className="bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                  {product.name}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                        {order?.customer?.data?.attributes?.username || "N/A"}
+                        <div className="flex flex-col items-center">
+                          <span className="font-medium">{order?.user?.username || "N/A"}</span>
+                          <span className="text-xs text-gray-400">{order?.user?.email}</span>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                        {order?.order_items?.data?.length || 0}
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-[#6D28D9]">
+                            {order?.totalAmount.toFixed(2)} {order?.currency?.toUpperCase()}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {t("orders.orders.table.items")}: {Object.keys(order?.quantities || {}).length}
+                          </span>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-[#6D28D9]">
-                        {order?.totalAmount.toFixed(2)} €
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                        <span
-                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}
-                        >
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}>
                           {getStatusText(order?.statusOrder)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPaymentStatusBadgeClass(order?.paymentStatus)}`}>
+                          {getPaymentStatusText(order?.paymentStatus)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                         <div className="inline-block text-end action-menu">
                           <button
                             type="button"
-                            onClick={() => handleViewDetails(order.id)}
+                            onClick={() => handleViewDetails(order)}
                             className="cursor-pointer text-blue-500 focus:outline-none p-1 rounded-full hover:bg-blue-500/10 transition-colors"
                           >
                             <Eye className="h-5 w-5" />
@@ -479,6 +539,128 @@ export default function OrdersPage() {
           </div>
         </>
       )}
+
+      {/* Order Details Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full p-6 relative">
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Order Header */}
+            <div className="mb-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-xl font-semibold text-[#1e3a8a] mb-1">
+                    {t('orders.orders.view.orderDetails')} - {selectedOrder.orderNumber}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">{t('orders.orders.table.status')}:</span>
+                    <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedOrder.statusOrder)}`}>
+                      {getStatusText(selectedOrder.statusOrder)}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">{t('orders.orders.table.paymentStatus')}:</span>
+                    <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPaymentStatusBadgeClass(selectedOrder.paymentStatus)}`}>
+                      {getPaymentStatusText(selectedOrder.paymentStatus)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Customer Information */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-medium text-[#1e3a8a] mb-3">{t('orders.orders.view.customerInfo')}</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">{t('orders.orders.view.username')}</p>
+                    <p className="font-medium">{selectedOrder.user?.username || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">{t('orders.orders.view.email')}</p>
+                    <p className="font-medium">{selectedOrder.user?.email || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Products List */}
+              <div className="border rounded-lg overflow-hidden">
+                <div className="bg-gray-50 px-4 py-3 border-b">
+                  <h3 className="font-medium text-[#1e3a8a]">{t('orders.orders.view.items')}</h3>
+                </div>
+                <div className="divide-y">
+                  {selectedOrder.products?.map((product) => (
+                    <div key={product.id} className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={product.imgMain?.url ? 
+                            `http://localhost:1337${product.imgMain.url}` : 
+                            "/placeholder.svg"}
+                          alt={product.name}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                        <div>
+                          <h4 className="font-medium">{product.name}</h4>
+                          <p className="text-sm text-gray-500">
+                            {t('orders.orders.view.quantity')}: {selectedOrder.quantities[product.id] || 1}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {t('orders.orders.view.sku')}: {product.sku || 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium text-[#6D28D9]">
+                          {product.prix.toFixed(2)} {selectedOrder.currency?.toUpperCase()}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {t('orders.orders.view.stock')}: {product.stock}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Summary */}
+              <div className="border rounded-lg p-4">
+                <h3 className="font-medium text-[#1e3a8a] mb-4">{t('orders.orders.view.summary')}</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t('orders.orders.view.subtotal')}</span>
+                    <span>{selectedOrder.totalAmount.toFixed(2)} {selectedOrder.currency?.toUpperCase()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t('orders.orders.view.items')}</span>
+                    <span>{Object.keys(selectedOrder.quantities || {}).length}</span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between font-medium">
+                      <span>{t('orders.orders.view.total')}</span>
+                      <span className="text-[#6D28D9]">
+                        {selectedOrder.totalAmount.toFixed(2)} {selectedOrder.currency?.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+

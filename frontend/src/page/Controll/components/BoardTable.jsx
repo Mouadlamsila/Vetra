@@ -30,7 +30,7 @@ export default function BoardTable() {
                 const products = productsResponse.data.data;
 
                 // Fetch orders
-                const ordersResponse = await axios.get(`http://localhost:1337/api/orders?filters[customer][id][$eq]=${userId}&populate=*`);
+                const ordersResponse = await axios.get(`http://localhost:1337/api/orders?filters[user][id][$eq]=${userId}&populate=*`);
                 const orders = ordersResponse.data.data;
 
                 // Calculate total sales

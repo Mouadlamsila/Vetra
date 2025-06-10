@@ -59,7 +59,9 @@ const statsFr = {
           title: "Répartition des ventes",
           subtitle: "Par catégorie de produit",
           tooltip: {
-            percentage: "Pourcentage"
+            percentage: "Pourcentage",
+            count: "Nombre",
+            products: "Produits"
           }
         }
       },

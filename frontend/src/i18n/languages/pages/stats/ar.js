@@ -59,7 +59,9 @@ const statsAr = {
           title: "توزيع المبيعات",
           subtitle: "حسب فئة المنتج",
           tooltip: {
-            percentage: "النسبة المئوية"
+            percentage: "النسبة المئوية",
+            count : "العدد",
+            products: "المنتجات"
           }
         }
       },
