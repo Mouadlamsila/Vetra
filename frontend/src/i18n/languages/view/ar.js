@@ -40,6 +40,8 @@ export default {
     addedToFavorites: "تمت إضافة المنتج إلى المفضلة بنجاح!",
     removedFromFavorites: "تمت إزالة المنتج من المفضلة بنجاح!",
     onlyLeft: "باقي {{count}} فقط",
+    processing: "جاري المعالجة...",
+    addToFavorites: "أضف إلى المفضلة",
 
     error: {
       loginRequired: "يرجى تسجيل الدخول لإضافة إلى السلة",

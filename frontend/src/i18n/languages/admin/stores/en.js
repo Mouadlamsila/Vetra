@@ -77,6 +77,14 @@ export default {
         title: "Confirm Approval",
         message: "Are you sure you want to approve the store \"{{name}}\"? A notification will be sent to the owner."
       },
+      disable: {
+        title: "Confirm Disabling",
+        message: "Are you sure you want to disable the store \"{{name}}\"? It will no longer be visible on the marketplace."
+      },
+      enable: {
+        title: "Confirm Enabling",
+        message: "Are you sure you want to enable the store \"{{name}}\"? It will be visible again on the marketplace."
+      },
       reject: {
         title: "Confirm Rejection",
         message: "Are you sure you want to reject the store \"{{name}}\"? A notification will be sent to the owner."
@@ -100,7 +108,9 @@ export default {
         suspend: "Suspend",
         delete: "Delete",
         activate: "Activate",
-        cancel: "Cancel"
+        cancel: "Cancel",
+        disable: "Disable",
+        enable: "Enable Store"
       }
     }
   }

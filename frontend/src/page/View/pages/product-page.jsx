@@ -21,6 +21,10 @@ import axios from "axios"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
 
+import stripePromise from '../../../utils/stripe'
+import { Elements } from '@stripe/react-stripe-js'
+import CheckoutForm from '../../../components/CheckoutForm'
+
 export default function ProductPage() {
   const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(0)
@@ -43,7 +47,13 @@ export default function ProductPage() {
     opinion: ""
   })
   const [isFavorite, setIsFavorite] = useState(false)
-
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const [user, setUser] = useState(null)
+  const [userData, setUserData] = useState(null)
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [checkoutAmount, setCheckoutAmount] = useState(0);
+  const [orderId, setOrderId] = useState(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -375,6 +385,166 @@ export default function ProductPage() {
     }
   }
 
+  // Add useEffect to fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userId = localStorage.getItem("IDUser");
+      if (!userId) return;
+
+      try {
+        const response = await axios.get(`http://localhost:1337/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        toast.error(t('view.productDetails.error.fetchingUserData'));
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleBuyNow = async () => {
+    const userId = localStorage.getItem("IDUser")
+    if (!userId) {
+      toast.error(t('view.productDetails.loginRequired'))
+      return
+    }
+
+    const availableStock = getAvailableStock();
+    if (quantity > availableStock) {
+      toast.error(t('view.productDetails.error.stockExceeded', { count: availableStock }))
+      return
+    }
+
+    setIsProcessingPayment(true)
+
+    try {
+      // Generate a unique order number
+      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+      // First create the order
+      const orderData = {
+        data: {
+          statusOrder: "pending",
+          totalAmount: parseFloat(product.prix * quantity),
+          user: parseInt(userId),
+          orderNumber: orderNumber,
+          currency: 'usd',
+          products: [parseInt(product.id)],
+          quantities: {
+            [product.id]: parseInt(quantity)
+          },
+          shippingAddress: {
+            line1: userData?.address?.line1 || '',
+            line2: userData?.address?.line2 || '',
+            city: userData?.address?.city || '',
+            state: userData?.address?.state || '',
+            postal_code: userData?.address?.postal_code || '',
+            country: userData?.address?.country || 'US'
+          },
+          paymentStatus: "pending"
+        }
+      };
+
+      // Create the order
+      const orderResponse = await axios.post('http://localhost:1337/api/orders', orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      console.log('Order created:', orderResponse.data);
+      
+      // Set the order ID and amount for the checkout form
+      setOrderId(orderResponse.data.data.id);
+      setCheckoutAmount(product.prix * quantity);
+      setShowCheckoutForm(true);
+      
+    } catch (error) {
+      console.error('Error in checkout process:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error details:', error.response.data.error);
+      }
+      toast.error(t('view.productDetails.paymentError'));
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (paymentMethod) => {
+    try {
+      // Create checkout session with the payment method
+      const checkoutData = {
+        data: {
+          products: [parseInt(product.id)],
+          quantities: {
+            [product.id]: parseInt(quantity)
+          },
+          user: parseInt(localStorage.getItem("IDUser")),
+          amount: checkoutAmount,
+          currency: 'usd',
+          status_checkout: "pending",
+          customer: {
+            email: userData?.email || '',
+            name: userData?.username || '',
+            phone: userData?.phone || '',
+            address: {
+              line1: userData?.address?.line1 || '',
+              line2: userData?.address?.line2 || '',
+              city: userData?.address?.city || '',
+              state: userData?.address?.state || '',
+              postal_code: userData?.address?.postal_code || '',
+              country: userData?.address?.country || 'US'
+            }
+          },
+          shippingAddress: {
+            line1: userData?.address?.line1 || '',
+            line2: userData?.address?.line2 || '',
+            city: userData?.address?.city || '',
+            state: userData?.address?.state || '',
+            postal_code: userData?.address?.postal_code || '',
+            country: userData?.address?.country || 'US'
+          },
+          order: orderId,
+          paymentMethodId: paymentMethod.id
+        }
+      };
+
+      const response = await axios.post('http://localhost:1337/api/checkout-sessions', checkoutData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      console.log('Checkout session created:', response.data);
+      
+      // Close the checkout form
+      setShowCheckoutForm(false);
+      
+      // Show success message
+      toast.success(t('view.productDetails.paymentSuccess'));
+      
+      // Redirect to order confirmation page or home
+      window.location.href = '/view/orders';
+      
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast.error(t('view.productDetails.paymentError'));
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowCheckoutForm(false);
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
   }
@@ -541,8 +711,14 @@ export default function ProductPage() {
                 <ShoppingCart className={`${lang ==='ar' ? 'ml-2' : 'mr-2'} h-5 w-5`} /> 
                 {isAddingToCart ? t('view.productDetails.addingToCart') : t('view.productDetails.addToCart')}
               </button>
-              <button className="flex-1 border border-purple-200 text-purple-700 hover:bg-purple-50 py-3 px-4 rounded-md">
-                {t('view.productDetails.buyNow')}
+              <button 
+                onClick={handleBuyNow}
+                disabled={isProcessingPayment}
+                className={`flex-1 border border-purple-200 text-purple-700 hover:bg-purple-50 py-3 px-4 rounded-md ${
+                  isProcessingPayment ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isProcessingPayment ? t('view.productDetails.processing') : t('view.productDetails.buyNow')}
               </button>
             </div>
 
@@ -760,6 +936,41 @@ export default function ProductPage() {
                 {t('view.productDetails.submit')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Stripe Elements Provider and Checkout Form */}
+      {showCheckoutForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 relative">
+            <button
+              onClick={handlePaymentCancel}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <Elements stripe={stripePromise}>
+              <CheckoutForm
+                amount={checkoutAmount}
+                onSuccess={(response) => {
+                  // Close the checkout form
+                  setShowCheckoutForm(false);
+                  
+                  // Show success message
+                  toast.success(t('view.productDetails.paymentSuccess'));
+                  
+                  // Redirect to order confirmation page
+                  window.location.href = '/view/orders';
+                }}
+                onCancel={handlePaymentCancel}
+                orderId={orderId}
+                product={product}
+                quantity={quantity}
+                userData={userData}
+              />
+            </Elements>
           </div>
         </div>
       )}

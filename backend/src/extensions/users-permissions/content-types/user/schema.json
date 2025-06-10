@@ -79,12 +79,6 @@
       "target": "api::boutique.boutique",
       "mappedBy": "owner"
     },
-    "orders": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::order.order",
-      "mappedBy": "customer"
-    },
     "phone": {
       "type": "biginteger",
       "unique": false
@@ -123,6 +117,18 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::rating-product.rating-product",
+      "mappedBy": "user"
+    },
+    "checkout_sessions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::checkout-session.checkout-session",
+      "mappedBy": "user"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
       "mappedBy": "user"
     }
   }

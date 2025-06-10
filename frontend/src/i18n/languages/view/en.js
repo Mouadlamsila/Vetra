@@ -40,6 +40,8 @@ export default {
     addedToFavorites: "Product added to favorites successfully!",
     removedFromFavorites: "Product removed from favorites successfully!",
     onlyLeft: "Only {{count}} left",
+    processing: "Processing...",
+    addToFavorites: "Add to Favorites",
     error: {
       loginRequired: "Please login to add to cart",
       stockExceeded: "Sorry, only {{count}} units left in stock",

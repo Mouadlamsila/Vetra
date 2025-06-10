@@ -14,48 +14,58 @@
     "statusOrder": {
       "type": "enumeration",
       "enum": [
-        "Pending",
-        "Processing",
-        "Shipped",
-        "Delivered",
-        "Cancelled"
+        "pending",
+        "processing",
+        "completed",
+        "cancelled"
       ]
     },
     "totalAmount": {
       "required": true,
       "type": "decimal"
     },
-    "shippingAmount": {
-      "type": "decimal",
-      "required": true
-    },
-    "taxAmount": {
-      "type": "decimal"
-    },
-    "discountAmount": {
-      "type": "decimal"
-    },
-    "notes": {
-      "type": "text",
-      "required": true
-    },
-    "customer": {
+    "user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
     },
-    "boutique": {
+    "orderNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "currency": {
+      "type": "string",
+      "default": "usd",
+      "required": false
+    },
+    "products": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::boutique.boutique",
+      "relation": "manyToMany",
+      "target": "api::product.product",
       "inversedBy": "orders"
     },
-    "order_items": {
+    "quantities": {
+      "type": "json"
+    },
+    "shippingAddress": {
+      "type": "json"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "checkoutSession": {
       "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::order-item.order-item",
-      "mappedBy": "order"
+      "relation": "oneToOne",
+      "target": "api::checkout-session.checkout-session",
+      "inversedBy": "order"
     }
   }
 }

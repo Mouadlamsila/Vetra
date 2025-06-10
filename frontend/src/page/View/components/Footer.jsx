@@ -94,8 +94,8 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-purple-400 flex-shrink-0" />
                 {
-                  boutique?.location.map((e)=>
-                    <span>{e.addressLine1 || e.addressLine2 || ''}, {e.postalCode || ''} {e.city || ''}, {e.country || ''}</span>
+                  boutique?.location.map((e, index) =>
+                    <span key={index}>{e.addressLine1 || e.addressLine2 || ''}, {e.postalCode || ''} {e.city || ''}, {e.country || ''}</span>
                   )
                 }
               </li>

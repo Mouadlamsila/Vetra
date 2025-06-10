@@ -77,6 +77,14 @@ export default {
         title: "Confirmer l'approbation",
         message: "Êtes-vous sûr de vouloir approuver la boutique \"{{name}}\" ? Une notification sera envoyée au propriétaire."
       },
+      disable: {
+        title: "Confirmer la désactivation",
+        message: "Êtes-vous sûr de vouloir désactiver la boutique \"{{name}}\" ? Elle ne sera plus visible sur la marketplace."
+      },
+      enable: {
+        title: "Confirmer l'activation",
+        message: "Êtes-vous sûr de vouloir activer la boutique \"{{name}}\" ? Elle sera à nouveau visible sur la marketplace.",
+      },
       reject: {
         title: "Confirmer le rejet",
         message: "Êtes-vous sûr de vouloir rejeter la boutique \"{{name}}\" ? Une notification sera envoyée au propriétaire."
@@ -100,7 +108,9 @@ export default {
         suspend: "Suspendre",
         delete: "Supprimer",
         activate: "Activer",
-        cancel: "Annuler"
+        cancel: "Annuler",
+        disable: "Désactiver",
+        enable: "Activer la boutique"
       }
     }
   }

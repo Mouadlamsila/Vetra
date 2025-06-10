@@ -112,6 +112,18 @@
       "relation": "oneToMany",
       "target": "api::favorite-product.favorite-product",
       "mappedBy": "product"
+    },
+    "checkout_sessions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::checkout-session.checkout-session",
+      "mappedBy": "products"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::order.order",
+      "mappedBy": "products"
     }
   }
 }

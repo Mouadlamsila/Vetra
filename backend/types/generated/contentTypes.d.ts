@@ -439,7 +439,6 @@ export interface ApiBoutiqueBoutique extends Struct.CollectionTypeSchema {
     >;
     logo: Schema.Attribute.Media<'images'>;
     nom: Schema.Attribute.String & Schema.Attribute.Required;
-    orders: Schema.Attribute.Relation<'oneToMany', 'api::order.order'>;
     owner: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
@@ -560,6 +559,52 @@ export interface ApiCategorieProductCategorieProduct
   };
 }
 
+export interface ApiCheckoutSessionCheckoutSession
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'checkout_sessions';
+  info: {
+    displayName: 'checkout_sessions';
+    pluralName: 'checkout-sessions';
+    singularName: 'checkout-session';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'usd'>;
+    customer: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::checkout-session.checkout-session'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Relation<'oneToOne', 'api::order.order'>;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    quantities: Schema.Attribute.JSON;
+    sessionId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    shippingAddress: Schema.Attribute.JSON;
+    status_checkout: Schema.Attribute.Enumeration<
+      ['pending', 'completed', 'failed']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
   collectionName: 'countries';
   info: {
@@ -644,7 +689,6 @@ export interface ApiOrderItemOrderItem extends Struct.CollectionTypeSchema {
       'api::order-item.order-item'
     > &
       Schema.Attribute.Private;
-    order: Schema.Attribute.Relation<'manyToOne', 'api::order.order'>;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     productSnapshot: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
@@ -669,33 +713,37 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    boutique: Schema.Attribute.Relation<'manyToOne', 'api::boutique.boutique'>;
+    checkoutSession: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::checkout-session.checkout-session'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    customer: Schema.Attribute.Relation<
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
-    discountAmount: Schema.Attribute.Decimal;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'usd'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
-    notes: Schema.Attribute.Text & Schema.Attribute.Required;
-    order_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::order-item.order-item'
-    >;
+    orderNumber: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    paymentStatus: Schema.Attribute.Enumeration<['pending', 'paid', 'failed']> &
+      Schema.Attribute.DefaultTo<'pending'>;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
-    shippingAmount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    quantities: Schema.Attribute.JSON;
+    shippingAddress: Schema.Attribute.JSON;
     statusOrder: Schema.Attribute.Enumeration<
-      ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
+      ['pending', 'processing', 'completed', 'cancelled']
     >;
-    taxAmount: Schema.Attribute.Decimal;
     totalAmount: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -716,6 +764,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     category: Schema.Attribute.Relation<
       'oneToOne',
       'api::categorie-product.categorie-product'
+    >;
+    checkout_sessions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::checkout-session.checkout-session'
     >;
     comparePrice: Schema.Attribute.Decimal;
     cost: Schema.Attribute.Decimal;
@@ -746,6 +798,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::order-item.order-item'
     >;
+    orders: Schema.Attribute.Relation<'manyToMany', 'api::order.order'>;
     prix: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     rating_products: Schema.Attribute.Relation<
@@ -1326,6 +1379,10 @@ export interface PluginUsersPermissionsUser
       'api::business-surveys.business-surveys'
     >;
     carts: Schema.Attribute.Relation<'oneToMany', 'api::cart.cart'>;
+    checkout_sessions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::checkout-session.checkout-session'
+    >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
@@ -1396,6 +1453,7 @@ declare module '@strapi/strapi' {
       'api::business-surveys.business-surveys': ApiBusinessSurveysBusinessSurveys;
       'api::cart.cart': ApiCartCart;
       'api::categorie-product.categorie-product': ApiCategorieProductCategorieProduct;
+      'api::checkout-session.checkout-session': ApiCheckoutSessionCheckoutSession;
       'api::country.country': ApiCountryCountry;
       'api::favorite-product.favorite-product': ApiFavoriteProductFavoriteProduct;
       'api::order-item.order-item': ApiOrderItemOrderItem;

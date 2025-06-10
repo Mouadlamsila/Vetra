@@ -7,6 +7,10 @@ import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useTranslation } from "react-i18next"
 import { changeLanguage } from "../../../i18n/i18n"
+import { loadStripe } from '@stripe/stripe-js'
+import stripePromise from '../../../utils/stripe'
+import { Elements } from '@stripe/react-stripe-js'
+import CheckoutForm from '../../../components/CheckoutForm'
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -29,6 +33,10 @@ export default function Header() {
   const [favorites, setFavorites] = useState([])
   const [favoritesOpen, setFavoritesOpen] = useState(false)
   const [favoritesLoading, setFavoritesLoading] = useState(true)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [checkoutAmount, setCheckoutAmount] = useState(0);
+  const [orderId, setOrderId] = useState(null);
 
   const handleLanguageChange = (lng) => {
     changeLanguage(lng);
@@ -236,6 +244,101 @@ export default function Header() {
         draggable: true,
       });
     }
+  };
+
+  const handleCheckout = async () => {
+    const userId = localStorage.getItem("IDUser")
+    if (!userId) {
+      toast.error(t('header.loginRequired'))
+      return
+    }
+
+    if (cartItems.length === 0) {
+      toast.error(t('header.emptyCart'))
+      return
+    }
+
+    setIsProcessingPayment(true)
+
+    try {
+      // Generate a unique order number
+      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+      // Calculate total amount
+      const totalAmount = cartItems.reduce((sum, item) => {
+        const product = item?.product;
+        return sum + (product?.prix || 0) * (item?.qte || 0);
+      }, 0);
+
+      // Create the order first
+      const orderData = {
+        data: {
+          statusOrder: "pending",
+          totalAmount: totalAmount,
+          user: parseInt(userId),
+          orderNumber: orderNumber,
+          currency: 'usd',
+          products: cartItems.map(item => parseInt(item.product.id)),
+          quantities: cartItems.reduce((acc, item) => ({
+            ...acc,
+            [item.product.id]: parseInt(item.qte)
+          }), {}),
+          shippingAddress: {
+            line1: user?.address?.line1 || '',
+            line2: user?.address?.line2 || '',
+            city: user?.address?.city || '',
+            state: user?.address?.state || '',
+            postal_code: user?.address?.postal_code || '',
+            country: user?.address?.country || 'US'
+          },
+          paymentStatus: "pending"
+        }
+      };
+
+      // Create the order
+      const orderResponse = await axios.post('http://localhost:1337/api/orders', orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      console.log('Order created:', orderResponse.data);
+      
+      // Set the order ID and amount for the checkout form
+      setOrderId(orderResponse.data.data.id);
+      setCheckoutAmount(totalAmount);
+      setShowCheckoutForm(true);
+      setCartOpen(false); // Close the cart sidebar
+      
+    } catch (error) {
+      console.error('Error in checkout process:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error details:', error.response.data.error);
+      }
+      toast.error(t('header.paymentError'));
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (response) => {
+    try {
+      // Show success message
+      toast.success(t('header.paymentSuccess'));
+      
+      // Redirect to orders page
+      window.location.href = '/view/orders';
+    } catch (error) {
+      console.error('Error handling payment success:', error);
+      toast.error(t('header.paymentError'));
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowCheckoutForm(false);
   };
 
   return (
@@ -618,10 +721,14 @@ export default function Header() {
                                       {t('header.continue')}
                                     </Link>
                                   </button>
-                                  <button className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md">
-                                    <Link to="/checkout" className="w-full">
-                                      {t('header.checkout')}
-                                    </Link>
+                                  <button 
+                                    onClick={handleCheckout}
+                                    disabled={isProcessingPayment}
+                                    className={`bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md ${
+                                      isProcessingPayment ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                                  >
+                                    {isProcessingPayment ? t('header.processing') : t('header.checkout')}
                                   </button>
                                 </div>
                               </div>
@@ -721,56 +828,46 @@ export default function Header() {
                           <Link
                             key={category.id}
                             to={`/view/categories/${category.documentId}`}
-                            className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                            onClick={() => setMobileMenuOpen(false)}
                           >
                             {category.name}
                           </Link>
                         ))}
                       </div>
                     </div>
-
-                    <Link
-                      to="/promotions"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {t('header.promotions')}
-                    </Link>
-
-                    <Link
-                      to="/view/contact"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {t('header.contact')}
-                    </Link>
                   </nav>
-
-                  <div className="mt-6 px-3">
-                    <div className="space-y-3">
-                      <Link
-                        to="/login"
-                        className="block w-full bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {t('header.login')}
-                      </Link>
-                      <Link
-                        to="/register"
-                        className="block w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-center"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {t('header.signup')}
-                      </Link>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Add Stripe Elements Provider and Checkout Form */}
+      {showCheckoutForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">{t('checkout.title')}</h2>
+              <button
+                onClick={handlePaymentCancel}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <Elements stripe={stripePromise}>
+              <CheckoutForm
+                amount={checkoutAmount}
+                onSuccess={handlePaymentSuccess}
+                onCancel={handlePaymentCancel}
+                orderId={orderId}
+                userData={user}
+                cartItems={cartItems}
+              />
+            </Elements>
+          </div>
+        </div>
+      )}
     </header>
-  )
+  );
 }
