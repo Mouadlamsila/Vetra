@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
+import { generatePaymentReceipt } from '../../../utils/pdfGenerator'
 
 export default function PaymentsPage() {
   const { t } = useTranslation()
@@ -130,13 +131,11 @@ export default function PaymentsPage() {
     }
   }
 
-  // Add handleDownloadReceipt function
+  // Update handleDownloadReceipt function
   const handleDownloadReceipt = (paymentId) => {
     const payment = payments.find(p => p.id === paymentId)
     if (payment) {
-      // You can implement your download receipt logic here
-      console.log("Download receipt for payment:", payment)
-      // For example, you could generate and download a PDF receipt
+      generatePaymentReceipt(payment)
     }
   }
 

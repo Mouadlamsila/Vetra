@@ -20,6 +20,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import stripePromise from '../../../utils/stripe'
 import CheckoutForm from '../../../components/CheckoutForm'
 import { toast } from 'react-hot-toast'
+import { generateOrderInvoice } from '../../../utils/pdfGenerator'
 
 export default function OrdersPage() {
   const { t } = useTranslation()
@@ -145,8 +146,10 @@ export default function OrdersPage() {
   }
 
   const handleDownloadInvoice = (orderId) => {
-    console.log("Download invoice:", orderId)
-    setOpenActionMenu(null)
+    const order = orders.find(o => o.id === orderId)
+    if (order) {
+      generateOrderInvoice(order)
+    }
   }
 
   const resetFilters = () => {
