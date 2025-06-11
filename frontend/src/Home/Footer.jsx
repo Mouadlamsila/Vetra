@@ -68,9 +68,9 @@ const Footer = () => {
                                             offset={-100}
                                             className="text-gray-300 hover:text-[#c8c2fd] transition-colors flex items-center "
                                         >
-                                             <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
-                                             {link.name}
-                                        </ScrollLink> 
+                                            <ChevronRight className="h-4 w-4 mr-1 text-[#c8c2fd]" />
+                                            {link.name}
+                                        </ScrollLink>
                                         :
                                         <Link
                                             to={link.url}
@@ -117,24 +117,25 @@ const Footer = () => {
                         <p className="text-gray-300 mb-6">{t('joinUsers')}</p>
                         {/* Séparateur */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            {userId ?  <button
+                            {userId ? <button
                                 className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
-                                onClick={() => {window.location.href = '/controll/Profil' ; localStorage.setItem("location", "login")}}
+                                onClick={() => { window.location.href = '/controll/Profil'; localStorage.setItem("location", "login") }}
                             >
                                 {t('dashboard.profile')}
-                            </button>  : 
-                            <div className=""><button
-                                className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2 rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
-                                onClick={() => {window.location.href = '/login' ; localStorage.setItem("location", "login")}}
-                            >
-                                {t('Login')}
-                            </button>
-                            <button
-                                className="bg-[#6D28D9] hover:bg-[#6D28D9]/90 hover:text-[#c8c2fd] transition-all ease-in-out duration-300 px-6 py-2 rounded-lg text-[#c8c2fd] font-medium w-full sm:w-auto"
-                                onClick={() => {window.location.href = '/register' ; localStorage.setItem("location", "login")}}
-                            >
-                                {t('createAccount')}
-                            </button></div> 
+                            </button> :
+                                <div className=" flex flex-col sm:flex-row gap-2">
+                                    <button
+                                        className="bg-[#c8c2fd] text-[#6D28D9] hover:bg-[#c8c2fd]/90 hover:text-[#1e3a8a] px-6 py-2  rounded-lg font-medium transition-all ease-in-out duration-300 w-full sm:w-auto"
+                                        onClick={() => { window.location.href = '/login'; localStorage.setItem("location", "login") }}
+                                    >
+                                        {t('Login')}
+                                    </button>
+                                    <button
+                                        className="bg-[#6D28D9] hover:bg-[#6D28D9]/90 hover:text-[#c8c2fd] transition-all ease-in-out duration-300 px-6 py-2 rounded-lg text-[#c8c2fd] font-medium w-full sm:w-auto"
+                                        onClick={() => { window.location.href = '/register'; localStorage.setItem("location", "login") }}
+                                    >
+                                        {t('createAccount')}
+                                    </button></div>
                             }
                         </div>
                     </div>

@@ -125,7 +125,7 @@ export default function Stores() {
                                         <Eye size={18} /> {t('store.stores.view')}
                                     </button>
                                 </Link>
-                                <Link to={ `/controll/design/${store.documentId}` } >design</Link>
+                               
                                 <button 
                                     onClick={() => navigate(`/controll/edit-store/${store.documentId}`)}
                                     className="w-full sm:w-auto bg-white border border-gray-300 flex items-center justify-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"

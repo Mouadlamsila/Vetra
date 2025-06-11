@@ -1,15 +1,23 @@
 const productAr = {
     products: {
-        title: "منتجاتي",
-        subtitle: "إدارة منتجاتك للبيع",
-        createProduct: "إضافة منتج",
+        title: "المنتجات",
+        subtitle: "إدارة منتجاتك",
+        infoMessage: "قم بإدارة مخزون منتجاتك هنا",
         search: "البحث عن منتج...",
+        filters: "تصفية",
+        createProduct: "إضافة منتج",
+        filterByStore: "تصفية حسب المتجر",
+        filterByCategory: "تصفية حسب الفئة",
         allStores: "جميع المتاجر",
         allCategories: "جميع الفئات",
-        noProducts: "لم يتم العثور على منتجات",
-        filters: "تصفية",
-        infoMessage: " هنا يمكنك إدارة جميع المنتجات",
-
+        resetFilters: "إعادة تعيين التصفية",
+        noProductsFound: "لم يتم العثور على منتجات",
+        tryDifferentFilters: "جرب تصفية مختلفة",
+        productsFound: "منتج",
+        noName: "بدون اسم",
+        uncategorized: "غير مصنف",
+        unassigned: "غير معين",
+        loading: "جاري التحميل...",
         table: {
             product: "المنتج",
             id: "المعرف",
@@ -26,11 +34,19 @@ const productAr = {
             outOfStock: "غير متوفر"
         },
         actions: {
-            name: "الإجراءات",
             edit: "تعديل",
-            manageStock: "إدارة المخزون",
-            delete: "حذف",
-            
+            delete: "حذف"
+        },
+        lowStockAlert: "تنبيه المخزون المنخفض",
+        swal: {
+            deleteTitle: "هل أنت متأكد؟",
+            deleteText: "هل أنت متأكد من حذف هذا المنتج؟",
+            confirmButtonText: "نعم، احذف!",
+            cancelButtonText: "إلغاء",
+            successTitle: "تم الحذف!",
+            successText: "تم حذف المنتج بنجاح",
+            errorTitle: "خطأ!",
+            errorText: "حدث خطأ أثناء حذف المنتج. يرجى المحاولة مرة أخرى."
         },
         categories: {
             clothing: "ملابس",
@@ -39,9 +55,6 @@ const productAr = {
             beauty: "جمال",
             other: "أخرى"
         },
-        lowStockAlert: "تنبيه المخزون المنخفض",
-        unassigned: "متجر غير معين",
-        uncategorized: "غير مصنف",
         loading: "جاري تحميل المنتجات...",
         filterByStore: "تصفية بالمتجر",
         filterByCategory: "تصفية بالفئة",

@@ -302,7 +302,24 @@ const ar = {
   product: productAr,
   orders: ordersAr,
   stats: statsAr,
-  payment: paymentAr,
+  payment: {
+    ...paymentAr,
+    errors: {
+      invalidCardNumber: "رقم بطاقتك غير صالح",
+      invalidExpiryDate: "تاريخ انتهاء صلاحية بطاقتك غير صالح",
+      invalidCVC: "رمز الأمان الخاص ببطاقتك غير صالح",
+      cardDeclined: "تم رفض بطاقتك",
+      processingError: "حدث خطأ أثناء معالجة بطاقتك",
+      incompleteCardNumber: "الرجاء إدخال رقم بطاقتك",
+      incompleteExpiryDate: "الرجاء إدخال تاريخ انتهاء صلاحية بطاقتك",
+      incompleteCVC: "الرجاء إدخال رمز الأمان الخاص ببطاقتك",
+      incompleteName: "الرجاء إدخال الاسم الموجود على بطاقتك",
+      incompleteAddress: "الرجاء إدخال عنوان الفواتير الخاص بك",
+      incompleteNumber: "رقم بطاقتك غير مكتمل",
+      incompleteExpiry: "تاريخ انتهاء صلاحية بطاقتك غير مكتمل",
+      incompleteSecurityCode: "رمز الأمان الخاص ببطاقتك غير مكتمل"
+    }
+  },
   help: helpAr,
   settings: settingsAr,
   owner: ownerAr,
@@ -360,6 +377,7 @@ const ar = {
     addedToCart: "تمت إضافة المنتج إلى السلة",
     addedToFavorites: "تمت إضافة المنتج إلى المفضلة",
     removeFromCart: "إزالة من السلة",
+    processing: "جاري المعالجة...",
   },
   checkout: {
     title: 'الدفع',
@@ -429,6 +447,12 @@ const ar = {
     line2Required: 'سطر العنوان 2 مطلوب. يرجى التحقق من عنوانك.',
     quantityRequired: 'الكمية مطلوبة. يرجى التحقق من الكمية.',
     productRequired: 'المنتج مطلوب. يرجى التحقق من المنتج.',
+  },
+  view: {
+    productDetails: {
+      loading: "جاري التحميل...",
+      productNotFound: "المنتج غير موجود"
+    }
   },
 };
 export default ar; 

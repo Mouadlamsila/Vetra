@@ -127,14 +127,14 @@ export default function ProductsPage() {
 
   const handleDeleteProduct = async (productId) => {
     const result = await Swal.fire({
-      title: "Êtes-vous sûr?",
-      text: "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      title: t('product.products.swal.deleteTitle'),
+      text: t('product.products.swal.deleteText'),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#6D28D9",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Oui, supprimer!",
-      cancelButtonText: "Annuler",
+      confirmButtonText: t('product.products.swal.confirmButtonText'),
+      cancelButtonText: t('product.products.swal.cancelButtonText'),
     })
 
     if (result.isConfirmed) {
@@ -154,7 +154,7 @@ export default function ProductsPage() {
         setProducts((prevProducts) => prevProducts?.filter((product) => product.documentId !== productId))
 
         // Show success toast
-        toast.success("Produit supprimé avec succès", {
+        toast.success(t('product.products.swal.successText'), {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -167,7 +167,7 @@ export default function ProductsPage() {
         if (err.response && err.response.status === 401) {
           navigate("/login")
         } else {
-          toast.error("Erreur lors de la suppression du produit. Veuillez réessayer.", {
+          toast.error(t('product.products.swal.errorText'), {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,

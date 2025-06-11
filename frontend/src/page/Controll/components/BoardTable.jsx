@@ -24,7 +24,6 @@ export default function BoardTable() {
                 // Fetch stores
                 const storesResponse = await axios.get(`http://localhost:1337/api/boutiques?filters[owner][id][$eq]=${userId}`);
                 const stores = storesResponse.data.data;
-                console.log(stores);
                 // Fetch products
                 const productsResponse = await axios.get(`http://localhost:1337/api/products?filters[boutique][owner][id][$eq]=${userId}`);
                 const products = productsResponse.data.data;
@@ -186,10 +185,10 @@ export default function BoardTable() {
                         <p className="text-sm text-gray-500">{t('dashboard.last5Orders')}</p>
                     </div>
                     <div className="h-[1px] bg-[#c8c2fd] w-full"></div>
-                    <div className="h-[300px] grid gap-2 px-4 py-2 w-full overflow-y-auto">
+                    <div className="h-[300px]  gap-2  space-y-3 px-4 py-4 w-full overflow-y-auto">
                         {recentOrders.length > 0 ? (
                             recentOrders.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between">
+                                <div key={index} className="flex  items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 bg-[#c8c2fd]/30 text-[#6D28D9] rounded-full flex items-center justify-center">
                                             <ShoppingBag className="size-4" />

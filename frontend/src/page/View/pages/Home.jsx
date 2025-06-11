@@ -71,15 +71,15 @@ export default function HomeView() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen flex items-center justify-center">{t('view.home.loading')}</div>
   }
 
   if (error) {
-    return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error}</div>
+    return <div className="min-h-screen flex items-center justify-center text-red-500">{t('view.home.error', { error })}</div>
   }
 
   if (!boutique) {
-    return <div className="min-h-screen flex items-center justify-center">No boutique found</div>
+    return <div className="min-h-screen flex items-center justify-center">{t('view.home.noBoutiqueFound')}</div>
   }
 
   // Filter products based on active tab

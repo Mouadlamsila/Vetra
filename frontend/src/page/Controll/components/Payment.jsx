@@ -464,8 +464,8 @@ export default function PaymentsPage() {
 
       {/* Payment Details Modal */}
       {isDetailsModalOpen && selectedPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 relative">
+        <div className="fixed  inset-0 bg-black/55 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-2xl w-full sm:p-10 p-6 relative my-8">
             <button
               onClick={() => setIsDetailsModalOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -475,7 +475,7 @@ export default function PaymentsPage() {
 
             {/* Payment Header */}
             <div className="mb-6">
-              <div className="flex justify-between items-start">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-[#1e3a8a] mb-1">
                     {t('payment.payment.actions.viewDetails')} - {selectedPayment.sessionId}
@@ -496,10 +496,10 @@ export default function PaymentsPage() {
               {/* Payment Information */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
-                  <CreditCard className="h-4 w-4 mr-2" />
+                  <CreditCard className={`h-4 w-4 ${lang === 'ar' ? 'ml-2' : 'mr-2'}`} />
                   {t('payment.payment.table.headers.paymentInfo')}
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">{t('payment.payment.table.headers.amount')}</p>
                     <p className="font-medium text-[#6D28D9]">
@@ -517,10 +517,10 @@ export default function PaymentsPage() {
               {selectedPayment.customer && (
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
-                    <User className="h-4 w-4 mr-2" />
+                    <User className={`h-4 w-4 ${lang === 'ar' ? 'ml-2' : 'mr-2'}`} />
                     {t('payment.payment.table.headers.customerInfo')}
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-500">{t('payment.payment.table.headers.name')}</p>
                       <p className="font-medium">{selectedPayment.customer.name}</p>
@@ -537,7 +537,7 @@ export default function PaymentsPage() {
               {selectedPayment.shippingAddress && (
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-medium text-[#1e3a8a] mb-3 flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" />
+                    <MapPin className={`h-4 w-4 ${lang === 'ar' ? 'ml-2' : 'mr-2'}`} />
                     {t('payment.payment.table.headers.shippingAddress')}
                   </h3>
                   <div className="space-y-2">
@@ -558,7 +558,7 @@ export default function PaymentsPage() {
                 <div className="border rounded-lg overflow-hidden">
                   <div className="bg-gray-50 px-4 py-3 border-b">
                     <h3 className="font-medium text-[#1e3a8a] flex items-center">
-                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      <ShoppingBag className={`h-4 w-4 ${lang === 'ar' ? 'ml-2' : 'mr-2'}`} />
                       {t('payment.payment.table.headers.products')}
                     </h3>
                   </div>
@@ -569,7 +569,7 @@ export default function PaymentsPage() {
                         if (!product) return null;
                         
                         return (
-                          <div key={product.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                          <div key={product.id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-gray-50 transition-colors">
                             <div className="flex items-center space-x-4">
                               <img
                                 src={product.imgMain?.url ? 
@@ -613,17 +613,17 @@ export default function PaymentsPage() {
               )}
 
               {/* Actions */}
-              <div className="flex justify-end space-x-3 pt-4 border-t">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
                 <button
                   onClick={() => handleDownloadReceipt(selectedPayment.id)}
-                  className="inline-flex items-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
+                  className="inline-flex items-center justify-center px-4 py-2 border border-[#6D28D9] text-[#6D28D9] rounded-lg hover:bg-[#6D28D9]/10 transition-colors"
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className={`h-4 w-4 ${lang === 'ar' ? 'ml-2' : 'mr-2'}`} />
                   {t('payment.payment.actions.downloadReceipt')}
                 </button>
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
-                  className="inline-flex items-center px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors"
+                  className="inline-flex items-center justify-center px-4 py-2 bg-[#6D28D9] text-white rounded-lg hover:bg-[#6D28D9]/90 transition-colors"
                 >
                   {t('payment.payment.actions.close')}
                 </button>

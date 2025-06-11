@@ -46,8 +46,17 @@ const productFr = {
     productsFound: "Produits trouvés",
     noProductsFound: "Aucun produit trouvé",
     tryDifferentFilters: "Essayez différents filtres",
-    
-    
+    noName: "Sans nom",
+    swal: {
+      deleteTitle: "Êtes-vous sûr ?",
+      deleteText: "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      confirmButtonText: "Oui, supprimer !",
+      cancelButtonText: "Annuler",
+      successTitle: "Supprimé !",
+      successText: "Le produit a été supprimé avec succès",
+      errorTitle: "Erreur !",
+      errorText: "Une erreur s'est produite lors de la suppression du produit. Veuillez réessayer."
+    }
   },
   createProduct: {
     title: "Ajouter un Nouveau Produit",

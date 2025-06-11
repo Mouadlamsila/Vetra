@@ -333,12 +333,76 @@ export default function Header() {
       window.location.href = '/view/orders';
     } catch (error) {
       console.error('Error handling payment success:', error);
-      toast.error(t('header.paymentError'));
+      if (error.type === 'card_error') {
+        switch (error.code) {
+          case 'invalid_number':
+            toast.error(t('payment.errors.invalidCardNumber'));
+            break;
+          case 'incomplete_number':
+            toast.error(t('payment.errors.incompleteCardNumber'));
+            break;
+          case 'invalid_expiry':
+            toast.error(t('payment.errors.invalidExpiryDate'));
+            break;
+          case 'incomplete_expiry':
+            toast.error(t('payment.errors.incompleteExpiryDate'));
+            break;
+          case 'invalid_cvc':
+            toast.error(t('payment.errors.invalidCVC'));
+            break;
+          case 'incomplete_cvc':
+            toast.error(t('payment.errors.incompleteCVC'));
+            break;
+          case 'card_declined':
+            toast.error(t('payment.errors.cardDeclined'));
+            break;
+          default:
+            toast.error(t('payment.errors.processingError'));
+        }
+      } else if (error.message?.includes('incomplete')) {
+        // Handle Stripe's default incomplete messages
+        if (error.message.includes('card number')) {
+          toast.error(t('payment.errors.incompleteCardNumber'));
+        } else if (error.message.includes('expiry')) {
+          toast.error(t('payment.errors.incompleteExpiryDate'));
+        } else if (error.message.includes('cvc')) {
+          toast.error(t('payment.errors.incompleteCVC'));
+        } else {
+          toast.error(t('payment.errors.processingError'));
+        }
+      } else {
+        toast.error(t('payment.errors.processingError'));
+      }
     }
   };
 
   const handlePaymentCancel = () => {
     setShowCheckoutForm(false);
+  };
+
+  // Add validation function for payment form
+  const validatePaymentForm = (formData) => {
+    if (!formData.cardNumber) {
+      toast.error(t('payment.errors.incompleteCardNumber'));
+      return false;
+    }
+    if (!formData.expiryDate) {
+      toast.error(t('payment.errors.incompleteExpiryDate'));
+      return false;
+    }
+    if (!formData.cvc) {
+      toast.error(t('payment.errors.incompleteCVC'));
+      return false;
+    }
+    if (!formData.name) {
+      toast.error(t('payment.errors.incompleteName'));
+      return false;
+    }
+    if (!formData.address) {
+      toast.error(t('payment.errors.incompleteAddress'));
+      return false;
+    }
+    return true;
   };
 
   return (

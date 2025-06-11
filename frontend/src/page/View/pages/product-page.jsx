@@ -537,7 +537,46 @@ export default function ProductPage() {
       
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      toast.error(t('view.productDetails.paymentError'));
+      if (error.type === 'card_error') {
+        switch (error.code) {
+          case 'invalid_number':
+            toast.error(t('payment.errors.invalidCardNumber'));
+            break;
+          case 'incomplete_number':
+            toast.error(t('payment.errors.incompleteCardNumber'));
+            break;
+          case 'invalid_expiry':
+            toast.error(t('payment.errors.invalidExpiryDate'));
+            break;
+          case 'incomplete_expiry':
+            toast.error(t('payment.errors.incompleteExpiryDate'));
+            break;
+          case 'invalid_cvc':
+            toast.error(t('payment.errors.invalidCVC'));
+            break;
+          case 'incomplete_cvc':
+            toast.error(t('payment.errors.incompleteCVC'));
+            break;
+          case 'card_declined':
+            toast.error(t('payment.errors.cardDeclined'));
+            break;
+          default:
+            toast.error(t('payment.errors.processingError'));
+        }
+      } else if (error.message?.includes('incomplete')) {
+        // Handle Stripe's default incomplete messages
+        if (error.message.includes('card number')) {
+          toast.error(t('payment.errors.incompleteCardNumber'));
+        } else if (error.message.includes('expiry')) {
+          toast.error(t('payment.errors.incompleteExpiryDate'));
+        } else if (error.message.includes('cvc')) {
+          toast.error(t('payment.errors.incompleteCVC'));
+        } else {
+          toast.error(t('payment.errors.processingError'));
+        }
+      } else {
+        toast.error(t('payment.errors.processingError'));
+      }
     }
   };
 
@@ -545,12 +584,37 @@ export default function ProductPage() {
     setShowCheckoutForm(false);
   };
 
+  // Add validation function for payment form
+  const validatePaymentForm = (formData) => {
+    if (!formData.cardNumber) {
+      toast.error(t('payment.errors.incompleteCardNumber'));
+      return false;
+    }
+    if (!formData.expiryDate) {
+      toast.error(t('payment.errors.incompleteExpiryDate'));
+      return false;
+    }
+    if (!formData.cvc) {
+      toast.error(t('payment.errors.incompleteCVC'));
+      return false;
+    }
+    if (!formData.name) {
+      toast.error(t('payment.errors.incompleteName'));
+      return false;
+    }
+    if (!formData.address) {
+      toast.error(t('payment.errors.incompleteAddress'));
+      return false;
+    }
+    return true;
+  };
+
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+    return <div className="flex justify-center items-center min-h-screen">{t('view.productDetails.loading')}</div>
   }
 
   if (!product) {
-    return <div className="flex justify-center items-center min-h-screen">Product not found</div>
+    return <div className="flex justify-center items-center min-h-screen">{t('view.productDetails.productNotFound')}</div>
   }
 
   const incrementQuantity = () => {
@@ -862,7 +926,7 @@ export default function ProductPage() {
 
       {/* Rating Modal */}
       {showRatingModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-[#1e3a8a]/40 bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-lg w-full p-6 relative">
             <button
               onClick={() => {
@@ -870,7 +934,7 @@ export default function ProductPage() {
                 setSelectedProduct(null)
                 setRatingForm({ stars: 0, opinion: "" })
               }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600`}
             >
               <X className="h-5 w-5" />
             </button>
@@ -942,11 +1006,11 @@ export default function ProductPage() {
 
       {/* Add Stripe Elements Provider and Checkout Form */}
       {showCheckoutForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-[#1e3a8a]/40 bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-lg w-full p-6 relative">
             <button
               onClick={handlePaymentCancel}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600`}
             >
               <X className="h-5 w-5" />
             </button>

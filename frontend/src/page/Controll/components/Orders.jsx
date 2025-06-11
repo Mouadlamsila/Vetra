@@ -16,9 +16,6 @@ import {
 } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
-import { Elements } from '@stripe/react-stripe-js'
-import stripePromise from '../../../utils/stripe'
-import CheckoutForm from '../../../components/CheckoutForm'
 import { toast } from 'react-hot-toast'
 import { generateOrderInvoice } from '../../../utils/pdfGenerator'
 
@@ -300,7 +297,6 @@ export default function OrdersPage() {
     )
   }
 
-  console.log(orders)
 
   return (
     <div className="space-y-6 p-4 md:p-6 bg-white">

@@ -298,7 +298,24 @@ const fr = {
   product: productFr,
   orders: ordersFr,
   stats: statsFr,
-  payment: paymentFr,
+  payment: {
+    ...paymentFr,
+    errors: {
+      invalidCardNumber: "Votre numéro de carte est invalide",
+      invalidExpiryDate: "La date d'expiration de votre carte est invalide",
+      invalidCVC: "Le code de sécurité de votre carte est invalide",
+      cardDeclined: "Votre carte a été refusée",
+      processingError: "Une erreur s'est produite lors du traitement de votre carte",
+      incompleteCardNumber: "Veuillez entrer votre numéro de carte",
+      incompleteExpiryDate: "Veuillez entrer la date d'expiration de votre carte",
+      incompleteCVC: "Veuillez entrer le code de sécurité de votre carte",
+      incompleteName: "Veuillez entrer le nom figurant sur votre carte",
+      incompleteAddress: "Veuillez entrer votre adresse de facturation",
+      incompleteNumber: "Votre numéro de carte est incomplet",
+      incompleteExpiry: "La date d'expiration de votre carte est incomplète",
+      incompleteSecurityCode: "Le code de sécurité de votre carte est incomplet"
+    }
+  },
   help: helpFr,
   settings: settingsFr,
   owner: ownerFr,
@@ -356,6 +373,7 @@ const fr = {
     addedToCart: "Produit ajouté au panier",
     addedToFavorites: "Produit ajouté aux favoris",
     removedFromCart: "Produit retiré du panier",
+    processing: "Traitement en cours...",
   },
   checkout: {
     title: 'Paiement',
@@ -425,6 +443,12 @@ const fr = {
     line2Required: 'Ligne d\'adresse 2 requise. Veuillez vérifier votre adresse.',
     quantityRequired: 'Quantité requise. Veuillez vérifier votre quantité.',
     productRequired: 'Produit requis. Veuillez vérifier votre produit.',
+  },
+  view: {
+    productDetails: {
+      loading: "Chargement...",
+      productNotFound: "Produit non trouvé"
+    }
   },
 };
 

@@ -298,7 +298,24 @@ const en = {
   product: productEn,
   orders: ordersEn,
   stats: statsEn,
-  payment: paymentEn,
+  payment: {
+    ...paymentEn,
+    errors: {
+      invalidCardNumber: "Your card number is invalid",
+      invalidExpiryDate: "Your card's expiration date is invalid",
+      invalidCVC: "Your card's security code is invalid",
+      cardDeclined: "Your card was declined",
+      processingError: "An error occurred while processing your card",
+      incompleteCardNumber: "Please enter your card number",
+      incompleteExpiryDate: "Please enter your card's expiration date",
+      incompleteCVC: "Please enter your card's security code",
+      incompleteName: "Please enter the name on your card",
+      incompleteAddress: "Please enter your billing address",
+      incompleteNumber: "Your card number is incomplete",
+      incompleteExpiry: "Your card's expiration date is incomplete",
+      incompleteSecurityCode: "Your card's security code is incomplete"
+    }
+  },
   help: helpEn,
   settings: settingsEn,
   owner: ownerEn,
@@ -356,6 +373,7 @@ const en = {
     addedToCart: "Product added to cart",
     addedToFavorites: "Product added to favorites",
     removedFromCart: "Product removed from cart",
+    processing: "Processing...",
   },
   checkout: {
     title: 'Checkout',
@@ -425,6 +443,12 @@ const en = {
     line2Required: 'Address line 2 is required. Please check your address.',
     quantityRequired: 'Quantity is required. Please check your quantity.',
     productRequired: 'Product is required. Please check your product.',
+  },
+  view: {
+    productDetails: {
+      loading: "Loading...",
+      productNotFound: "Product not found"
+    }
   },
 };
 

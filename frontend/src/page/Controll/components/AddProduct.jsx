@@ -118,7 +118,6 @@ export default function AddProductPage() {
       fetchProductData(id)
     }
   }, [id])
-  console.log(imgsAdditional)
   const fetchProductData = async (productId) => {
     try {
       setLoading(true)

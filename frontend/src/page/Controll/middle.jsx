@@ -13,7 +13,7 @@ import HelpPage from "./components/Help";
 import Stores from "./components/Stores";
 import EditProduct from "./components/EditProduct";
 import EditStore from "./components/EditStore";
-import DesignStore from "./components/designStore";
+
 
 export default function Middle() {
     return (
@@ -32,9 +32,7 @@ export default function Middle() {
                 <Route path="/Help" element={<HelpPage />} />
                 <Route path="/edit-product/:id" element={<EditProduct />} />
                 <Route path="/edit-store/:id" element={<EditStore />} />
-                <Route path="/design/:id" element={<DesignStore />} />
             </Routes>
-
         </div>
     )
 }
