@@ -602,7 +602,7 @@ export default function Profile() {
           )}
         </div>
       </div>
-      {userRole === "User" && (
+      {userRole === "user" && (
         <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
           <div className="flex items-start space-x-4">
             <div className="bg-purple-100 p-3 rounded-lg">

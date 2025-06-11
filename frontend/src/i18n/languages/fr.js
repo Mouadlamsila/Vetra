@@ -447,7 +447,9 @@ const fr = {
   view: {
     productDetails: {
       loading: "Chargement...",
-      productNotFound: "Produit non trouvé"
+      productNotFound: "Produit non trouvé",
+      shareSuccess: "Produit partagé avec succès !",
+      shareError: "Erreur lors du partage du produit",
     }
   },
 };

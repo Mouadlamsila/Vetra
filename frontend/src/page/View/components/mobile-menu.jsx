@@ -73,13 +73,6 @@ export function MobileMenu() {
                       </div>
                     </div>
 
-                    <Link
-                      to="/promotions"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {t('view.header.promotions')}
-                    </Link>
 
                     <Link
                       to="/new-arrivals"

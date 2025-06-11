@@ -340,7 +340,7 @@ export default function Stores() {
 
       {/* Filters Section */}
       <div className="container mx-auto px-4 mb-8">
-        <div className="bg-white h-full rounded-xl shadow-lg p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="bg-white h-full rounded-xl shadow-lg sm:pr-20 p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex h-full items-center gap-2 text-gray-600">
             <Filter className="h-5 w-5" />
             <span className="font-medium">{t('stores.filters')}:</span>
@@ -395,7 +395,7 @@ export default function Stores() {
               </button>
 
               {showSortDropdown && (
-                <div className="absolute z-10 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200 py-2">
+                <div className="absolute  z-10 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200 py-2">
                   {[
                     { value: "popular", label: t('stores.sortOptions.popular') },
                     { value: "newest", label: t('stores.sortOptions.newest') },

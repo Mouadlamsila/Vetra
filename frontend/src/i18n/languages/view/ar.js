@@ -42,6 +42,9 @@ export default {
     onlyLeft: "باقي {{count}} فقط",
     processing: "جاري المعالجة...",
     addToFavorites: "أضف إلى المفضلة",
+    shareSuccess: "تمت نسخ رابط مشاركة المنتج بنجاح!",
+    shareError: "خطأ في مشاركة المنتج",
+    loading: "جاري التحميل...",
 
     error: {
       loginRequired: "يرجى تسجيل الدخول لإضافة إلى السلة",

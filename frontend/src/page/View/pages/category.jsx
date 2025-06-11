@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useMemo } from "react"
 import { Link, useParams } from "react-router-dom"
-import { ChevronRight, Heart, ShoppingCart, Star, Filter, X } from 'lucide-react'
+import { ChevronRight, Heart, ShoppingCart, Star, Filter, X } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
 
 export default function CategoryPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const { category } = useParams()
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
@@ -30,22 +30,20 @@ export default function CategoryPage() {
 
         // Fetch products with ratings
         const productsWithRatingsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`
+          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`,
         )
 
         // Fetch products with all other relations
         const productsWithRelationsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`
+          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`,
         )
 
         // Merge the results
-        const mergedProducts = productsWithRelationsResponse.data.data.map(product => {
-          const productWithRating = productsWithRatingsResponse.data.data.find(
-            p => p.id === product.id
-          )
+        const mergedProducts = productsWithRelationsResponse.data.data.map((product) => {
+          const productWithRating = productsWithRatingsResponse.data.data.find((p) => p.id === product.id)
           return {
             ...product,
-            rating_products: productWithRating?.rating_products || []
+            rating_products: productWithRating?.rating_products || [],
           }
         })
 
@@ -74,10 +72,13 @@ export default function CategoryPage() {
 
       // Rating filter
       if (selectedRating > 0) {
-        const averageRating = product.rating_products?.length 
-          ? product.rating_products.reduce((acc, curr) => acc + curr.stars, 0) / product.rating_products.length
-          : 0
-        if (averageRating < selectedRating) return false
+        // Calculate average rating
+        const totalRating = product.rating_products?.reduce((acc, curr) => acc + curr.stars, 0) || 0
+        const numberOfRatings = product.rating_products?.length || 0
+        const averageRating = numberOfRatings > 0 ? totalRating / numberOfRatings : 0
+
+        // Compare with selected rating - show products with rating >= selected rating
+        return averageRating >= selectedRating
       }
 
       return true
@@ -107,7 +108,7 @@ export default function CategoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center text-sm text-gray-500">
             <Link to="/view/1" className="hover:text-purple-700 transition-colors">
-              {t('view.category.home')}
+              {t("view.category.home")}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
             <span className="text-gray-900 font-medium">{categoryName}</span>
@@ -121,14 +122,16 @@ export default function CategoryPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{categoryName}</h1>
-              <p className="text-gray-500">{filteredProducts.length} {t('view.category.products')}</p>
+              <p className="text-gray-500">
+                {filteredProducts.length} {t("view.category.products")}
+              </p>
             </div>
             <button
               className="md:hidden bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-purple-800 transition-colors"
               onClick={() => setMobileFilterOpen(true)}
             >
               <Filter className="h-4 w-4" />
-              {t('view.category.filters')}
+              {t("view.category.filters")}
             </button>
           </div>
         </div>
@@ -139,15 +142,19 @@ export default function CategoryPage() {
           {/* Filter Sidebar - Desktop */}
           <div className="hidden md:block w-64 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm p-5 sticky top-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-6 text-gray-900">{t('view.category.filters')}</h2>
+              <h2 className="font-bold text-lg mb-6 text-gray-900">{t("view.category.filters")}</h2>
 
               {/* Price Range Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.price')}</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t("view.category.price")}</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500">{t('view.category.min')}: ${priceRange[0]}</span>
-                    <span className="text-sm text-gray-500">{t('view.category.max')}: ${priceRange[1]}</span>
+                    <span className="text-sm text-gray-500">
+                      {t("view.category.min")}: ${priceRange[0]}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {t("view.category.max")}: ${priceRange[1]}
+                    </span>
                   </div>
                   <div className="relative pt-1">
                     <input
@@ -204,7 +211,7 @@ export default function CategoryPage() {
 
               {/* Availability Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.availability')}</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t("view.category.availability")}</h3>
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <div className="relative">
                     <input
@@ -230,14 +237,14 @@ export default function CategoryPage() {
                     )}
                   </div>
                   <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                    {t('view.category.inStockOnly')}
+                    {t("view.category.inStockOnly")}
                   </span>
                 </label>
               </div>
 
               {/* Rating Filter */}
               <div className="mb-8">
-                <h3 className="font-medium mb-4 text-gray-700">{t('view.category.rating')}</h3>
+                <h3 className="font-medium mb-4 text-gray-700">{t("view.category.rating")}</h3>
                 <div className="space-y-3">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <label key={rating} className="flex items-center gap-3 cursor-pointer group">
@@ -264,7 +271,7 @@ export default function CategoryPage() {
                             className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
                           />
                         ))}
-                        <span className="ml-1 text-sm text-gray-500">{t('view.category.andUp')}</span>
+                        <span className="ml-1 text-sm text-gray-500">{t("view.category.andUp")}</span>
                       </div>
                     </label>
                   ))}
@@ -273,7 +280,7 @@ export default function CategoryPage() {
                       onClick={() => setSelectedRating(0)}
                       className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
                     >
-                      {t('view.category.reset')}
+                      {t("view.category.reset")}
                     </button>
                   )}
                 </div>
@@ -288,7 +295,7 @@ export default function CategoryPage() {
                 }}
                 className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-300"
               >
-                {t('view.category.resetAll')}
+                {t("view.category.resetAll")}
               </button>
             </div>
           </div>
@@ -296,14 +303,14 @@ export default function CategoryPage() {
           {/* Mobile Filter Sidebar */}
           {mobileFilterOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden backdrop-blur-sm transition-all">
-              <div 
+              <div
                 className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white p-5 overflow-y-auto shadow-xl"
                 style={{
                   animation: "slide-in 0.3s ease-out forwards",
                 }}
               >
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="font-bold text-lg text-gray-900">{t('view.category.filters')}</h2>
+                  <h2 className="font-bold text-lg text-gray-900">{t("view.category.filters")}</h2>
                   <button
                     onClick={() => setMobileFilterOpen(false)}
                     className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
@@ -314,11 +321,15 @@ export default function CategoryPage() {
 
                 {/* Price Range Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.price')}</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t("view.category.price")}</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">{t('view.category.min')}: ${priceRange[0]}</span>
-                      <span className="text-sm text-gray-500">{t('view.category.max')}: ${priceRange[1]}</span>
+                      <span className="text-sm text-gray-500">
+                        {t("view.category.min")}: ${priceRange[0]}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {t("view.category.max")}: ${priceRange[1]}
+                      </span>
                     </div>
                     <div className="relative pt-1">
                       <input
@@ -375,7 +386,7 @@ export default function CategoryPage() {
 
                 {/* Availability Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.availability')}</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t("view.category.availability")}</h3>
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <div className="relative">
                       <input
@@ -401,14 +412,14 @@ export default function CategoryPage() {
                       )}
                     </div>
                     <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                      {t('view.category.inStockOnly')}
+                      {t("view.category.inStockOnly")}
                     </span>
                   </label>
                 </div>
 
                 {/* Rating Filter */}
                 <div className="mb-8">
-                  <h3 className="font-medium mb-4 text-gray-700">{t('view.category.rating')}</h3>
+                  <h3 className="font-medium mb-4 text-gray-700">{t("view.category.rating")}</h3>
                   <div className="space-y-3">
                     {[5, 4, 3, 2, 1].map((rating) => (
                       <label key={rating} className="flex items-center gap-3 cursor-pointer group">
@@ -435,7 +446,7 @@ export default function CategoryPage() {
                               className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
                             />
                           ))}
-                          <span className="ml-1 text-sm text-gray-500">{t('view.category.andUp')}</span>
+                          <span className="ml-1 text-sm text-gray-500">{t("view.category.andUp")}</span>
                         </div>
                       </label>
                     ))}
@@ -444,7 +455,7 @@ export default function CategoryPage() {
                         onClick={() => setSelectedRating(0)}
                         className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
                       >
-                        {t('view.category.reset')}
+                        {t("view.category.reset")}
                       </button>
                     )}
                   </div>
@@ -456,7 +467,7 @@ export default function CategoryPage() {
                     onClick={() => setMobileFilterOpen(false)}
                     className="flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
                   >
-                    {t('view.category.apply')}
+                    {t("view.category.apply")}
                   </button>
                   <button
                     onClick={() => {
@@ -466,7 +477,7 @@ export default function CategoryPage() {
                     }}
                     className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-300"
                   >
-                    {t('view.category.reset')}
+                    {t("view.category.reset")}
                   </button>
                 </div>
               </div>
@@ -486,7 +497,7 @@ export default function CategoryPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
                   <X className="h-8 w-8 text-gray-500" />
                 </div>
-                <p className="text-gray-700 mb-4">{t('view.category.noResults')}</p>
+                <p className="text-gray-700 mb-4">{t("view.category.noResults")}</p>
                 <button
                   onClick={() => {
                     setPriceRange([0, 1000])
@@ -495,7 +506,7 @@ export default function CategoryPage() {
                   }}
                   className="text-purple-700 hover:text-purple-800 font-medium hover:underline transition-colors"
                 >
-                  {t('view.category.resetFilters')}
+                  {t("view.category.resetFilters")}
                 </button>
               </div>
             )}
@@ -507,13 +518,13 @@ export default function CategoryPage() {
 }
 
 function ProductCard({ product }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
 
   const averageRating = useMemo(() => {
     if (!product.rating_products || product.rating_products.length === 0) return 0
-    const sum = product.rating_products.reduce((acc, curr) => acc + curr.stars, 0)
-    return sum / product.rating_products.length
+    const totalRating = product.rating_products.reduce((acc, curr) => acc + curr.stars, 0)
+    return Math.round((totalRating / product.rating_products.length) * 2) / 2 // Round to nearest 0.5
   }, [product.rating_products])
 
   return (
@@ -533,7 +544,9 @@ function ProductCard({ product }) {
           </div>
           {product.stock <= 10 && (
             <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1.5 rounded-full backdrop-blur-sm">
-              {product.stock <= 5 ? t('view.productDetails.onlyLeft', { count: product.stock }) : t('view.productDetails.lowStock')}
+              {product.stock <= 5
+                ? t("view.productDetails.onlyLeft", { count: product.stock })
+                : t("view.productDetails.lowStock")}
             </div>
           )}
           <div
@@ -551,7 +564,7 @@ function ProductCard({ product }) {
             {product.name}
           </h3>
           <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">
-            {product.category?.name || t('view.category.uncategorized')}
+            {product.category?.name || t("view.category.uncategorized")}
           </span>
         </div>
         <div className="flex items-center mb-3">
@@ -565,9 +578,7 @@ function ProductCard({ product }) {
               />
             ))}
           </div>
-          <span className="ml-2 text-xs text-gray-600">
-            ({product.rating_products?.length || 0})
-          </span>
+          <span className="ml-2 text-xs text-gray-600">({product.rating_products?.length || 0})</span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">

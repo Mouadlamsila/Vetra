@@ -447,7 +447,9 @@ const en = {
   view: {
     productDetails: {
       loading: "Loading...",
-      productNotFound: "Product not found"
+      productNotFound: "Product not found",
+      shareSuccess: "Product link copied to clipboard",
+      shareError: "Error copying product link",
     }
   },
 };

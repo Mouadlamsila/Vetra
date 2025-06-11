@@ -8,6 +8,13 @@ import { motion } from "framer-motion"
 import axios from "axios"
 
 export default function Login() {
+  const userId = localStorage.getItem('IDUser')
+  useEffect(() => {
+    
+  if (userId) {
+    window.location.href = '/';
+  }
+  }, [userId])
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)

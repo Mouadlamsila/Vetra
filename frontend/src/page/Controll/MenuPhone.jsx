@@ -28,10 +28,14 @@ export default function MobileNavigation() {
   const menuRef = useRef(null)
 
   const handleLogout = () => {
-    localStorage.removeItem("IDUser")
-    localStorage.removeItem("user")
-    localStorage.removeItem("token")
-    navigate("/login")
+      localStorage.removeItem("user");
+      localStorage.removeItem("IDUser");
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("IDBoutique");
+      localStorage.removeItem("idOwner");
+      localStorage.setItem("location", "login");
+      navigate("/login")
   }
 
   // Main navigation items (always visible)

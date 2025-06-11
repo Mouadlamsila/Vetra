@@ -42,6 +42,9 @@ export default {
     onlyLeft: "Only {{count}} left",
     processing: "Processing...",
     addToFavorites: "Add to Favorites",
+    shareSuccess: "Link copy successfully!",
+    shareError: "Error sharing product",
+    loading: "Loading...",
     error: {
       loginRequired: "Please login to add to cart",
       stockExceeded: "Sorry, only {{count}} units left in stock",

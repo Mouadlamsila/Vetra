@@ -78,6 +78,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("IDBoutique");
+    localStorage.removeItem("idOwner");
     localStorage.setItem("location", "login");
     navigate("/login");
   };

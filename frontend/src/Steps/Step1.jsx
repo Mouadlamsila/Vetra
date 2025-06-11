@@ -66,7 +66,7 @@ export default function Step1() {
                 </Link>
             );
         }
-        if (userRole === "User") {
+        if (userRole === "user") {
             return (
                 <Link to="/to-owner" className="block">
                     <div className="flex justify-between border border-gray-300 rounded-lg px-3 py-2 sm:px-4 sm:py-3 hover:border-purple-500 transition-colors">

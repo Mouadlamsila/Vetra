@@ -599,7 +599,7 @@ export default function Header() {
                             <h3 className="font-medium text-lg mb-2">{t('header.emptyFavorites')}</h3>
                             <p className="text-gray-500 mb-6">{t('header.emptyFavoritesDesc')}</p>
                             <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
-                              <Link to="/categories/electronics">{t('header.continueShopping')}</Link>
+                              <p onClick={() => setFavoritesOpen(false)} >{t('header.continueShopping')}</p>
                             </button>
                           </div>
                         ) : (
@@ -706,7 +706,7 @@ export default function Header() {
                             <h3 className="font-medium text-lg mb-2">{t('header.emptyCart')}</h3>
                             <p className="text-gray-500 mb-6">{t('header.emptyCartDesc')}</p>
                             <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
-                              <Link to="/categories/electronics">{t('header.continueShopping')}</Link>
+                              <p  onClick={() => setCartOpen(false)}>{t('header.continueShopping')}</p>
                             </button>
                           </div>
                         ) : (
@@ -840,9 +840,7 @@ export default function Header() {
             )}
           </div>
 
-          <Link to="/promotions" className="text-sm font-medium hover:text-purple-700 transition-colors">
-            {t('header.promotions')}
-          </Link>
+         
 
           <Link to="/view/contact" className="text-sm font-medium hover:text-purple-700 transition-colors">
             {t('header.contact')}
@@ -908,7 +906,7 @@ export default function Header() {
 
       {/* Add Stripe Elements Provider and Checkout Form */}
       {showCheckoutForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/55 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">{t('checkout.title')}</h2>

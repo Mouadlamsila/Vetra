@@ -451,7 +451,9 @@ const ar = {
   view: {
     productDetails: {
       loading: "جاري التحميل...",
-      productNotFound: "المنتج غير موجود"
+      productNotFound: "المنتج غير موجود",
+      shareSuccess: "تمت مشاركة المنتج بنجاح",
+      shareError: "خطأ في مشاركة المنتج",
     }
   },
 };

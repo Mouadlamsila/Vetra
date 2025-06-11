@@ -42,6 +42,9 @@ export default {
     removedFromFavorites: "Produit retiré des favoris avec succès!",
     processing: "Traitement en cours...",
     addToFavorites: "Ajouter aux favoris",
+    shareSuccess: "Lien Produit copie  avec succès!",
+    shareError: "Erreur lors du partage du produit",
+    loading: "Chargement...",
     error: {
       loginRequired: "Veuillez vous connecter pour ajouter au panier",
       stockExceeded: "Désolé, il ne reste que {{count}} unités en stock",
