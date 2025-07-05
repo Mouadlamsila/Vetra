@@ -3,7 +3,7 @@ import Home from "./page/Home";
 import Footer from "./Home/Footer";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Login from "./page/Login";
-import Register from "./page/register";
+import Register from "./page/Register";
 import Controll from "./page/Controll";
 import Middle from "./page/Controll/middle";
 import ViewRoute from "./page/View/App";
