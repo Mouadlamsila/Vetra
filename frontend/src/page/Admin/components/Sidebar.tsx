@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         const userId = localStorage.getItem("IDUser");
         if (!userId) return;
 
-        const response = await axios.get(`http://localhost:1337/api/users/${userId}?populate=*`);
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate=*`);
         setUserData(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -110,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white overflow-hidden">
             {userData?.photo?.url ? (
               <img 
-                src={`http://localhost:1337${userData.photo.url}`}
+                src={`${userData.photo.url}`}
                 alt={userData?.username}
                 className="w-full h-full object-cover"
               />

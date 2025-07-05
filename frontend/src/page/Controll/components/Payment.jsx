@@ -43,7 +43,7 @@ export default function PaymentsPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `http://localhost:1337/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -573,7 +573,7 @@ export default function PaymentsPage() {
                             <div className="flex items-center space-x-4">
                               <img
                                 src={product.imgMain?.url ? 
-                                  `http://localhost:1337${product.imgMain.url}` : 
+                                  `${product.imgMain.url}` : 
                                   "/placeholder.svg"}
                                 alt={product.name || 'Product'}
                                 className="w-16 h-16 object-cover rounded-lg"

@@ -42,23 +42,23 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         // Fetch users count
-        const usersResponse = await axios.get('http://localhost:1337/api/users/count')
+        const usersResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users/count')
         
         // Fetch stores count using pagination metadata
-        const storesResponse = await axios.get('http://localhost:1337/api/boutiques?pagination[pageSize]=1')
+        const storesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?pagination[pageSize]=1')
         
         // Fetch products count using pagination metadata
-        const productsResponse = await axios.get('http://localhost:1337/api/products?pagination[pageSize]=1')
+        const productsResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/products?pagination[pageSize]=1')
         
         // Fetch recent orders (last 5)
-        const ordersResponse = await axios.get('http://localhost:1337/api/orders?sort=createdAt:desc&limit=5&populate=*')
+        const ordersResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/orders?sort=createdAt:desc&limit=5&populate=*')
         
         // Fetch user photos for recent orders
         const userPhotosData = {}
         for (const order of ordersResponse.data.data) {
           if (order.customer?.id) {
             try {
-              const userResponse = await axios.get(`http://localhost:1337/api/users/${order.customer.id}?populate=photo`)
+              const userResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${order.customer.id}?populate=photo`)
               if (userResponse.data.photo) {
                 userPhotosData[order.customer.id] = userResponse.data.photo
               }
@@ -70,7 +70,7 @@ export default function Dashboard() {
         setUserPhotos(userPhotosData)
         
         // Fetch all orders for charts
-        const ordersData = await axios.get('http://localhost:1337/api/orders?populate=*')
+        const ordersData = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/orders?populate=*')
         
         // Calculate total revenue from orders
         const totalRevenue = ordersData.data.data.reduce((sum, order) => sum + (order.totalAmount || 0), 0)
@@ -197,7 +197,7 @@ export default function Dashboard() {
         }
         
         // Fetch product distribution by category
-        const productsWithCategoriesResponse = await axios.get('http://localhost:1337/api/products?populate=*')
+        const productsWithCategoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/products?populate=*')
         
         // Process product distribution data
         const categoryCount = {}
@@ -451,7 +451,7 @@ const ProductDistributionChart = () => {
               <div className={`h-10 w-10 rounded-full overflow-hidden ${language === 'ar' ? 'ml-3' : 'mr-3'}`}>
                 {userPhotos[order.customer?.id] ? (
                   <img 
-                    src={`http://localhost:1337${userPhotos[order.customer.id].url}`}
+                    src={`${userPhotos[order.customer.id].url}`}
                     alt={order.customer.username}
                     className="h-full w-full object-cover"
                   />

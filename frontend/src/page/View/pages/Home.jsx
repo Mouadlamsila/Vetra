@@ -46,15 +46,15 @@ export default function HomeView() {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
+        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutique(boutiqueResponse.data.data)
 
         // Fetch products data
-        const productsResponse = await axios.get(`http://localhost:1337/api/products?filters[boutique][documentId][$eq]=${boutiqueResponse.data.data.documentId}&populate=*`)
+        const productsResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${boutiqueResponse.data.data.documentId}&populate=*`)
         setProducts(productsResponse.data.data)
 
         // Fetch categories data
-        const categoriesResponse = await axios.get('http://localhost:1337/api/Categorie-products?populate=*')
+        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*')
         setCategories(categoriesResponse.data.data)
         
         setLoading(false)
@@ -97,7 +97,7 @@ export default function HomeView() {
     {
       title: "Summer Collection 2023",
       subtitle: "Discover our latest arrivals with premium quality and design",
-      image: boutique.banniere?.url ? `http://localhost:1337${boutique.banniere.url}` : "/placeholder.svg",
+      image: boutique.banniere?.url ? `${boutique.banniere.url}` : "/placeholder.svg",
       buttonText: "Shop Now",
     },
   ]
@@ -225,7 +225,7 @@ export default function HomeView() {
                 <div className="relative overflow-hidden rounded-2xl shadow-sm transition-all duration-300 group-hover:shadow-md">
                   <div className="aspect-[4/3] relative">
                     <img
-                      src={category.photo?.url ? `http://localhost:1337${category.photo.url}` : "/placeholder.svg"}
+                      src={category.photo?.url ? `${category.photo.url}` : "/placeholder.svg"}
                       alt={category.name}
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     />
@@ -287,7 +287,7 @@ export default function HomeView() {
                   <div className="relative">
                     <div className="aspect-square overflow-hidden">
                       <img 
-                        src={product.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"} 
+                        src={product.imgMain?.url ? `${product.imgMain.url}` : "/placeholder.svg"} 
                         alt={product.name} 
                         className="w-full h-full object-cover" 
                       />

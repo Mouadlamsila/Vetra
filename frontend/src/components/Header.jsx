@@ -40,7 +40,7 @@ const Header = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:1337/api/checkout-sessions",
+        "https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions",
         {
           cartItems: cartItems,
           userId: user.id,

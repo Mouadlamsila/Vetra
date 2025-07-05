@@ -15,7 +15,7 @@ export default function Stores() {
     useEffect(() => {
         const fetchStores = async () => {
             try {
-                const response = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`);
+                const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`);
                 const storesData = response.data.boutiques;
                 
                 // Fetch products count for each store
@@ -23,7 +23,7 @@ export default function Stores() {
                     storesData.map(async (store) => {
                         try {
                             const productsResponse = await axios.get(
-                                `http://localhost:1337/api/products?filters[boutique][id][$eq]=${store.id}`
+                                `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}`
                             );
                             return {
                                 ...store,

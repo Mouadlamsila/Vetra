@@ -25,8 +25,8 @@ export default function Stores() {
     const fetchData = async () => {
       try {
         const [storesResponse, usersResponse] = await Promise.all([
-          axios.get('http://localhost:1337/api/boutiques?populate=*'),
-          axios.get('http://localhost:1337/api/users?populate=*')
+          axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?populate=*'),
+          axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users?populate=*')
         ])
         setStores(storesResponse.data.data)
         setUsers(usersResponse.data)
@@ -51,7 +51,7 @@ export default function Stores() {
   const getOwnerPhotoUrl = (ownerId) => {
     const owner = getOwnerDetails(ownerId)
     if (owner?.photo?.formats?.thumbnail?.url) {
-      return `http://localhost:1337${owner.photo.formats.thumbnail.url}`
+      return `${owner.photo.formats.thumbnail.url}`
     }
     return null
   }
@@ -82,14 +82,14 @@ export default function Stores() {
     try {
       if (confirmAction === "delete") {
         // Delete the store from the API
-        await axios.delete(`http://localhost:1337/api/boutiques/${selectedStore.documentId}`)
+        await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${selectedStore.documentId}`)
         
         // Update local state by removing the deleted store
         const updatedStores = stores.filter(store => store.id !== selectedStore.id)
         setStores(updatedStores)
       } else {
         // Update store status in the API
-        await axios.put(`http://localhost:1337/api/boutiques/${selectedStore.documentId}`, {
+        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${selectedStore.documentId}`, {
           data: {
             statusBoutique: confirmAction === "approve" || confirmAction === "enable" ? "active" : "suspended"
           }
@@ -185,7 +185,7 @@ export default function Stores() {
                       <div className={`h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-3" : "mr-3"}`}>
                         {store.logo?.formats?.thumbnail?.url ? (
                           <img
-                            src={`http://localhost:1337${store.logo.formats.thumbnail.url}`}
+                            src={`${store.logo.formats.thumbnail.url}`}
                             alt={store.nom}
                             className="h-full w-full object-cover rounded-lg"
                           />
@@ -361,7 +361,7 @@ export default function Stores() {
                       <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-3" : "mr-3"}`}>
                         {store.logo?.formats?.thumbnail?.url ? (
                           <img
-                            src={`http://localhost:1337${store.logo.formats.thumbnail.url}`}
+                            src={`${store.logo.formats.thumbnail.url}`}
                             alt={store.nom}
                             className="h-full w-full object-cover rounded-lg"
                           />
@@ -547,7 +547,7 @@ export default function Stores() {
                     <div className={`h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${Languages === "ar" ? "ml-4" : "mr-4"}`}>
                       {selectedStore.logo?.formats?.thumbnail?.url ? (
                         <img
-                          src={`http://localhost:1337${selectedStore.logo.formats.thumbnail.url}`}
+                          src={`${selectedStore.logo.formats.thumbnail.url}`}
                           alt={selectedStore.nom}
                           className="h-full w-full object-cover rounded-lg"
                         />
@@ -672,7 +672,7 @@ export default function Stores() {
                   <div className="mt-6">
                     <h4 className="text-sm font-medium text-gray-500 mb-2">{t('storesAdmin.modals.view.banner')}</h4>
                     <img
-                      src={`http://localhost:1337${selectedStore.banniere.formats.large.url}`}
+                      src={`${selectedStore.banniere.formats.large.url}`}
                       alt={`${t('storesAdmin.modals.view.banner')} ${selectedStore.nom}`}
                       className="w-full h-48 object-cover rounded-lg"
                     />

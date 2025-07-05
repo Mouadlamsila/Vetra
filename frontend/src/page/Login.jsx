@@ -9,19 +9,25 @@ import axios from "axios"
 
 export default function Login() {
   const userId = localStorage.getItem('IDUser')
+  const userRole = localStorage.getItem('role')
   useEffect(() => {
-    
-  if (userId) {
-    window.location.href = '/';
-  }
-  }, [userId])
+
+    if (userId) {
+      if (userRole === "Admin") {
+        window.location.href = '/admin';
+      }
+      else {
+        window.location.href = '/';
+      }
+    }
+  }, [userId, userRole])
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  
+
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -46,7 +52,7 @@ export default function Login() {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
-    
+
     try {
       // Basic validation
       if (!formData.identifier || !formData.password) {
@@ -54,13 +60,13 @@ export default function Login() {
       }
 
       const response = await axios.post(
-        'http://localhost:1337/api/auth/local',
+        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
         {
           identifier: formData.identifier,
           password: formData.password
         }
       )
-      const user = await axios.get(`http://localhost:1337/api/users/${response.data.user.id}?populate=*`)
+      const user = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${response.data.user.id}?populate=*`)
 
 
       // Store authentication data
@@ -75,10 +81,10 @@ export default function Login() {
       } else {
         navigate('/')
       }
-      
+
     } catch (error) {
       let errorMessage = t('loginFailed')
-      
+
       if (error.response) {
         if (error.response.status === 400) {
           errorMessage = t('invalidCredentials')
@@ -88,10 +94,10 @@ export default function Login() {
       } else if (error.message) {
         errorMessage = error.message
       }
-      
+
       setError(errorMessage)
       console.error('Login error:', error)
-      
+
     } finally {
       setIsLoading(false)
     }
@@ -153,7 +159,7 @@ export default function Login() {
 
             {/* Error Message */}
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-3 mb-4 text-red-400 bg-red-900/20 rounded-lg text-center"

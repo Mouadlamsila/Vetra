@@ -36,7 +36,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:1337/api/users/${id}?populate=*`)
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
         const userData = response.data
         setUser(userData)
         setFormData({
@@ -50,7 +50,7 @@ export default function Profile() {
           postalCode: userData.adress?.postalCode || "",
         })
         if (userData.photo) {
-          setPreviewUrl(`http://localhost:1337${userData.photo.url}`)
+          setPreviewUrl(`${userData.photo.url}`)
         }
       } catch (error) {
         console.error("Error fetching user data:", error)
@@ -87,14 +87,14 @@ export default function Profile() {
     setIsSubmitting(true)
 
     try {
-      await axios.put(`http://localhost:1337/api/users/${id}`, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
         username: formData.username,
         email: formData.email,
         phone: formData.phone,
       })
 
       if (user.adress) {
-        await axios.put(`http://localhost:1337/api/adresses/${user.adress.documentId}`, {
+        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.adress.documentId}`, {
           data: {
             addressLine1: formData.addressLine1,
             addressLine2: formData.addressLine2,
@@ -108,16 +108,16 @@ export default function Profile() {
       if (selectedFile) {
         const formData = new FormData()
         formData.append("files", selectedFile)
-        const uploadResponse = await axios.post("http://localhost:1337/api/upload", formData)
+        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData)
         
         if (uploadResponse.data[0]) {
-          await axios.put(`http://localhost:1337/api/users/${id}`, {
+          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
             photo: uploadResponse.data[0].id,
           })
         }
       }
 
-      const response = await axios.get(`http://localhost:1337/api/users/${id}?populate=*`)
+      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
       setUser(response.data)
       setEditMode(false)
       showSuccessMessage(t('profileAdmin.messages.updateSuccess'))
@@ -147,7 +147,7 @@ export default function Profile() {
     }
 
     try {
-      const verifyResponse = await axios.post("http://localhost:1337/api/auth/local", {
+      const verifyResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local", {
         identifier: user.email,
         password: passwordData.currentPassword,
       })
@@ -158,7 +158,7 @@ export default function Profile() {
         return
       }
 
-      await axios.put(`http://localhost:1337/api/users/${id}`, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
         password: passwordData.newPassword,
       })
 

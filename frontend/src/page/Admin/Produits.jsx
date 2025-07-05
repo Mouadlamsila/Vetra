@@ -25,11 +25,11 @@ export default function Products() {
     const fetchData = async () => {
       try {
         // Fetch categories
-        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products')
+        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products')
         setCategories(categoriesResponse.data.data)
 
         // Fetch products
-        const response = await axios.get('http://localhost:1337/api/products?populate=*')
+        const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/products?populate=*')
         setProducts(response.data.data)
         setIsLoading(false)
       } catch (err) {
@@ -58,7 +58,7 @@ export default function Products() {
     setIsSubmitting(true)
 
     try {
-      await axios.delete(`http://localhost:1337/api/products/${selectedProduct.documentId}`)
+      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${selectedProduct.documentId}`)
       
       // Update local state
       const updatedProducts = products.filter((p) => p.id !== selectedProduct.id)
@@ -224,7 +224,7 @@ export default function Products() {
                       <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${language === "ar" ? "ml-3" : "mr-3"}`}>
                         {product.imgMain?.formats?.thumbnail?.url ? (
                           <img
-                            src={`http://localhost:1337${product.imgMain.formats.thumbnail.url}`}
+                            src={`${product.imgMain.formats.thumbnail.url}`}
                             alt={product.name}
                             className="h-full w-full object-cover rounded-lg"
                           />
@@ -366,7 +366,7 @@ export default function Products() {
                     <div className="h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
                       {selectedProduct.imgMain?.formats?.thumbnail?.url ? (
                         <img
-                          src={`http://localhost:1337${selectedProduct.imgMain.formats.thumbnail.url}`}
+                          src={`${selectedProduct.imgMain.formats.thumbnail.url}`}
                           alt={selectedProduct.name}
                           className="h-full w-full object-cover rounded-lg"
                         />
@@ -488,7 +488,7 @@ export default function Products() {
                           {selectedProduct.imgsAdditional.map((img) => (
                             <div key={img.id} className="relative aspect-square">
                               <img
-                                src={`http://localhost:1337${img.formats.thumbnail.url}`}
+                                src={`${img.formats.thumbnail.url}`}
                                 alt={img.name}
                                 className="w-full h-full object-cover rounded-lg"
                               />

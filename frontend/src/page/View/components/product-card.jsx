@@ -7,7 +7,7 @@ export default function ProductCard({ product, layout = "grid" }) {
       <div className="group relative flex flex-col sm:flex-row gap-6 bg-white rounded-lg border overflow-hidden hover:shadow-md transition-all duration-300">
         <div className="relative w-full sm:w-48 h-48">
           <img
-            src={`http://localhost:1337${product?.imgMain?.url}`}
+            src={`${product?.imgMain?.url}`}
             alt={product?.imgMain?.url}
             className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
           />
@@ -73,7 +73,7 @@ export default function ProductCard({ product, layout = "grid" }) {
         <div className="relative">
           <div className="aspect-square overflow-hidden">
             <img
-              src={`http://localhost:1337${product?.imgMain?.url}`}
+              src={`${product?.imgMain?.url}`}
               alt={"édddd"}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
             />

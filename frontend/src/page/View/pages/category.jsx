@@ -25,17 +25,17 @@ export default function CategoryPage() {
     const fetchData = async () => {
       try {
         // First fetch the category to get its name
-        const categoryResponse = await axios.get(`http://localhost:1337/api/categorie-products/${category}`)
+        const categoryResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products/${category}`)
         setCategoryName(categoryResponse.data.data.name)
 
         // Fetch products with ratings
         const productsWithRatingsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`,
         )
 
         // Fetch products with all other relations
         const productsWithRelationsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`,
         )
 
         // Merge the results
@@ -537,7 +537,7 @@ function ProductCard({ product }) {
         <div className="relative">
           <div className="aspect-square overflow-hidden">
             <img
-              src={product.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
+              src={product.imgMain?.url ? `${product.imgMain.url}` : "/placeholder.svg"}
               alt={product.name}
               className={`object-cover w-full h-full transition-transform duration-500 ${isHovered ? "scale-110" : "scale-100"}`}
             />

@@ -24,7 +24,7 @@ export default function DesignStore() {
     useEffect(() => {
         const fetchStoreData = async () => {
             try {
-                const response = await axios.get(`http://localhost:1337/api/boutiques/${id}`);
+                const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}`);
                 const storeData = response.data.data;
                 
                 if (!storeData) {
@@ -44,7 +44,7 @@ export default function DesignStore() {
 
                 // Fetch products
                 const productsResponse = await axios.get(
-                    `http://localhost:1337/api/products?filters[boutique][documentId][$eq]=${id}`
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${id}`
                 );
                 setProducts(productsResponse.data.data || []);
                 setLoading(false);
@@ -79,7 +79,7 @@ export default function DesignStore() {
 
     const handleSave = async () => {
         try {
-            await axios.put(`http://localhost:1337/api/boutiques/${id}`, {
+            await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}`, {
                 data: {
                     nom: formData.name,
                     description: formData.description,

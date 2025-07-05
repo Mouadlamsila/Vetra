@@ -82,7 +82,7 @@ export default function EditProduct() {
         }
 
         // Fetch categories
-        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +90,7 @@ export default function EditProduct() {
         setCategories(categoriesResponse.data.data)
 
         // Fetch stores
-        const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
+        const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -98,7 +98,7 @@ export default function EditProduct() {
         setStores(storesResponse.data.boutiques || [])
 
         // Fetch product data
-        const productResponse = await axios.get(`http://localhost:1337/api/products/${id}?populate=*`, {
+        const productResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${id}?populate=*`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -108,11 +108,11 @@ export default function EditProduct() {
 
         // Set image previews if available
         if (product.imgMain?.url) {
-          setMainImagePreview(`http://localhost:1337${product.imgMain.url}`)
+          setMainImagePreview(`${product.imgMain.url}`)
         }
 
         if (product.imgsAdditional && product.imgsAdditional.length > 0) {
-          const previews = product.imgsAdditional.map((img) => `http://localhost:1337${img.url}`)
+          const previews = product.imgsAdditional.map((img) => `${img.url}`)
           setAdditionalImagePreviews(previews)
         }
 
@@ -205,7 +205,7 @@ export default function EditProduct() {
         setAdditionalImageLoading(true)
       }
 
-      const uploadResponse = await axios.post("http://localhost:1337/api/upload", formData, {
+      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -316,7 +316,7 @@ export default function EditProduct() {
         },
       }
 
-      await axios.put(`http://localhost:1337/api/products/${id}`, productData, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${id}`, productData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

@@ -62,7 +62,7 @@ export default function Profile() {
   const fetchUserData = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get("http://localhost:1337/api/users/me?populate=photo", {
+      const response = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me?populate=photo", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -77,7 +77,7 @@ export default function Profile() {
         photo: null,
       })
       if (response.data.photo) {
-        setPreviewUrl(`http://localhost:1337${response.data.photo.url}`)
+        setPreviewUrl(`${response.data.photo.url}`)
       } else {
         setPreviewUrl(`https://api.dicebear.com/7.x/initials/svg?seed=${response.data.username}&backgroundColor=c8c2fd`)
       }
@@ -136,7 +136,7 @@ export default function Profile() {
 
   const verifyOldPassword = async () => {
     try {
-      await axios.post("http://localhost:1337/api/auth/local", {
+      await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local", {
         identifier: user.email,
         password: formData.oldPassword,
       })
@@ -191,7 +191,7 @@ export default function Profile() {
         const uploadFormData = new FormData()
         uploadFormData.append("files", formData.photo)
 
-        const uploadResponse = await axios.post("http://localhost:1337/api/upload", uploadFormData, {
+        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", uploadFormData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
@@ -221,7 +221,7 @@ export default function Profile() {
       }
 
       // Update user data
-      const response = await axios.put(`http://localhost:1337/api/users/${user.id}`, updateData, {
+      const response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${user.id}`, updateData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
@@ -230,7 +230,7 @@ export default function Profile() {
 
       if (response.data) {
         // Fetch updated user data with photo
-        const updatedUserResponse = await axios.get("http://localhost:1337/api/users/me?populate=photo", {
+        const updatedUserResponse = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me?populate=photo", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -568,7 +568,7 @@ export default function Profile() {
                     photo: null,
                   }))
                   if (user?.photo) {
-                    setPreviewUrl(`http://localhost:1337${user.photo.url}`)
+                    setPreviewUrl(`${user.photo.url}`)
                   } else {
                     setPreviewUrl(
                       `https://api.dicebear.com/7.x/initials/svg?seed=${user.username}&backgroundColor=c8c2fd`,

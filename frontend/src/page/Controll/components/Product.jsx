@@ -73,7 +73,7 @@ export default function ProductsPage() {
       }
 
       // Fetch categories
-      const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+      const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ export default function ProductsPage() {
       setCategories(categoriesResponse.data.data)
 
       // Fetch user's stores
-      const storesResponse = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
+      const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +94,7 @@ export default function ProductsPage() {
       const allProducts = []
       for (const store of userStores) {
         const productsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -144,7 +144,7 @@ export default function ProductsPage() {
           return
         }
 
-        await axios.delete(`http://localhost:1337/api/products/${productId}`, {
+        await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${productId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -227,7 +227,7 @@ export default function ProductsPage() {
         {product?.imgMain ? (
           <div className="w-16 h-16 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm flex-shrink-0">
             <img
-              src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`}
+              src={`${product.imgMain.url || product.imgMain?.url}`}
               alt={product?.name || "Product"}
               className="w-full h-full object-cover"
             />
@@ -554,7 +554,7 @@ export default function ProductsPage() {
                           {product?.imgMain ? (
                             <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#c8c2fd]/30 shadow-sm">
                               <img
-                                src={`http://localhost:1337${product.imgMain.url || product.imgMain?.url}`}
+                                src={`${product.imgMain.url || product.imgMain?.url}`}
                                 alt={product?.name || "Product"}
                                 className="w-full h-full object-cover"
                               />

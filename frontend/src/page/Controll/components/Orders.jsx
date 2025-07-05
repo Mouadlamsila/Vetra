@@ -58,7 +58,7 @@ export default function OrdersPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `http://localhost:1337/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -173,7 +173,7 @@ export default function OrdersPage() {
       
       // Refresh orders list
       const response = await axios.get(
-        `http://localhost:1337/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
+        `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -237,7 +237,7 @@ export default function OrdersPage() {
             <div key={product.id} className="flex-shrink-0">
               <img
                 src={product.imgMain?.url ? 
-                  `http://localhost:1337${product.imgMain.url}` : 
+                  `${product.imgMain.url}` : 
                   "/placeholder.svg"}
                 alt={product.name}
                 className="w-12 h-12 object-cover rounded-lg"
@@ -469,7 +469,7 @@ export default function OrdersPage() {
                             <div key={product.id} className="relative group">
                               <img
                                 src={product.imgMain?.url ? 
-                                  `http://localhost:1337${product.imgMain.url}` : 
+                                  `${product.imgMain.url}` : 
                                   "/placeholder.svg"}
                                 alt={product.name}
                                 className="w-12 h-12 object-cover rounded-lg"
@@ -605,7 +605,7 @@ export default function OrdersPage() {
                       <div className="flex items-center space-x-4">
                         <img
                           src={product.imgMain?.url ? 
-                            `http://localhost:1337${product.imgMain.url}` : 
+                            `${product.imgMain.url}` : 
                             "/placeholder.svg"}
                           alt={product.name}
                           className="w-16 h-16 object-cover rounded-lg"

@@ -61,7 +61,7 @@ export default function SettingsPage() {
       const token = localStorage.getItem('token');
 
       // Delete user account
-      await axios.delete(`http://localhost:1337/api/users/${userId}`, {
+      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

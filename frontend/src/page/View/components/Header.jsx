@@ -47,12 +47,12 @@ export default function Header() {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
+        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutiques(boutiqueResponse.data.data)
 
         // Fetch products with populated categories
         const productsResponse = await axios.get(
-          `http://localhost:1337/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
         )
 
         // Extract unique categories from products
@@ -81,7 +81,7 @@ export default function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=*`);
+        const res = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=*`);
         setUser(res.data); // Assure-toi d'utiliser res.data, pas res
       } catch (error) {
         console.error("Erreur lors de la récupération de l'utilisateur :", error);
@@ -98,7 +98,7 @@ export default function Header() {
       if (!IDUser) return;
 
       try {
-        const response = await axios.get(`http://localhost:1337/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
         setCartItems(response.data.data);
         setCartLoading(false);
 
@@ -116,7 +116,7 @@ export default function Header() {
       if (!IDUser) return;
 
       try {
-        const response = await axios.get(`http://localhost:1337/api/favorite-products?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
         setFavorites(response.data.data);
         setFavoritesLoading(false);
       } catch (error) {
@@ -130,7 +130,7 @@ export default function Header() {
 
   const handleRemoveFromCart = async (cartItemId) => {
     try {
-      await axios.delete(`http://localhost:1337/api/carts/${cartItemId}`);
+      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts/${cartItemId}`);
       // Update cart items immediately
       setCartItems(prevItems => prevItems.filter(item => item.documentId !== cartItemId));
       toast.success("Produit retiré du panier", {
@@ -176,7 +176,7 @@ export default function Header() {
         return;
       }
 
-      await axios.put(`http://localhost:1337/api/carts/${cartItemId}`, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts/${cartItemId}`, {
         data: {
           qte: newQuantity
         }
@@ -222,7 +222,7 @@ export default function Header() {
 
   const handleRemoveFromFavorites = async (favoriteId) => {
     try {
-      await axios.delete(`http://localhost:1337/api/favorite-products/${favoriteId}`);
+      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${favoriteId}`);
       setFavorites(prevFavorites => prevFavorites.filter(item => item.documentId !== favoriteId));
       toast.success(t('header.removedFromFavorites'), {
         position: "top-right",
@@ -296,7 +296,7 @@ export default function Header() {
       };
 
       // Create the order
-      const orderResponse = await axios.post('http://localhost:1337/api/orders', orderData, {
+      const orderResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/orders', orderData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -424,7 +424,7 @@ export default function Header() {
 
             <Link to={`/view/${id}`} className="flex items-center gap-2">
               <img
-                src={boutiques?.logo?.url ? `http://localhost:1337${boutiques.logo.url}` : "/placeholder.svg"}
+                src={boutiques?.logo?.url ? `${boutiques.logo.url}` : "/placeholder.svg"}
                 alt={boutiques?.nom || "ShopEase"}
                 className="w-6 h-6 object-cover"
               />
@@ -491,7 +491,7 @@ export default function Header() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 {user?.photo ? <div className="">
-                  <img src={`http://localhost:1337${user.photo.url}`} className="h-9 w-9 rounded-full" />
+                  <img src={`${user.photo.url}`} className="h-9 w-9 rounded-full" />
                 </div> : <User className="h-5 w-5" />}
               </button>
 
@@ -615,7 +615,7 @@ export default function Header() {
                                       onClick={() => setFavoritesOpen(false)}
                                     >
                                       <img
-                                        src={product?.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
+                                        src={product?.imgMain?.url ? `${product.imgMain.url}` : "/placeholder.svg"}
                                         alt={product?.name}
                                         className="object-cover w-full h-full"
                                       />
@@ -719,7 +719,7 @@ export default function Header() {
                                     <div key={item.id} className="flex gap-4">
                                       <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white">
                                         <img
-                                          src={product?.imgMain?.url ? `http://localhost:1337${product.imgMain.url}` : "/placeholder.svg"}
+                                          src={product?.imgMain?.url ? `${product.imgMain.url}` : "/placeholder.svg"}
                                           alt={product?.name}
                                           className="object-cover w-full h-full"
                                         />

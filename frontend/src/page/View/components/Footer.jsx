@@ -14,7 +14,7 @@ export default function Footer() {
   const [owner, setOwner] = useState(null);
   
   useEffect(() => {
-    axios.get(`http://localhost:1337/api/boutiques/${id}?filters[owner][id][$eq]=${ownerId}&populate=*`)
+    axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${ownerId}&populate=*`)
       .then((res) => {
         setBoutique(res.data.data)
         setOwner(res.data.data.owner)
@@ -31,7 +31,7 @@ export default function Footer() {
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4  ">
-              <img src={`http://localhost:1337${boutique?.logo?.url}`} alt="" className="w-10 h-10 rounded-full" />
+              <img src={`${boutique?.logo?.url}`} alt="" className="w-10 h-10 rounded-full" />
               <h3 className="text-white font-semibold text-lg "> {boutique?.nom}</h3>
             </div>
             <p className="text-sm mb-4">

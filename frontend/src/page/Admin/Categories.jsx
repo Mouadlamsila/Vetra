@@ -23,7 +23,7 @@ export default function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:1337/api/categorie-products?populate=*')
+        const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products?populate=*')
         setCategories(response.data.data)
         setIsLoading(false)
       } catch (err) {
@@ -57,7 +57,7 @@ export default function Categories() {
       name: category.name,
       photo: null,
       photoPreview: category.photo?.url 
-        ? `http://localhost:1337${category.photo.url}`
+        ? `${category.photo.url}`
         : null
     })
     setEditModalOpen(true)
@@ -77,11 +77,11 @@ export default function Categories() {
       if (formData.photo) {
         const formDataPhoto = new FormData()
         formDataPhoto.append('files', formData.photo)
-        const uploadResponse = await axios.post('http://localhost:1337/api/upload', formDataPhoto)
+        const uploadResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/upload', formDataPhoto)
         photoId = uploadResponse.data[0].id
       }
 
-      const response = await axios.post('http://localhost:1337/api/categorie-products', {
+      const response = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
         data: {
           name: formData.name,
           photo: photoId
@@ -114,12 +114,12 @@ export default function Categories() {
       if (formData.photo) {
         const formDataPhoto = new FormData()
         formDataPhoto.append('files', formData.photo)
-        const uploadResponse = await axios.post('http://localhost:1337/api/upload', formDataPhoto)
+        const uploadResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/upload', formDataPhoto)
         console.log(uploadResponse.data[0].url)
         photoId = uploadResponse.data[0].id
       }
 
-      const response = await axios.put(`http://localhost:1337/api/categorie-products/${selectedCategory.documentId}`, {
+      const response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products/${selectedCategory.documentId}`, {
         data: {
           name: formData.name,
           photo: photoId
@@ -150,7 +150,7 @@ export default function Categories() {
     setIsSubmitting(true)
 
     try {
-      await axios.delete(`http://localhost:1337/api/categorie-products/${selectedCategory.documentId}`)
+      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products/${selectedCategory.documentId}`)
       
       const filteredCategories = categories.filter((cat) => cat.id !== selectedCategory.id)
       setCategories(filteredCategories)
@@ -205,7 +205,7 @@ export default function Categories() {
             <div className="relative h-48">
               {category.photo?.formats?.medium?.url ? (
                 <img
-                  src={`http://localhost:1337${category.photo.formats.medium.url}`}
+                  src={`${category.photo.formats.medium.url}`}
                   alt={category.name}
                   className="w-full h-full object-cover"
                 />
@@ -262,7 +262,7 @@ export default function Categories() {
                       <div className={`h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${language === "ar" ? "ml-3" : "mr-3"}`}>
                         {category.photo?.url ? (
                           <img
-                            src={`http://localhost:1337${category.photo.url}`}
+                            src={`${category.photo.url}`}
                             alt={category.name}
                             className="h-full w-full object-cover rounded-lg"
                           />

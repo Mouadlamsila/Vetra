@@ -83,14 +83,14 @@ export default function AddProductPage() {
         }
 
         // Fetch categories
-        const categoriesResponse = await axios.get('http://localhost:1337/api/categorie-products', {
+        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         setCategories(categoriesResponse.data.data)
 
-        const response = await axios.get(`http://localhost:1337/api/users/${IDUser}?populate=boutiques`, {
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -126,7 +126,7 @@ export default function AddProductPage() {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }
 
-      const response = await axios.get(`http://localhost:1337/api/products/${productId}?populate=*`, {
+      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${productId}?populate=*`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -239,7 +239,7 @@ export default function AddProductPage() {
         setLoadingImgsAdditional(true)
       }
 
-      const uploadResponse = await axios.post("http://localhost:1337/api/upload", formData, {
+      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -326,7 +326,7 @@ export default function AddProductPage() {
         },
       }
 
-      await axios.post("http://localhost:1337/api/products", productData, {
+      await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/products", productData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -616,7 +616,7 @@ export default function AddProductPage() {
                   ) : imgMain ? (
                     <div className="relative group">
                       <img
-                        src={`http://localhost:1337${imgMain}`}
+                        src={`${imgMain}`}
                         alt="Main Image"
                         className="w-full h-32 object-cover rounded-lg border border-[#c8c2fd]/30 shadow-md group-hover:opacity-75 transition-opacity"
                       />
@@ -666,7 +666,7 @@ export default function AddProductPage() {
                   {imgsAdditional?.map((img, index) => (
                     <div key={index} className="relative group">
                       <img
-                        src={`http://localhost:1337${img}`}
+                        src={`${img}`}
                         alt={`Additional ${index + 1}`}
                         className="w-full h-32 object-cover rounded-lg border border-[#c8c2fd]/30 shadow-md group-hover:opacity-75 transition-opacity"
                       />

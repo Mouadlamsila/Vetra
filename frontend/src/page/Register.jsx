@@ -55,7 +55,7 @@ export default function Register() {
             });
 
             // Register the user
-            const registerResponse = await axios.post('http://localhost:1337/api/auth/local/register', {
+            const registerResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register', {
                 username: formData.username,
                 email: formData.email,
                 password: formData.password
@@ -65,7 +65,7 @@ export default function Register() {
             
             // Update user role to "User"
             const userId = registerResponse.data.user.id;
-            await axios.put(`http://localhost:1337/api/users/${userId}`, {
+            await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
                 role: 4
             }, {
                 headers: {

@@ -28,7 +28,7 @@ export default function Step1() {
         const fetchBoutiquesData = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(`http://localhost:1337/api/users/${userId}?populate[boutiques][count]=true`);
+                const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate[boutiques][count]=true`);
                 
                 if (response.data && response.data.boutiques) {
                     setBoutiquesCount(response.data.boutiques.count);

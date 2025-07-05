@@ -22,14 +22,14 @@ export default function BoardTable() {
                 if (!userId) return;
 
                 // Fetch stores
-                const storesResponse = await axios.get(`http://localhost:1337/api/boutiques?filters[owner][id][$eq]=${userId}`);
+                const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[owner][id][$eq]=${userId}`);
                 const stores = storesResponse.data.data;
                 // Fetch products
-                const productsResponse = await axios.get(`http://localhost:1337/api/products?filters[boutique][owner][id][$eq]=${userId}`);
+                const productsResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][owner][id][$eq]=${userId}`);
                 const products = productsResponse.data.data;
 
                 // Fetch orders
-                const ordersResponse = await axios.get(`http://localhost:1337/api/orders?filters[user][id][$eq]=${userId}&populate=*`);
+                const ordersResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${userId}&populate=*`);
                 const orders = ordersResponse.data.data;
 
                 // Calculate total sales
