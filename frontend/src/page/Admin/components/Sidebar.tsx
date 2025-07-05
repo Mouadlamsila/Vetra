@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
         </div>
         <div className="flex   sm:hidden  items-center justify-start space-x-2">
-          <img src="/img/logo/v.png" alt="logo" className="w-[50%] h-[50%] " />
+          <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="logo" className="w-[50%] h-[50%] " />
         </div>
       </Link>
         <button className="md:hidden text-white" onClick={onClose}>

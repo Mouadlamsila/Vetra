@@ -42,7 +42,7 @@ export default function DashBoard() {
 
                 <Link to={'/'}>
                     <div className="flex justify-start px-4 border-b-[0.1px] border-gray-300  w-full h-full items-start">
-                        <img src="/public/img/logo/logo.png" className="h-[48px] w-[145px]" alt="" />
+                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/logo_2d36844e55.png" className="h-[48px] w-[145px]" alt="" />
                     </div>
                 </Link>
                 <div className="flex h-full w-full items-center">

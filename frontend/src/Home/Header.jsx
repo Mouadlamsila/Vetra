@@ -80,20 +80,20 @@ export default function Header() {
             <div className={`flex ${menu ? "flex justify-between w-full" : ""}  items-center w-full gap-16`}>
                 {location.pathname === '/' ? (
                     <ScrollLink to="home" spy={true} smooth={true} offset={-100} className="sm:block hidden">
-                        <img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden" />
+                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/logo_2d36844e55.png" alt="" className="h-12 sm:block hidden" />
                     </ScrollLink>
                 ) : (
                     <LinkDom to="/" className="sm:block hidden">
-                        <img src="/public/img/logo/logo.png" alt="" className="h-12 sm:block hidden" />
+                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/logo_2d36844e55.png" alt="" className="h-12 sm:block hidden" />
                     </LinkDom>
                 )}
                 {location.pathname === '/' ? (
                     <ScrollLink to="home2" spy={true} smooth={true} offset={-100} className="block sm:hidden" onClick={() => setMenu(false)}>
-                        <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
+                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="" className="h-12 block sm:hidden" />
                     </ScrollLink>
                 ) : (
                     <LinkDom to="/" className="block sm:hidden" onClick={() => setMenu(false)}>
-                        <img src="/public/img/logo/v.png" alt="" className="h-12 block sm:hidden" />
+                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="" className="h-12 block sm:hidden" />
                     </LinkDom>
                 )}
                 <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl`} onClick={() => setMenu(!menu)} />
