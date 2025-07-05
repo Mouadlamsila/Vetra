@@ -10,7 +10,7 @@ import { storesEn } from './pages/store/stores';
 import dashboardAdmin from './admin/dashboard';
 import sidebarAdmin from './admin/sidebar';
 import usersAdmin from './admin/users';
-import ownerEn from './pages/owner/en';
+import ownerEn from './pages/Owner/en';
 import storesAdmin from './admin/stores';
 import productsAdmin from './admin/products';
 import categoriesAdmin from './admin/categories';
