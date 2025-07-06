@@ -5,6 +5,8 @@ import {
     Mail, Lock, Eye, EyeOff, User,
     Facebook, Twitter, Github, ArrowRight, ArrowLeft
 } from "lucide-react"
+import { auth, googleProvider } from "../firebase"
+import { signInWithPopup } from "firebase/auth"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
@@ -35,6 +37,27 @@ export default function Register() {
         return () => clearInterval(animationTimer)
     }, [])
 
+
+    // Function to handle Google sign-in
+    const handleGoogleRegister = async () => {
+        setError(""); // مسح الأخطاء القديمة
+        try {
+            window.location.href = "https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google";
+
+            const { jwt, user: returnedUser } = response.data;
+
+            localStorage.setItem("token", jwt);
+            localStorage.setItem("user", JSON.stringify(returnedUser));
+            localStorage.setItem("role", "user");
+
+            navigate("/to-owner");
+        } catch (error) {
+            console.error("Google login error:", error);
+            setError("فشل تسجيل الدخول بواسطة Google");
+        }
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
@@ -62,7 +85,7 @@ export default function Register() {
             });
 
             console.log('Registration response:', registerResponse.data);
-            
+
             // Update user role to "User"
             const userId = registerResponse.data.user.id;
             await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
@@ -80,7 +103,7 @@ export default function Register() {
             localStorage.setItem('role', 'user')
 
             setSuccess(t('registrationSuccess'));
-            
+
             // Wait for 2 seconds to show success message before redirecting
             setTimeout(() => {
                 navigate("/to-owner")
@@ -299,10 +322,17 @@ export default function Register() {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={handleGoogleRegister}
                                     className="flex items-center justify-center py-2 px-4 border border-purple-300/20 rounded-lg hover:bg-white/10 transition-all duration-200 group"
                                 >
-                                    <Twitter className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                                    <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
+                                        alt="Google"
+                                        className="h-5 w-5 mr-2"
+                                    />
+                                    <span className="text-white text-sm">Google</span>
                                 </button>
+
                                 <button
                                     type="button"
                                     className="flex items-center justify-center py-2 px-4 border border-purple-300/20 rounded-lg hover:bg-white/10 transition-all duration-200 group"
