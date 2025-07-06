@@ -299,6 +299,9 @@ const en = {
   loginSuccess: "Login successful!",
   loginProcessingError: "Error processing login",
   googleRegisterError: "Google registration error",
+  googleTokenExchangeError: "Failed to exchange Google tokens with server",
+  noStrapiTokenError: "Failed to obtain authentication token",
+  userDataRetrievalError: "Failed to retrieve user data",
   //footer
   companyName: "Servis",
   allRightsReserved: "All rights reserved",

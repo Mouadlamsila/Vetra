@@ -60,8 +60,8 @@ export default function Register() {
             // Sauvegarder l'intention d'inscription (pas de connexion)
             localStorage.setItem('auth_intent', 'register');
 
-            // Rediriger vers l'authentification Google via Strapi
-            const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google`;
+            // Rediriger vers l'authentification Google via Strapi avec le bon redirect URI
+            const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
             window.location.href = redirectUrl;
 
         } catch (error) {

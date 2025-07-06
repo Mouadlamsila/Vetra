@@ -299,6 +299,9 @@ const fr = {
   loginSuccess: "Connexion réussie !",
   loginProcessingError: "Erreur lors du traitement de la connexion",
   googleRegisterError: "Erreur d'inscription Google",
+  googleTokenExchangeError: "Échec de l'échange des tokens Google avec le serveur",
+  noStrapiTokenError: "Échec de l'obtention du token d'authentification",
+  userDataRetrievalError: "Échec de la récupération des données utilisateur",
   //footer
   companyName: "Servis",
   allRightsReserved: "Tous droits réservés",

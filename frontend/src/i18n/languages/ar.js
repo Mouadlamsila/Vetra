@@ -302,6 +302,9 @@ const ar = {
   loginSuccess: "تم تسجيل الدخول بنجاح!",
   loginProcessingError: "خطأ في معالجة تسجيل الدخول",
   googleRegisterError: "خطأ في تسجيل الدخول بـ Google",
+  googleTokenExchangeError: "فشل في تبادل رموز Google مع الخادم",
+  noStrapiTokenError: "فشل في الحصول على رمز المصادقة",
+  userDataRetrievalError: "فشل في استرداد بيانات المستخدم",
   //footer
   companyName: "شركة سيرفيس",
   allRightsReserved: "جميع الحقوق محفوظة",
