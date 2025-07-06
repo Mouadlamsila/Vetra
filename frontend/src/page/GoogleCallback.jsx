@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 export default function GoogleCallback() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [status, setStatus] = useState('processing');
-    const [message, setMessage] = useState('جارٍ تسجيل الدخول...');
+    const [message, setMessage] = useState(t('processingLogin'));
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -16,14 +18,16 @@ export default function GoogleCallback() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const jwt = urlParams.get("jwt") || urlParams.get("id_token");
                 const error = urlParams.get("error");
+                
                 if (jwt) {
                     localStorage.setItem("token", jwt);
                     // redirect or update auth state
                 }
+                
                 if (error) {
                     console.error("Erreur d'authentification:", error);
                     setStatus('error');
-                    setMessage('فشل في تسجيل الدخول');
+                    setMessage(t('loginFailed'));
                     setTimeout(() => navigate("/login?error=" + error), 2000);
                     return;
                 }
@@ -31,7 +35,7 @@ export default function GoogleCallback() {
                 if (!jwt) {
                     console.error("Pas de token reçu");
                     setStatus('error');
-                    setMessage('لم يتم استلام رمز الوصول');
+                    setMessage(t('noTokenReceived'));
                     setTimeout(() => navigate("/login?error=no_token"), 2000);
                     return;
                 }
@@ -100,7 +104,7 @@ export default function GoogleCallback() {
                 localStorage.removeItem('auth_intent');
 
                 setStatus('success');
-                setMessage('تم تسجيل الدخول بنجاح!');
+                setMessage(t('loginSuccess'));
 
                 // Rediriger vers la page principale
                 setTimeout(() => navigate("/to-owner"), 1500);
@@ -108,13 +112,13 @@ export default function GoogleCallback() {
             } catch (error) {
                 console.error("Erreur lors du traitement du callback:", error);
                 setStatus('error');
-                setMessage('حدث خطأ أثناء معالجة تسجيل الدخول');
+                setMessage(t('loginProcessingError'));
                 setTimeout(() => navigate("/login?error=processing_error"), 2000);
             }
         };
 
         handleCallback();
-    }, [navigate]);
+    }, [navigate, t]);
 
     return (
         <div className="min-h-screen bg-[#1e3a8a] flex items-center justify-center">

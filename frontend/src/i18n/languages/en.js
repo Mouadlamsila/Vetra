@@ -287,6 +287,18 @@ const en = {
   allFieldsRequired: "All fields are required",
   loginFailed: "Login failed",
   invalidCredentials: "Invalid credentials",
+  // Password validation messages
+  passwordTooShort: "Password must be at least 8 characters long",
+  passwordNoUpperCase: "Password must contain at least one uppercase letter",
+  passwordNoLowerCase: "Password must contain at least one lowercase letter",
+  passwordNoNumber: "Password must contain at least one number",
+  passwordNoSpecialChar: "Password must contain at least one special character",
+  // Google callback messages
+  processingLogin: "Processing login...",
+  noTokenReceived: "No access token received",
+  loginSuccess: "Login successful!",
+  loginProcessingError: "Error processing login",
+  googleRegisterError: "Google registration error",
   //footer
   companyName: "Servis",
   allRightsReserved: "All rights reserved",

@@ -290,6 +290,18 @@ const ar = {
   allFieldsRequired: "جميع الحقول مطلوبة",
   loginFailed: "فشل تسجيل الدخول",
   invalidCredentials: "بيانات الدخول غير صالحة",
+  // Password validation messages
+  passwordTooShort: "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+  passwordNoUpperCase: "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+  passwordNoLowerCase: "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل",
+  passwordNoNumber: "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+  passwordNoSpecialChar: "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل",
+  // Google callback messages
+  processingLogin: "جارٍ معالجة تسجيل الدخول...",
+  noTokenReceived: "لم يتم استلام رمز الوصول",
+  loginSuccess: "تم تسجيل الدخول بنجاح!",
+  loginProcessingError: "خطأ في معالجة تسجيل الدخول",
+  googleRegisterError: "خطأ في تسجيل الدخول بـ Google",
   //footer
   companyName: "شركة سيرفيس",
   allRightsReserved: "جميع الحقوق محفوظة",

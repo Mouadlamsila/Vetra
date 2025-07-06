@@ -287,6 +287,18 @@ const fr = {
   allFieldsRequired: "Tous les champs sont requis",
   loginFailed: "Échec de la connexion",
   invalidCredentials: "Identifiants invalides",
+  // Password validation messages
+  passwordTooShort: "Le mot de passe doit contenir au moins 8 caractères",
+  passwordNoUpperCase: "Le mot de passe doit contenir au moins une lettre majuscule",
+  passwordNoLowerCase: "Le mot de passe doit contenir au moins une lettre minuscule",
+  passwordNoNumber: "Le mot de passe doit contenir au moins un chiffre",
+  passwordNoSpecialChar: "Le mot de passe doit contenir au moins un caractère spécial",
+  // Google callback messages
+  processingLogin: "Traitement de la connexion...",
+  noTokenReceived: "Aucun jeton d'accès reçu",
+  loginSuccess: "Connexion réussie !",
+  loginProcessingError: "Erreur lors du traitement de la connexion",
+  googleRegisterError: "Erreur d'inscription Google",
   //footer
   companyName: "Servis",
   allRightsReserved: "Tous droits réservés",

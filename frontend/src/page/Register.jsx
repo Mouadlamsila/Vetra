@@ -5,8 +5,6 @@ import {
     Mail, Lock, Eye, EyeOff, User,
     Facebook, Twitter, Github, ArrowRight, ArrowLeft
 } from "lucide-react"
-import { auth, googleProvider } from "../firebase"
-import { signInWithPopup } from "firebase/auth"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
@@ -30,13 +28,29 @@ export default function Register() {
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
     const navigate = useNavigate()
 
+    // Password strength validation
+    const validatePassword = (password) => {
+        const minLength = 8;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        
+        if (password.length < minLength) return t('passwordTooShort');
+        if (!hasUpperCase) return t('passwordNoUpperCase');
+        if (!hasLowerCase) return t('passwordNoLowerCase');
+        if (!hasNumbers) return t('passwordNoNumber');
+        if (!hasSpecialChar) return t('passwordNoSpecialChar');
+        
+        return null;
+    };
+
     useEffect(() => {
         const animationTimer = setInterval(() => {
             setActiveFeatureIndex((prev) => (prev + 1) % features.length)
         }, 3000)
         return () => clearInterval(animationTimer)
     }, [])
-
 
     // Function to handle Google sign-in
     const handleGoogleRegister = () => {
@@ -57,13 +71,18 @@ export default function Register() {
         }
     };
 
-
-
     // Dans votre fonction handleSubmit du Register.jsx
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
         setSuccess("")
+
+        // Validate password strength
+        const passwordError = validatePassword(formData.password);
+        if (passwordError) {
+            setError(passwordError);
+            return;
+        }
 
         // Validate password confirmation
         if (formData.password !== formData.confirmPassword) {
@@ -85,10 +104,6 @@ export default function Register() {
                 email: formData.email,
                 password: formData.password
             });
-
-          
-
-           
 
             // Store authentication data
             localStorage.setItem('token', registerResponse.data.jwt)
