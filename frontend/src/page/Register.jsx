@@ -59,6 +59,7 @@ export default function Register() {
 
 
 
+    // Dans votre fonction handleSubmit du Register.jsx
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
@@ -87,15 +88,24 @@ export default function Register() {
 
             console.log('Registration response:', registerResponse.data);
 
-            // Update user role to "User"
+            // L'utilisateur devrait automatiquement avoir le rôle "User" par défaut
+            // Mais on peut le vérifier/forcer si nécessaire
             const userId = registerResponse.data.user.id;
-            await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
-                role: 4
-            }, {
-                headers: {
-                    Authorization: `Bearer ${registerResponse.data.jwt}`
-                }
-            });
+
+            // Vérifier l'ID du rôle "User" (ajustez selon votre configuration)
+            const userRoleId = 4; // Remplacez par l'ID correct du rôle "User"
+
+            try {
+                await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
+                    role: userRoleId
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${registerResponse.data.jwt}`
+                    }
+                });
+            } catch (roleError) {
+                console.warn('Le rôle User est probablement déjà assigné par défaut');
+            }
 
             // Store authentication data
             localStorage.setItem('token', registerResponse.data.jwt)

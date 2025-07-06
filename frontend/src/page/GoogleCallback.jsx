@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function GoogleCallback() {
     const navigate = useNavigate();
-    const [status, setStatus] = useState('processing'); // 'processing', 'success', 'error'
+    const [status, setStatus] = useState('processing');
     const [message, setMessage] = useState('جارٍ تسجيل الدخول...');
 
     useEffect(() => {
@@ -35,43 +35,63 @@ export default function GoogleCallback() {
 
                 console.log("Token reçu de Strapi:", accessToken);
                 
-                // Récupérer les informations de l'utilisateur
-                const userResponse = await axios.get(
-                    'https://stylish-basket-710b77de8f.strapiapp.com/api/users/me',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    }
-                );
-
-                const userData = userResponse.data;
-                console.log("Données utilisateur:", userData);
-
-                // Vérifier si c'est un nouvel utilisateur et s'assurer qu'il a le bon rôle
-                if (userData.role?.name !== 'Authenticated') {
-                    try {
-                        await axios.put(
-                            `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userData.id}`,
-                            { role: 1 }, // ID du rôle "Authenticated"
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${accessToken}`
-                                }
+                // Méthode 1: Essayer d'abord avec /api/users/me
+                let userData = null;
+                try {
+                    const userResponse = await axios.get(
+                        'https://stylish-basket-710b77de8f.strapiapp.com/api/users/me',
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
                             }
-                        );
-                    } catch (roleError) {
-                        console.warn("Erreur lors de la mise à jour du rôle:", roleError);
+                        }
+                    );
+                    userData = userResponse.data;
+                    console.log("Données utilisateur via /me:", userData);
+                } catch (meError) {
+                    console.log("Erreur avec /me, tentative avec décodage du token:", meError);
+                    
+                    // Méthode 2: Décoder le JWT pour obtenir l'ID utilisateur
+                    try {
+                        const tokenParts = accessToken.split('.');
+                        if (tokenParts.length === 3) {
+                            const payload = JSON.parse(atob(tokenParts[1]));
+                            console.log("Payload du token:", payload);
+                            
+                            const userId = payload.id;
+                            if (userId) {
+                                // Utiliser l'endpoint avec l'ID spécifique
+                                const userResponse = await axios.get(
+                                    `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${accessToken}`
+                                        }
+                                    }
+                                );
+                                userData = userResponse.data;
+                                console.log("Données utilisateur via ID:", userData);
+                            }
+                        }
+                    } catch (decodeError) {
+                        console.error("Erreur lors du décodage du token:", decodeError);
                     }
                 }
 
+                if (!userData) {
+                    throw new Error("Impossible de récupérer les données utilisateur");
+                }
+
+                // Traitement des données utilisateur
+                const userInfo = userData.data || userData;
+                
                 // Stocker les données d'authentification
                 localStorage.setItem("token", accessToken);
-                localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
-                localStorage.setItem("IDUser", userData.id);
+                localStorage.setItem("user", JSON.stringify(userInfo.documentId || userInfo.id));
+                localStorage.setItem("IDUser", userInfo.id);
                 localStorage.setItem("role", "user");
-                localStorage.setItem("userEmail", userData.email);
-                localStorage.setItem("userName", userData.username);
+                localStorage.setItem("userEmail", userInfo.email);
+                localStorage.setItem("userName", userInfo.username);
 
                 // Nettoyer l'intention d'auth
                 localStorage.removeItem('auth_intent');
