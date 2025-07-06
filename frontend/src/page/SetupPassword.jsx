@@ -1,300 +1,262 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Eye, EyeOff, Lock, User, Mail } from 'lucide-react';
-import { getAuthToken, getUserId } from '../utils/auth';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import { useState, useEffect } from "react"
+import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
-const SetupPassword = () => {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+export default function SetupPassword() {
+    const { t } = useTranslation()
+    const navigate = useNavigate()
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
+        password: "",
+        confirmPassword: ""
+    })
+    const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
     const [passwordStrength, setPasswordStrength] = useState({
-        score: 0,
-        feedback: []
-    });
-    const language = localStorage.getItem('lang');
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false
+    })
+    const language = localStorage.getItem('lang')
 
+    // Check if user is authenticated
     useEffect(() => {
-        // Check if user is already authenticated
-        const token = getAuthToken();
+        const token = localStorage.getItem('token')
         if (!token) {
-            navigate('/login');
-            return;
+            navigate('/login')
+            return
         }
+    }, [navigate])
 
-        // Fetch user data to pre-fill the form
-        const fetchUserData = async () => {
-            try {
-                const userId = getUserId();
-                const response = await fetch(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const userData = await response.json();
-                    setFormData(prev => ({
-                        ...prev,
-                        username: userData.username || '',
-                        email: userData.email || ''
-                    }));
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, [navigate]);
-
+    // Password strength validation
     const validatePassword = (password) => {
-        const feedback = [];
-        let score = 0;
-
-        if (password.length >= 8) {
-            score += 1;
-        } else {
-            feedback.push('At least 8 characters');
+        const newStrength = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
         }
+        setPasswordStrength(newStrength)
+        
+        if (!newStrength.length) return t('passwordTooShort')
+        if (!newStrength.uppercase) return t('passwordNoUpperCase')
+        if (!newStrength.lowercase) return t('passwordNoLowerCase')
+        if (!newStrength.number) return t('passwordNoNumber')
+        if (!newStrength.special) return t('passwordNoSpecialChar')
+        
+        return null
+    }
 
-        if (/[a-z]/.test(password)) {
-            score += 1;
-        } else {
-            feedback.push('At least one lowercase letter');
-        }
-
-        if (/[A-Z]/.test(password)) {
-            score += 1;
-        } else {
-            feedback.push('At least one uppercase letter');
-        }
-
-        if (/[0-9]/.test(password)) {
-            score += 1;
-        } else {
-            feedback.push('At least one number');
-        }
-
-        if (/[^A-Za-z0-9]/.test(password)) {
-            score += 1;
-        } else {
-            feedback.push('At least one special character');
-        }
-
-        return { score, feedback };
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
-        }));
+            [name]: value,
+        }))
 
         if (name === 'password') {
-            setPasswordStrength(validatePassword(value));
+            validatePassword(value)
         }
-    };
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault()
+        setError("")
+        setSuccess("")
+
+        // Validate password
+        const passwordError = validatePassword(formData.password)
+        if (passwordError) {
+            setError(passwordError)
+            return
+        }
+
+        // Validate password confirmation
+        if (formData.password !== formData.confirmPassword) {
+            setError(t('passwordsDoNotMatch'))
+            return
+        }
 
         try {
-            // Validate passwords match
-            if (formData.password !== formData.confirmPassword) {
-                toast.error('Passwords do not match');
-                return;
-            }
+            setIsLoading(true)
+            
+            const token = localStorage.getItem('token')
+            const userId = localStorage.getItem('IDUser')
 
-            // Validate password strength
-            if (passwordStrength.score < 3) {
-                toast.error('Password is too weak. Please improve it.');
-                return;
-            }
-
-            const userId = getUserId();
-            const token = getAuthToken();
-
-            const response = await fetch(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
+            // Update user password
+            const response = await axios.put(
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
+                {
                     password: formData.password
-                })
-            });
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
 
-            if (response.ok) {
-                toast.success('Password setup completed successfully!');
-                navigate('/controll');
-            } else {
-                const errorData = await response.json();
-                toast.error(errorData.error?.message || 'Failed to update password');
-            }
+            setSuccess(t('passwordUpdateSuccess'))
+
+            // Redirect to dashboard after successful password update
+            setTimeout(() => {
+                navigate("/to-owner")
+            }, 2000)
+
         } catch (error) {
-            console.error('Error updating password:', error);
-            toast.error('An error occurred while updating your password');
+            console.error('Password update error:', error)
+            if (error.response) {
+                const errorData = error.response.data?.error
+                setError(errorData?.message || t('passwordUpdateError'))
+            } else {
+                setError(t('passwordUpdateError'))
+            }
         } finally {
-            setLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
-    const getPasswordStrengthColor = () => {
-        if (passwordStrength.score <= 1) return 'bg-red-500';
-        if (passwordStrength.score <= 2) return 'bg-orange-500';
-        if (passwordStrength.score <= 3) return 'bg-yellow-500';
-        if (passwordStrength.score <= 4) return 'bg-blue-500';
-        return 'bg-green-500';
-    };
+    const isPasswordValid = Object.values(passwordStrength).every(Boolean)
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
-                <div className="text-center mb-8">
-                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                        <Lock className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Setup Your Password</h1>
-                    <p className="text-gray-600">Complete your account setup by creating a secure password</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Username
-                        </label>
-                        <div className="relative">
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                            <input
-                                type="text"
-                                name="username"
-                                value={formData.username}
-                                onChange={handleInputChange}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                required
-                            />
-                        </div>
+        <div className="min-h-screen pt-12 w-full bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
+            <div className="w-full max-w-md mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow p-8 border border-white/20 transform transition-all duration-300 hover:border-purple-300/30">
+                    <div className="text-center mb-8">
+                        <h2 className="text-3xl font-bold text-white mb-2">{t('setupPassword')}</h2>
+                        <p className="text-purple-100">{t('setupPasswordDescription')}</p>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Email
-                        </label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Password */}
+                        <div className="relative group">
+                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                                <Lock className="h-5 w-5 text-purple-200" />
+                            </div>
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                            <input
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
-                                onChange={handleInputChange}
-                                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                onChange={handleChange}
+                                className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
+                                placeholder={t('newPasswordPlaceholder')}
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-purple-300 hover:text-purple-500 transition-colors duration-300`}
                             >
-                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                             </button>
                         </div>
-                        
-                        {/* Password strength indicator */}
-                        {formData.password && (
-                            <div className="mt-2">
-                                <div className="flex space-x-1 mb-2">
-                                    {[1, 2, 3, 4, 5].map((level) => (
-                                        <div
-                                            key={level}
-                                            className={`h-2 flex-1 rounded ${
-                                                level <= passwordStrength.score ? getPasswordStrengthColor() : 'bg-gray-200'
-                                            }`}
-                                        />
-                                    ))}
+
+                        {/* Password Strength Indicator */}
+                        <div className="space-y-2">
+                            <p className="text-sm text-purple-200">{t('passwordRequirements')}:</p>
+                            <div className="space-y-1">
+                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.length ? 'text-green-300' : 'text-red-300'}`}>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>{t('passwordMinLength')}</span>
                                 </div>
-                                <div className="text-xs text-gray-600">
-                                    {passwordStrength.feedback.length > 0 && (
-                                        <ul className="list-disc list-inside">
-                                            {passwordStrength.feedback.map((item, index) => (
-                                                <li key={index}>{item}</li>
-                                            ))}
-                                        </ul>
-                                    )}
+                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.uppercase ? 'text-green-300' : 'text-red-300'}`}>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>{t('passwordUppercase')}</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.lowercase ? 'text-green-300' : 'text-red-300'}`}>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>{t('passwordLowercase')}</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.number ? 'text-green-300' : 'text-red-300'}`}>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>{t('passwordNumber')}</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.special ? 'text-green-300' : 'text-red-300'}`}>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>{t('passwordSpecial')}</span>
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        {/* Confirm Password */}
+                        <div className="relative group">
+                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                                <Lock className="h-5 w-5 text-purple-200" />
+                            </div>
                             <input
-                                type={showConfirmPassword ? 'text' : 'password'}
+                                type={showConfirmPassword ? "text" : "password"}
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                onChange={handleChange}
+                                className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
+                                placeholder={t('confirmPasswordPlaceholder')}
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-purple-300 hover:text-purple-500 transition-colors duration-300`}
                             >
-                                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                             </button>
                         </div>
-                    </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {loading ? 'Setting up...' : 'Complete Setup'}
-                    </button>
-                </form>
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={isLoading || !isPasswordValid || formData.password !== formData.confirmPassword}
+                            className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span className="relative z-10 flex items-center justify-center">
+                                {isLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <>
+                                        {t('updatePassword')}
+                                        {language === 'ar' ? (
+                                            <ArrowLeft className="ml-2 h-5 w-5" />
+                                        ) : (
+                                            <ArrowRight className="ml-2 h-5 w-5" />
+                                        )}
+                                    </>
+                                )}
+                            </span>
+                        </button>
+
+                        {/* Skip Button */}
+                        <button
+                            type="button"
+                            onClick={() => navigate("/to-owner")}
+                            className="w-full bg-transparent border border-purple-300/20 text-purple-200 py-3 px-4 rounded-lg font-medium hover:bg-purple-300/10 transition-all duration-300"
+                        >
+                            {t('skipForNow')}
+                        </button>
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Success Message */}
+                        {success && (
+                            <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-200 text-sm">
+                                {success}
+                            </div>
+                        )}
+                    </form>
+                </div>
             </div>
         </div>
-    );
-};
-
-export default SetupPassword; 
+    )
+} 

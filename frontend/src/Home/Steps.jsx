@@ -6,13 +6,12 @@ import Step3 from "../Steps/Step3";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { getUserId, getUserRole } from '../utils/auth';
 
 
 const Steps = () => {
     const { t } = useTranslation();
-    const userId = getUserId();
-    const role = getUserRole();
+    const userId = localStorage.getItem("IDUser");
+    const role = localStorage.getItem('role');
 
 
     const containerVariants = {

@@ -6,15 +6,21 @@ import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from "axios"
-import { 
-  isAuthenticated, 
-  setAuthToken, 
-  getUserRole, 
-  getLanguage, 
-  setAuthIntent 
-} from "../utils/auth"
 
 export default function Login() {
+  const userId = localStorage.getItem('IDUser')
+  const userRole = localStorage.getItem('role')
+  useEffect(() => {
+
+    if (userId) {
+      if (userRole === "Admin") {
+        window.location.href = '/admin';
+      }
+      else {
+        window.location.href = '/';
+      }
+    }
+  }, [userId, userRole])
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
@@ -26,19 +32,7 @@ export default function Login() {
     identifier: "",
     password: "",
   })
-  const language = getLanguage()
-
-  // Check if user is already authenticated
-  useEffect(() => {
-    if (isAuthenticated()) {
-      const userRole = getUserRole()
-      if (userRole === "Admin") {
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/';
-      }
-    }
-  }, [])
+  const language = localStorage.getItem("lang")
 
   /* Animation */
   const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
@@ -72,13 +66,17 @@ export default function Login() {
           password: formData.password
         }
       )
+      const user = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${response.data.user.id}?populate=*`)
 
-      // Store only the token securely
-      setAuthToken(response.data.jwt)
 
-      // Navigate based on role (get from token)
-      const userRole = getUserRole()
-      if (userRole === "Admin") {
+      // Store authentication data
+      localStorage.setItem('token', response.data.jwt)
+      localStorage.setItem('user', JSON.stringify(response.data.user.documentId))
+      localStorage.setItem('IDUser', response.data.user.id)
+      localStorage.setItem('role', user.data.role.name)
+
+      // Navigate based on role
+      if (user.data.role.name === "Admin") {
         navigate('/admin')
       } else {
         navigate('/')
@@ -111,7 +109,7 @@ export default function Login() {
       setIsLoading(true);
 
       // Save login intent (not registration)
-      setAuthIntent('login');
+      localStorage.setItem('auth_intent', 'login');
 
       // Redirect to Google authentication via Strapi with proper redirect URI
       const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;

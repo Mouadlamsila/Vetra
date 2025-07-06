@@ -15,14 +15,11 @@ import {
   Check,
   MessageSquare,
   ArrowLeft,
-  ShoppingBag,
-  Calendar,
 } from "lucide-react"
 import axios from "axios"
 import { toast } from "react-toastify"
 import RatingForm from "../components/RatingForm"
 import { useTranslation } from "react-i18next"
-import { getUserId } from "../utils/auth"
 
 const categories = [
   "fashion",
@@ -55,9 +52,7 @@ export default function Stores() {
   const [isRating, setIsRating] = useState(false)
   const [showRatingModal, setShowRatingModal] = useState(false)
   const [selectedStore, setSelectedStore] = useState(null)
-  const [ratingForm, setRatingForm] = useState({ stars: 0, opinion: "" })
   const lang = localStorage.getItem('lang');
-  const userId = getUserId()
 
   // Fetch stores from Strapi
   useEffect(() => {
@@ -133,6 +128,8 @@ export default function Stores() {
 
   const handleRating = async (storeId, rating, opinion) => {
     try {
+      const userId = localStorage.getItem('IDUser')
+      
       if (!userId) {
         toast.error(t('stores.ratings.loginToReview'))
         return
@@ -190,6 +187,7 @@ export default function Stores() {
   }
 
   const openRatingModal = (store) => {
+    const userId = localStorage.getItem('IDUser')
     const existingRating = store.rating_boutiques?.find(
       rating => rating.user?.id === parseInt(userId)
     )
@@ -634,12 +632,11 @@ export default function Stores() {
         onClose={() => {
           setShowRatingModal(false)
           setSelectedStore(null)
-          setRatingForm({ stars: 0, opinion: "" })
         }}
         selectedStore={selectedStore}
         onRatingSubmit={handleRating}
         existingRating={selectedStore?.rating_boutiques?.find(
-          rating => rating.user?.id === parseInt(userId)
+          rating => rating.user?.id === parseInt(localStorage.getItem('IDUser'))
         )}
       />
     </div>

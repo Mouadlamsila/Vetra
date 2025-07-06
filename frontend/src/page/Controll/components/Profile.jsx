@@ -24,17 +24,13 @@ import {
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
-import { getUserId, getAuthToken, getUserRole } from "../../../utils/auth"
-
 export default function Profile() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [isEditing, setIsEditing] = useState(true)
   const language = localStorage.getItem("lang")
-  const userRole = getUserRole()
-  const userId = getUserId()
+  const userRole = localStorage.getItem("role")
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -42,15 +38,6 @@ export default function Profile() {
     confirmPassword: "",
     oldPassword: "",
     photo: null,
-    phone: "",
-    address: {
-      line1: "",
-      line2: "",
-      city: "",
-      state: "",
-      postal_code: "",
-      country: ""
-    }
   })
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -67,42 +54,27 @@ export default function Profile() {
   const [previewUrl, setPreviewUrl] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [showPasswordForm, setShowPasswordForm] = useState(false)
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  })
 
   useEffect(() => {
     fetchUserData()
-  }, [userId])
+  }, [])
 
   const fetchUserData = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
+      const response = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me?populate=photo", {
         headers: {
-          Authorization: `Bearer ${getAuthToken()}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       setUser(response.data)
       setFormData({
-        username: response.data.username || "",
-        email: response.data.email || "",
+        username: response.data.username,
+        email: response.data.email,
         password: "",
         confirmPassword: "",
         oldPassword: "",
         photo: null,
-        phone: response.data.phone || "",
-        address: {
-          line1: response.data.address?.line1 || "",
-          line2: response.data.address?.line2 || "",
-          city: response.data.address?.city || "",
-          state: response.data.address?.state || "",
-          postal_code: response.data.address?.postal_code || "",
-          country: response.data.address?.country || ""
-        }
       })
       if (response.data.photo) {
         setPreviewUrl(`${response.data.photo.url}`)
@@ -142,21 +114,10 @@ export default function Profile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".")
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }))
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
 
     if (name === "password") {
       checkPasswordRequirements(value)
@@ -232,7 +193,7 @@ export default function Profile() {
 
         const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", uploadFormData, {
           headers: {
-            Authorization: `Bearer ${getAuthToken()}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
           },
         })
@@ -249,8 +210,6 @@ export default function Profile() {
       const updateData = {
         username: formData.username,
         email: formData.email,
-        phone: formData.phone,
-        address: formData.address
       }
 
       if (formData.password) {
@@ -262,18 +221,18 @@ export default function Profile() {
       }
 
       // Update user data
-      const response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, updateData, {
+      const response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${user.id}`, updateData, {
         headers: {
-          Authorization: `Bearer ${getAuthToken()}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
       })
 
       if (response.data) {
         // Fetch updated user data with photo
-        const updatedUserResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
+        const updatedUserResponse = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me?populate=photo", {
           headers: {
-            Authorization: `Bearer ${getAuthToken()}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         })
 
@@ -286,15 +245,6 @@ export default function Profile() {
           confirmPassword: "",
           oldPassword: "",
           photo: null,
-          phone: updatedUserResponse.data.phone || "",
-          address: {
-            line1: updatedUserResponse.data.address?.line1 || "",
-            line2: updatedUserResponse.data.address?.line2 || "",
-            city: updatedUserResponse.data.address?.city || "",
-            state: updatedUserResponse.data.address?.state || "",
-            postal_code: updatedUserResponse.data.address?.postal_code || "",
-            country: updatedUserResponse.data.address?.country || ""
-          }
         }))
       } else {
         throw new Error(t("dashboard.updateError"))
@@ -320,60 +270,17 @@ export default function Profile() {
     }
   }
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error(t('profile.passwordsDoNotMatch'))
-      return
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      toast.error(t('profile.passwordTooShort'))
-      return
-    }
-
-    setIsUploading(true)
-
-    try {
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
-        password: passwordData.newPassword
-      }, {
-        headers: {
-          Authorization: `Bearer ${getAuthToken()}`,
-        },
-      })
-
-      toast.success(t('profile.passwordUpdateSuccess'))
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-      })
-      setShowPasswordForm(false)
-    } catch (error) {
-      console.error("Error updating password:", error)
-      toast.error(t('profile.passwordUpdateError'))
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6D28D9]"></div>
+          <p className="text-[#6D28D9] font-medium">{t("profile.loading")}</p>
+        </div>
       </div>
     )
   }
+  const lang = localStorage.getItem("lang")
 
   return (
     <div className="py-10 grid gap-4 px-6 md:px-10 bg-white">
@@ -695,63 +602,6 @@ export default function Profile() {
           )}
         </div>
       </div>
-
-      <div className="border-t border-gray-200 pt-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">{t('profile.changePassword')}</h2>
-          <button
-            onClick={() => setShowPasswordForm(!showPasswordForm)}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-          >
-            {showPasswordForm ? t('profile.cancel') : t('profile.changePassword')}
-          </button>
-        </div>
-
-        {showPasswordForm && (
-          <form onSubmit={handlePasswordSubmit} className="max-w-md">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('profile.newPassword')}
-                </label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('profile.confirmPassword')}
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={passwordData.confirmPassword}
-                  onChange={handlePasswordChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  disabled={isUploading}
-                  className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-                >
-                  {isUploading ? t('profile.updating') : t('profile.updatePassword')}
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
-      </div>
-
       {userRole === "user" && (
         <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
           <div className="flex items-start space-x-4">
@@ -802,7 +652,7 @@ export default function Profile() {
                 onClick={() => navigate("/to-owner")}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
               >
-                <Store className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                <Store className={`h-5 w-5 ${lang === "ar" ? "ml-2" : "mr-2"}`} />
                 {t("profile.becomeOwner.button")}
               </button>
             </div>

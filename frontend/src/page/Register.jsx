@@ -8,7 +8,6 @@ import {
 import { useTranslation } from "react-i18next"
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
-import { setAuthToken, setAuthIntent, getLanguage } from "../utils/auth"
 
 export default function Register() {
     const { t } = useTranslation()
@@ -24,7 +23,7 @@ export default function Register() {
     })
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
-    const language = getLanguage()
+    const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
     const navigate = useNavigate()
@@ -58,21 +57,21 @@ export default function Register() {
         try {
             setIsLoading(true);
 
-            // Save registration intent (not login)
-            setAuthIntent('register');
+            // Sauvegarder l'intention d'inscription (pas de connexion)
+            localStorage.setItem('auth_intent', 'register');
 
-            // Redirect to Google authentication via Strapi with proper redirect URI
+            // Rediriger vers l'authentification Google via Strapi avec le bon redirect URI
             const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
             window.location.href = redirectUrl;
 
         } catch (error) {
-            console.error('Error during Google registration:', error);
+            console.error('Erreur lors de l\'inscription Google:', error);
             setError(t('googleRegisterError'));
             setIsLoading(false);
         }
     };
 
-    // Handle form submission
+    // Dans votre fonction handleSubmit du Register.jsx
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
@@ -106,8 +105,11 @@ export default function Register() {
                 password: formData.password
             });
 
-            // Store only the token securely
-            setAuthToken(registerResponse.data.jwt)
+            // Store authentication data
+            localStorage.setItem('token', registerResponse.data.jwt)
+            localStorage.setItem('user', JSON.stringify(registerResponse.data.user.documentId))
+            localStorage.setItem('IDUser', registerResponse.data.user.id)
+            localStorage.setItem('role', 'user')
 
             setSuccess(t('registrationSuccess'));
 

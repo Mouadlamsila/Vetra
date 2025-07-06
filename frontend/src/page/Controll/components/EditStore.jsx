@@ -25,7 +25,6 @@ import {
   Edit,
   Loader,
 } from "lucide-react"
-import { getAuthToken } from '../../../utils/auth'
 
 export default function EditStore() {
   const { t } = useTranslation()
@@ -57,7 +56,7 @@ export default function EditStore() {
   const [pageLoading, setPageLoading] = useState(true)
   const navigate = useNavigate()
   const { id } = useParams()
-  const token = getAuthToken()
+  const token = localStorage.getItem("token")
   const lang = localStorage.getItem("lang")
   useEffect(() => {
     const fetchStoreData = async () => {

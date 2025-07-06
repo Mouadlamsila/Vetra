@@ -19,10 +19,8 @@ import {
   MapPin,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "react-toastify"
 import axios from "axios"
 import { generatePaymentReceipt } from '../../../utils/pdfGenerator'
-import { getUserId, getAuthToken } from "../../../utils/auth"
 
 export default function PaymentsPage() {
   const { t } = useTranslation()
@@ -37,34 +35,37 @@ export default function PaymentsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [showAllProducts, setShowAllProducts] = useState(false)
   const lang = localStorage.getItem("lang")
-  const userId = getUserId()
+  const IDUser = localStorage.getItem("IDUser")
 
   // Fetch payments data
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/payments?filters[user][id][$eq]=${userId}&populate=*`, {
-          headers: {
-            Authorization: `Bearer ${getAuthToken()}`,
-          },
-        })
+        const response = await axios.get(
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         setPayments(response.data.data)
         setLoading(false)
-      } catch (error) {
-        console.error("Error fetching payments:", error)
-        setError("Failed to load payments")
+      } catch (err) {
+        setError(t("payment.payment.error"))
         setLoading(false)
+        console.error("Error fetching payments:", err)
       }
     }
 
     fetchPayments()
-  }, [userId])
+  }, [IDUser, t])
 
   // Filter payments based on status and search query
   const filteredPayments = payments.filter((payment) => {
     // Filter by status
-    if (selectedStatus !== "all" && payment.status !== selectedStatus) {
+    if (selectedStatus !== "all" && payment.status_checkout !== selectedStatus) {
       return false
     }
 
@@ -72,9 +73,9 @@ export default function PaymentsPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       return (
-        payment.payment_id.toString().includes(query) ||
+        payment.sessionId.toLowerCase().includes(query) ||
         payment.amount.toString().includes(query) ||
-        payment.status.toLowerCase().includes(query)
+        payment.status_checkout.toLowerCase().includes(query)
       )
     }
 
@@ -89,8 +90,6 @@ export default function PaymentsPage() {
         return "bg-yellow-100 text-yellow-800"
       case "failed":
         return "bg-red-100 text-red-800"
-      case "refunded":
-        return "bg-blue-100 text-blue-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -103,15 +102,15 @@ export default function PaymentsPage() {
   // Calculate metrics
   const calculateMetrics = () => {
     const totalReceived = payments
-      .filter(p => p.status === "completed")
+      .filter(p => p.status_checkout === "completed")
       .reduce((sum, p) => sum + parseFloat(p.amount), 0)
 
     const pendingAmount = payments
-      .filter(p => p.status === "pending")
+      .filter(p => p.status_checkout === "pending")
       .reduce((sum, p) => sum + parseFloat(p.amount), 0)
 
     const nextPayment = payments
-      .filter(p => p.status === "pending")
+      .filter(p => p.status_checkout === "pending")
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]
 
     return {
@@ -150,13 +149,13 @@ export default function PaymentsPage() {
     <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
       <div className="flex justify-between items-start mb-3">
         <div>
-          <h3 className="font-medium text-[#1e3a8a]">{payment.payment_id || payment.id}</h3>
+          <h3 className="font-medium text-[#1e3a8a]">{payment.sessionId}</h3>
           <p className="text-xs text-gray-500">{new Date(payment.createdAt).toLocaleDateString()}</p>
         </div>
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status_checkout)}`}
         >
-          {getStatusText(payment.status)}
+          {getStatusText(payment.status_checkout)}
         </span>
       </div>
 
@@ -324,6 +323,7 @@ export default function PaymentsPage() {
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFiltersVisible || !isMobile ? "block" : "hidden"}`}>
         <div className="relative">
           <label className="block text-sm font-medium text-[#1e3a8a] mb-1 flex items-center">
+            <CreditCard className="h-4 w-4 mr-1" />
             {t("payment.payment.filterByStatus")}
           </label>
           <div className="relative">
@@ -336,7 +336,6 @@ export default function PaymentsPage() {
               <option value="completed">{t("payment.payment.status.completed")}</option>
               <option value="pending">{t("payment.payment.status.pending")}</option>
               <option value="failed">{t("payment.payment.status.failed")}</option>
-              <option value="refunded">{t("payment.payment.status.refunded")}</option>
             </select>
             <div
               className={`absolute inset-y-0 ${lang === "ar" ? "left-0" : "right-0"} flex items-center px-2 pointer-events-none`}
@@ -415,7 +414,7 @@ export default function PaymentsPage() {
                   {filteredPayments.map((payment) => (
                     <tr key={payment.id} className="hover:bg-[#c8c2fd]/5 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-start text-sm font-medium text-[#1e3a8a]">
-                        {payment.payment_id || payment.id}
+                        {payment.sessionId}
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                         {new Date(payment.createdAt).toLocaleDateString()}
@@ -428,9 +427,9 @@ export default function PaymentsPage() {
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status)}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.status_checkout)}`}
                         >
-                          {getStatusText(payment.status)}
+                          {getStatusText(payment.status_checkout)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end">
@@ -479,16 +478,16 @@ export default function PaymentsPage() {
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-[#1e3a8a] mb-1">
-                    {t('payment.payment.actions.viewDetails')} - {selectedPayment.payment_id || selectedPayment.id}
+                    {t('payment.payment.actions.viewDetails')} - {selectedPayment.sessionId}
                   </h2>
                   <p className="text-sm text-gray-500">
                     {new Date(selectedPayment.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <span
-                  className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedPayment.status)}`}
+                  className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedPayment.status_checkout)}`}
                 >
-                  {getStatusText(selectedPayment.status)}
+                  {getStatusText(selectedPayment.status_checkout)}
                 </span>
               </div>
             </div>
@@ -509,7 +508,7 @@ export default function PaymentsPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">{t('payment.payment.table.headers.status')}</p>
-                    <p className="font-medium">{getStatusText(selectedPayment.status)}</p>
+                    <p className="font-medium">{getStatusText(selectedPayment.status_checkout)}</p>
                   </div>
                 </div>
               </div>

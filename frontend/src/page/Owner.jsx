@@ -6,7 +6,6 @@ import * as Yup from "yup"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { getUserId, getAuthToken, setAuthToken } from '../utils/auth'
 
 export default function OwnerForm() {
   const { t } = useTranslation()
@@ -205,8 +204,8 @@ export default function OwnerForm() {
       await validationSchema.validate(formData, { abortEarly: false })
       setErrors({})
 
-      const userId = getUserId()
-      const token = getAuthToken()
+      const userId = localStorage.getItem('IDUser')
+      const token = localStorage.getItem('token')
 
       if (!userId || !token) {
         showToast(t("owner.toast.error.userNotAuth"), 'error')
@@ -251,8 +250,7 @@ export default function OwnerForm() {
           }
         )
         console.log('User updated successfully:', userResponse.data)
-        setAuthToken(userResponse.data.token)
-        // Role is now stored in the token, no need to store separately
+        localStorage.setItem('role', userResponse.data.role.name)
       } catch (userError) {
         console.error('Error updating user:', userError.response?.data || userError.message)
         throw userError

@@ -3,24 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { getUserId } from '../../../utils/auth';
 
 export default function Stores() {
     const { t } = useTranslation();
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showAddStore, setShowAddStore] = useState(false);
-    const [editingStore, setEditingStore] = useState(null);
-    const [showEditStore, setShowEditStore] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [storeToDelete, setStoreToDelete] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [storesPerPage] = useState(10);
-
-    const IDUser = getUserId();
+    const IDUser = localStorage.getItem('IDUser');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -129,7 +118,7 @@ export default function Stores() {
                                     <button 
                                         onClick={()=> {
                                             localStorage.setItem('IDBoutique', store.documentId)
-                                            // Store owner ID for navigation (non-sensitive)
+                                            localStorage.setItem('idOwner', IDUser)
                                         }}
                                         className="w-full bg-white border border-gray-300 flex items-center justify-center hover:bg-[#c8c2fd]/30 hover:text-[#1e3a8a] transition-all duration-300 gap-2 text-gray-500 px-4 py-2 rounded-md"
                                     >

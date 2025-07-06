@@ -2,14 +2,13 @@ import { Link, useLocation } from "react-router-dom"
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram, ChevronRight, Heart } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link as ScrollLink } from "react-scroll"
-import { getUserId } from '../utils/auth'
 
 const Footer = () => {
     const { t } = useTranslation()
     const currentYear = new Date().getFullYear()
     const location = useLocation();
     const language = localStorage.getItem("lang");
-    const userId = getUserId();
+    const userId = localStorage.getItem("IDUser");
 
 
 

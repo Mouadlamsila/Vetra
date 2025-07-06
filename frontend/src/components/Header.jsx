@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "react-hot-toast";
-import { getUserInfo } from '../utils/auth';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -11,7 +10,7 @@ const Header = () => {
 
   const handleCheckout = async () => {
     try {
-      const user = getUserInfo();
+      const user = JSON.parse(localStorage.getItem("user"));
       if (!user) {
         navigate("/login");
         return;

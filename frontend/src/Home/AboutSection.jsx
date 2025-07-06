@@ -5,12 +5,11 @@ import { motion } from "framer-motion"
 import { Star, ChevronRight, Users, Award, Clock, Globe, CheckCircle, Brain, Rocket, Sparkles, TrendingUp, Lightbulb, Target, ChevronLeft } from "lucide-react"
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
-import { getUserRole } from '../utils/auth';
 
 const AboutSection = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("mission")
-  const role = getUserRole();
+  const role = localStorage.getItem("role");
 
   // Team members data
   const teamMembers = [

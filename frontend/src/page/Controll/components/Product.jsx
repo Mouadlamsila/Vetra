@@ -24,7 +24,6 @@ import "react-toastify/dist/ReactToastify.css"
 import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
-import { getUserId, getAuthToken } from '../../../utils/auth'
 
 export default function ProductsPage() {
   const { t } = useTranslation()
@@ -39,8 +38,8 @@ export default function ProductsPage() {
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const navigate = useNavigate()
-  const token = getAuthToken()
-  const IDUser = getUserId()
+  const token = localStorage.getItem("token")
+  const IDUser = localStorage.getItem("IDUser")
   const lang = localStorage.getItem("lang")
 
   // Check if mobile on mount and when window resizes

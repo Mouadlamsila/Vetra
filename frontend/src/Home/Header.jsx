@@ -7,7 +7,6 @@ import { Link as LinkDom, useLocation, useNavigate } from "react-router-dom";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { scroller, Link as ScrollLink } from 'react-scroll'
 import BTN1 from "../blocks/Buttons/BTN1";
-import { isAuthenticated, clearAuth } from '../utils/auth';
 
 export default function Header() {
     const { t, i18n } = useTranslation();
@@ -18,7 +17,7 @@ export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const [makeStyle, setMakeStyle] = useState(localStorage.getItem("location"));
-    const userID = isAuthenticated();
+    const userID = localStorage.getItem("user");
 
     useEffect(() => {
         if (location.pathname === '/' && location.hash) {
@@ -64,8 +63,15 @@ export default function Header() {
     }, [currentLang]);
 
     function logout() {
-        clearAuth();
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("IDUser");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("IDBoutique");
+        localStorage.removeItem("idOwner");
         localStorage.setItem("location", "login");
+
         navigate("/login");
     }
 

@@ -1,278 +1,213 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
-import { getUserId, getAuthToken } from '../utils/auth';
+import { useTranslation } from 'react-i18next';
+import { X, RefreshCw } from 'lucide-react';
 
-const CheckoutForm = ({ amount, onSuccess, onCancel, validateForm }) => {
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    base: {
+      color: '#32325d',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: '#aab7c4'
+      }
+    },
+    invalid: {
+      color: '#fa755a',
+      iconColor: '#fa755a'
+    }
+  }
+};
+
+export default function CheckoutForm({ 
+  amount, 
+  onSuccess, 
+  onCancel, 
+  orderId, 
+  product, 
+  quantity, 
+  userData,
+  cartItems
+}) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: 'US'
-  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!stripe || !elements) {
-      toast.error('Stripe not loaded');
-      return;
-    }
-
-    // Validate form data
-    if (validateForm) {
-      const errors = validateForm(formData);
-      if (Object.keys(errors).length > 0) {
-        Object.values(errors).forEach(error => {
-          toast.error(error);
-        });
-        return;
-      }
-    }
-
-    setLoading(true);
-
+  const createCheckoutSession = async (paymentMethod) => {
     try {
-      // Create payment intent
-      const response = await fetch('https://stylish-basket-710b77de8f.strapiapp.com/api/create-payment-intent', {
+      const checkoutData = {
+        data: {
+          products: cartItems 
+            ? cartItems.map(item => parseInt(item.product.id))
+            : [parseInt(product.id)],
+          quantities: cartItems
+            ? cartItems.reduce((acc, item) => ({
+                ...acc,
+                [item.product.id]: parseInt(item.qte)
+              }), {})
+            : {
+                [product.id]: parseInt(quantity)
+              },
+          user: parseInt(localStorage.getItem("IDUser")),
+          amount: amount,
+          currency: 'usd',
+          status_checkout: "pending",
+          customer: {
+            email: userData?.email || '',
+            name: userData?.username || '',
+            phone: userData?.phone || '',
+            address: {
+              line1: userData?.address?.line1 || '',
+              line2: userData?.address?.line2 || '',
+              city: userData?.address?.city || '',
+              state: userData?.address?.state || '',
+              postal_code: userData?.address?.postal_code || '',
+              country: userData?.address?.country || 'US'
+            }
+          },
+          shippingAddress: {
+            line1: userData?.address?.line1 || '',
+            line2: userData?.address?.line2 || '',
+            city: userData?.address?.city || '',
+            state: userData?.address?.state || '',
+            postal_code: userData?.address?.postal_code || '',
+            country: userData?.address?.country || 'US'
+          },
+          order: orderId,
+          paymentMethodId: paymentMethod.id
+        }
+      };
+
+      const response = await fetch('https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAuthToken()}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({
-          amount: amount * 100, // Convert to cents
-          currency: 'usd',
-          user: parseInt(getUserId()),
-          metadata: {
-            user_id: getUserId(),
-            payment_type: 'stripe'
-          }
-        })
+        body: JSON.stringify(checkoutData)
       });
-
-      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create payment intent');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Confirm payment
-      const { error, paymentIntent } = await stripe.confirmCardPayment(data.client_secret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            address: {
-              line1: formData.address,
-              city: formData.city,
-              postal_code: formData.postalCode,
-              country: formData.country
-            }
-          }
-        }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const { error: stripeError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement),
       });
 
-      if (error) {
-        throw error;
+      if (stripeError) {
+        setError(stripeError.message);
+        toast.error(stripeError.message);
+        return;
       }
 
-      if (paymentIntent.status === 'succeeded') {
-        toast.success('Payment successful!');
-        onSuccess(paymentIntent);
-      } else {
-        throw new Error('Payment failed');
-      }
-
-    } catch (error) {
-      console.error('Payment error:', error);
-      
-      if (error.type === 'card_error') {
-        switch (error.code) {
-          case 'invalid_number':
-            toast.error('Invalid card number');
-            break;
-          case 'incomplete_number':
-            toast.error('Incomplete card number');
-            break;
-          case 'invalid_expiry':
-            toast.error('Invalid expiry date');
-            break;
-          case 'incomplete_expiry':
-            toast.error('Incomplete expiry date');
-            break;
-          case 'invalid_cvc':
-            toast.error('Invalid CVC');
-            break;
-          case 'incomplete_cvc':
-            toast.error('Incomplete CVC');
-            break;
-          case 'card_declined':
-            toast.error('Card was declined');
-            break;
-          default:
-            toast.error('Payment processing error');
+      // Try to create checkout session
+      try {
+        const response = await createCheckoutSession(paymentMethod);
+        onSuccess(response);
+      } catch (error) {
+        if (retryCount < MAX_RETRIES) {
+          setRetryCount(prev => prev + 1);
+          setIsRetrying(true);
+          toast.info(t('checkout.retrying', { count: retryCount + 1, max: MAX_RETRIES }));
+          
+          // Wait for RETRY_DELAY before retrying
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          
+          // Retry the checkout session creation
+          const response = await createCheckoutSession(paymentMethod);
+          onSuccess(response);
+        } else {
+          throw new Error(t('checkout.maxRetriesExceeded'));
         }
-      } else {
-        toast.error(error.message || 'Payment failed');
       }
+    } catch (err) {
+      setError(err.message);
+      toast.error(err.message);
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
+      setIsRetrying(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">Checkout</h2>
-        <p className="text-gray-600 mb-4">Total: ${amount.toFixed(2)}</p>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">{t('checkout.paymentDetails')}</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">
+            {t('checkout.cardDetails')}
+          </label>
+          <div className="p-3 border border-gray-300 rounded-md">
+            <CardElement options={CARD_ELEMENT_OPTIONS} />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+        {error && (
+          <div className="text-red-500 text-sm">
+            {error}
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+        {isRetrying && (
+          <div className="flex items-center gap-2 text-blue-600">
+            <RefreshCw className="h-4 w-4 animate-spin" />
+            <span>{t('checkout.retrying', { count: retryCount + 1, max: MAX_RETRIES })}</span>
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Address
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Postal Code
-              </label>
-              <input
-                type="text"
-                name="postalCode"
-                value={formData.postalCode}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Card Details
-            </label>
-            <div className="border border-gray-300 rounded-md p-3">
-              <CardElement
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
-                      },
-                    },
-                    invalid: {
-                      color: '#9e2146',
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex space-x-3">
-            <button
-              type="submit"
-              disabled={loading || !stripe}
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Processing...' : 'Pay Now'}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-between items-center">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+          >
+            {t('checkout.cancel')}
+          </button>
+          
+          <button
+            type="submit"
+            disabled={!stripe || isProcessing}
+            className={`px-6 py-2 rounded-md text-white font-medium ${
+              !stripe || isProcessing
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-purple-600 hover:bg-purple-700'
+            }`}
+          >
+            {isProcessing ? t('checkout.processing') : `${t('checkout.pay')} $${amount}`}
+          </button>
+        </div>
+      </form>
     </div>
   );
-};
-
-export default CheckoutForm; 
+} 

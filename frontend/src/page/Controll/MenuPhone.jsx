@@ -17,7 +17,6 @@ import {
 import { useEffect, useState, useRef } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { clearAuth } from "../../utils/auth"
 
 export default function MobileNavigation() {
   const location = useLocation()
@@ -29,9 +28,14 @@ export default function MobileNavigation() {
   const menuRef = useRef(null)
 
   const handleLogout = () => {
-    clearAuth()
-    localStorage.setItem("location", "login")
-    navigate("/login")
+      localStorage.removeItem("user");
+      localStorage.removeItem("IDUser");
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("IDBoutique");
+      localStorage.removeItem("idOwner");
+      localStorage.setItem("location", "login");
+      navigate("/login")
   }
 
   // Main navigation items (always visible)

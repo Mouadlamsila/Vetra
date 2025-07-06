@@ -7,7 +7,6 @@ import { changeLanguage } from '../../../i18n/i18n';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { getUserId, getAuthToken, clearAuth } from '../../../utils/auth';
 
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -58,8 +57,8 @@ export default function SettingsPage() {
 
     setIsDeleting(true);
     try {
-      const userId = getUserId();
-      const token = getAuthToken();
+      const userId = localStorage.getItem('IDUser');
+      const token = localStorage.getItem('token');
 
       // Delete user account
       await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
@@ -69,8 +68,10 @@ export default function SettingsPage() {
       });
 
       // Clear local storage
-      clearAuth();
-      localStorage.setItem('location', 'login');
+      localStorage.removeItem('IDUser');
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.setItem('location', 'home');
 
       // Show success message
       await Swal.fire({
@@ -80,8 +81,8 @@ export default function SettingsPage() {
         confirmButtonColor: '#3085d6',
       });
 
-      // Navigate to login page
-      navigate('/login');
+      // Navigate to home page
+      navigate('/');
     } catch (error) {
       console.error('Error deleting account:', error);
       await Swal.fire({
