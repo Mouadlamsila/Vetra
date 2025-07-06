@@ -197,6 +197,7 @@ export default function GoogleCallback() {
 
                 // Check if this is a new Google user (needs password setup)
                 const isNewGoogleUser = localStorage.getItem('auth_intent') === 'register';
+                const isLoginIntent = localStorage.getItem('auth_intent') === 'login';
                 localStorage.removeItem('auth_intent');
 
                 setStatus('success');
@@ -206,6 +207,9 @@ export default function GoogleCallback() {
                 setTimeout(() => {
                     if (isNewGoogleUser) {
                         navigate("/setup-password");
+                    } else if (isLoginIntent) {
+                        // For login, go directly to dashboard
+                        navigate("/");
                     } else {
                         navigate("/to-owner");
                     }
