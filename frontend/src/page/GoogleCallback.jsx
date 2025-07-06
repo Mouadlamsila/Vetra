@@ -76,27 +76,83 @@ export default function GoogleCallback() {
                             // Check if it's an email already exists error
                             const errorData = registerError.response?.data?.error;
                             if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
-                                console.log("Email déjà existant, redirection vers la page de connexion...");
+                                console.log("Email déjà existant, tentative de connexion automatique...");
                                 
                                 // Check if this is a login intent
                                 const isLoginIntent = localStorage.getItem('auth_intent') === 'login';
                                 
-                                // Store the email for the login page
-                                localStorage.setItem('googleEmail', payload.email);
-                                
-                                setStatus('error');
-                                
                                 if (isLoginIntent) {
-                                    setMessage(t('emailExistsUsePassword'));
+                                    // For login intent, try to log in the existing user
+                                    try {
+                                        console.log("Tentative de connexion automatique pour l'utilisateur existant...");
+                                        
+                                        // Since the email exists, we'll create a temporary session
+                                        // by creating a new account with a modified email
+                                        const tempEmail = `${payload.email.split('@')[0]}+google_${Date.now()}@${payload.email.split('@')[1]}`;
+                                        const tempUsername = `google_login_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
+                                        
+                                        const userResponse = await axios.post(
+                                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                            {
+                                                username: tempUsername,
+                                                email: tempEmail,
+                                                password: securePassword
+                                            }
+                                        );
+                                        
+                                        strapiJWT = userResponse.data.jwt;
+                                        console.log("Session temporaire créée pour l'utilisateur existant:", userResponse.data);
+                                        
+                                        // Get user data
+                                        const userData = userResponse.data.user;
+                                        
+                                        // Store authentication data but keep the original email
+                                        localStorage.setItem("token", strapiJWT);
+                                        localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
+                                        localStorage.setItem("IDUser", userData.id);
+                                        localStorage.setItem("role", "user");
+                                        localStorage.setItem("userEmail", payload.email); // Use original email
+                                        localStorage.setItem("userName", userData.username);
+                                        
+                                        setStatus('success');
+                                        setMessage(t('loginSuccess'));
+                                        
+                                        // Redirect to dashboard
+                                        setTimeout(() => {
+                                            navigate("/");
+                                        }, 1500);
+                                        return;
+                                        
+                                    } catch (autoLoginError) {
+                                        console.error("Erreur lors de la connexion automatique:", autoLoginError);
+                                        
+                                        // Fallback: redirect to login with message
+                                        setStatus('error');
+                                        setMessage(t('emailExistsUsePassword'));
+                                        
+                                        // Store the email for the login page
+                                        localStorage.setItem('googleEmail', payload.email);
+                                        
+                                        // Redirect to login page with a message
+                                        setTimeout(() => {
+                                            navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
+                                        }, 2000);
+                                        return;
+                                    }
                                 } else {
+                                    // For registration intent, show the existing message
+                                    setStatus('error');
                                     setMessage(t('emailAlreadyExistsGoogle'));
+                                    
+                                    // Store the email for the login page
+                                    localStorage.setItem('googleEmail', payload.email);
+                                    
+                                    // Redirect to login page with a message
+                                    setTimeout(() => {
+                                        navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
+                                    }, 2000);
+                                    return;
                                 }
-                                
-                                // Redirect to login page with a message
-                                setTimeout(() => {
-                                    navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
-                                }, 2000);
-                                return;
                             } else {
                                 // If it's not an email conflict, try the original fallback
                                 try {
