@@ -304,6 +304,7 @@ const fr = {
   userDataRetrievalError: "Échec de la récupération des données utilisateur",
   invalidGoogleTokenError: "Token Google invalide reçu",
   googleUserCreationError: "Échec de la création ou connexion de l'utilisateur Google",
+  emailAlreadyExistsGoogle: "Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe.",
   // Password setup page
   setupPassword: "Définir votre mot de passe",
   setupPasswordDescription: "Veuillez définir un mot de passe sécurisé pour votre compte",

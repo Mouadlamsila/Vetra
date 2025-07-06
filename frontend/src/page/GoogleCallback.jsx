@@ -71,40 +71,58 @@ export default function GoogleCallback() {
                             strapiJWT = userResponse.data.jwt;
                             console.log("Utilisateur créé avec Google avec succès:", userResponse.data);
                         } catch (registerError) {
-                            console.log("Erreur lors de la création, tentative de connexion...");
+                            console.log("Erreur lors de la création:", registerError.response?.data || registerError.message);
                             
-                            // If registration fails (user might already exist), try to login
-                            try {
-                                const loginResponse = await axios.post(
-                                    'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
-                                    {
-                                        identifier: payload.email,
-                                        password: securePassword
-                                    }
-                                );
+                            // Check if it's an email already exists error
+                            const errorData = registerError.response?.data?.error;
+                            if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
+                                console.log("Email déjà existant, redirection vers la page de connexion...");
                                 
-                                strapiJWT = loginResponse.data.jwt;
-                                console.log("Connexion réussie avec Google:", loginResponse.data);
-                            } catch (loginError) {
-                                console.error("Erreur lors de la connexion:", loginError.response?.data || loginError.message);
+                                // Store the email for the login page
+                                localStorage.setItem('googleEmail', payload.email);
                                 
-                                // Final attempt: create user with different username
+                                setStatus('error');
+                                setMessage(t('emailAlreadyExistsGoogle'));
+                                
+                                // Redirect to login page with a message
+                                setTimeout(() => {
+                                    navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
+                                }, 2000);
+                                return;
+                            } else {
+                                // If it's not an email conflict, try the original fallback
                                 try {
-                                    const finalUsername = `google_user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
-                                    const userResponse = await axios.post(
-                                        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                    const loginResponse = await axios.post(
+                                        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
                                         {
-                                            username: finalUsername,
-                                            email: payload.email,
+                                            identifier: payload.email,
                                             password: securePassword
                                         }
                                     );
                                     
-                                    strapiJWT = userResponse.data.jwt;
-                                    console.log("Utilisateur créé avec nom d'utilisateur final:", userResponse.data);
-                                } catch (finalError) {
-                                    console.error("Erreur finale:", finalError.response?.data || finalError.message);
-                                    throw new Error("Impossible de créer ou connecter l'utilisateur Google");
+                                    strapiJWT = loginResponse.data.jwt;
+                                    console.log("Connexion réussie avec Google:", loginResponse.data);
+                                } catch (loginError) {
+                                    console.error("Erreur lors de la connexion:", loginError.response?.data || loginError.message);
+                                    
+                                    // Final attempt: create user with different username
+                                    try {
+                                        const finalUsername = `google_user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
+                                        const userResponse = await axios.post(
+                                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                            {
+                                                username: finalUsername,
+                                                email: payload.email,
+                                                password: securePassword
+                                            }
+                                        );
+                                        
+                                        strapiJWT = userResponse.data.jwt;
+                                        console.log("Utilisateur créé avec nom d'utilisateur final:", userResponse.data);
+                                    } catch (finalError) {
+                                        console.error("Erreur finale:", finalError.response?.data || finalError.message);
+                                        throw new Error("Impossible de créer ou connecter l'utilisateur Google");
+                                    }
                                 }
                             }
                         }

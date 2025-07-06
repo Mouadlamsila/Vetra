@@ -115,6 +115,23 @@ export default function Login() {
     window.scrollTo(0, 0)
   }, [])
 
+  // Handle Google email redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const error = urlParams.get('error')
+    const email = urlParams.get('email')
+    
+    if (error === 'email_exists' && email) {
+      setError(t('emailAlreadyExistsGoogle'))
+      setFormData(prev => ({
+        ...prev,
+        identifier: email
+      }))
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+  }, [t])
+
   return (
     <div className="min-h-screen pt-12 w-full bg-gradient-to-br bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
       {/* Content Container */}
