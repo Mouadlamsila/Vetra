@@ -302,6 +302,8 @@ const fr = {
   googleTokenExchangeError: "Échec de l'échange des tokens Google avec le serveur",
   noStrapiTokenError: "Échec de l'obtention du token d'authentification",
   userDataRetrievalError: "Échec de la récupération des données utilisateur",
+  invalidGoogleTokenError: "Token Google invalide reçu",
+  googleUserCreationError: "Échec de la création ou connexion de l'utilisateur Google",
   //footer
   companyName: "Servis",
   allRightsReserved: "Tous droits réservés",

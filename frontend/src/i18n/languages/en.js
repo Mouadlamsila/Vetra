@@ -302,6 +302,8 @@ const en = {
   googleTokenExchangeError: "Failed to exchange Google tokens with server",
   noStrapiTokenError: "Failed to obtain authentication token",
   userDataRetrievalError: "Failed to retrieve user data",
+  invalidGoogleTokenError: "Invalid Google token received",
+  googleUserCreationError: "Failed to create or connect Google user",
   //footer
   companyName: "Servis",
   allRightsReserved: "All rights reserved",

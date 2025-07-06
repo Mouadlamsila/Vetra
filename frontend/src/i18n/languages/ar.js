@@ -305,6 +305,8 @@ const ar = {
   googleTokenExchangeError: "فشل في تبادل رموز Google مع الخادم",
   noStrapiTokenError: "فشل في الحصول على رمز المصادقة",
   userDataRetrievalError: "فشل في استرداد بيانات المستخدم",
+  invalidGoogleTokenError: "تم استلام رمز Google غير صالح",
+  googleUserCreationError: "فشل في إنشاء أو توصيل مستخدم Google",
   //footer
   companyName: "شركة سيرفيس",
   allRightsReserved: "جميع الحقوق محفوظة",
