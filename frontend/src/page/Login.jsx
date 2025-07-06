@@ -141,7 +141,13 @@ export default function Login() {
     const email = urlParams.get('email')
     
     if (error === 'email_exists' && email) {
-      setError(t('emailAlreadyExistsGoogle'))
+      // Check if this was from Google login or registration
+      const authIntent = localStorage.getItem('auth_intent')
+      if (authIntent === 'login') {
+        setError(t('emailExistsUsePassword'))
+      } else {
+        setError(t('emailAlreadyExistsGoogle'))
+      }
       setFormData(prev => ({
         ...prev,
         identifier: email

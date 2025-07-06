@@ -305,6 +305,7 @@ const fr = {
   invalidGoogleTokenError: "Token Google invalide reçu",
   googleUserCreationError: "Échec de la création ou connexion de l'utilisateur Google",
   emailAlreadyExistsGoogle: "Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe.",
+  emailExistsUsePassword: "Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe au lieu d'utiliser Google.",
   continueWithGoogle: "Continuer avec Google",
   googleLoginError: "Erreur de connexion Google",
   // Password setup page

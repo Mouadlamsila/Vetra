@@ -78,11 +78,19 @@ export default function GoogleCallback() {
                             if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
                                 console.log("Email déjà existant, redirection vers la page de connexion...");
                                 
+                                // Check if this is a login intent
+                                const isLoginIntent = localStorage.getItem('auth_intent') === 'login';
+                                
                                 // Store the email for the login page
                                 localStorage.setItem('googleEmail', payload.email);
                                 
                                 setStatus('error');
-                                setMessage(t('emailAlreadyExistsGoogle'));
+                                
+                                if (isLoginIntent) {
+                                    setMessage(t('emailExistsUsePassword'));
+                                } else {
+                                    setMessage(t('emailAlreadyExistsGoogle'));
+                                }
                                 
                                 // Redirect to login page with a message
                                 setTimeout(() => {

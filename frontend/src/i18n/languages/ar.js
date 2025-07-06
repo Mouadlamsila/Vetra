@@ -308,6 +308,7 @@ const ar = {
   invalidGoogleTokenError: "تم استلام رمز Google غير صالح",
   googleUserCreationError: "فشل في إنشاء أو توصيل مستخدم Google",
   emailAlreadyExistsGoogle: "حساب بهذا البريد الإلكتروني موجود بالفعل. يرجى تسجيل الدخول بكلمة المرور الخاصة بك.",
+  emailExistsUsePassword: "حساب بهذا البريد الإلكتروني موجود بالفعل. يرجى تسجيل الدخول بكلمة المرور بدلاً من استخدام Google.",
   continueWithGoogle: "المتابعة مع Google",
   googleLoginError: "خطأ في تسجيل الدخول بـ Google",
   // Password setup page
