@@ -14,7 +14,7 @@ export default function GoogleCallback() {
             
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const accessToken = urlParams.get("access_token");
+                const jwt = urlParams.get("jwt");
                 const error = urlParams.get("error");
                 
                 if (error) {
@@ -25,7 +25,7 @@ export default function GoogleCallback() {
                     return;
                 }
                 
-                if (!accessToken) {
+                if (!jwt) {
                     console.error("Pas de token reçu");
                     setStatus('error');
                     setMessage('لم يتم استلام رمز الوصول');
@@ -33,7 +33,7 @@ export default function GoogleCallback() {
                     return;
                 }
 
-                console.log("Token reçu de Strapi:", accessToken);
+                console.log("Token reçu de Strapi:", jwt);
                 
                 // Méthode 1: Essayer d'abord avec /api/users/me
                 let userData = null;
@@ -42,7 +42,7 @@ export default function GoogleCallback() {
                         'https://stylish-basket-710b77de8f.strapiapp.com/api/users/me',
                         {
                             headers: {
-                                Authorization: `Bearer ${accessToken}`
+                                Authorization: `Bearer ${jwt}`
                             }
                         }
                     );
@@ -53,7 +53,7 @@ export default function GoogleCallback() {
                     
                     // Méthode 2: Décoder le JWT pour obtenir l'ID utilisateur
                     try {
-                        const tokenParts = accessToken.split('.');
+                        const tokenParts = jwt.split('.');
                         if (tokenParts.length === 3) {
                             const payload = JSON.parse(atob(tokenParts[1]));
                             console.log("Payload du token:", payload);
@@ -65,7 +65,7 @@ export default function GoogleCallback() {
                                     `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
                                     {
                                         headers: {
-                                            Authorization: `Bearer ${accessToken}`
+                                            Authorization: `Bearer ${jwt}`
                                         }
                                     }
                                 );
@@ -86,7 +86,7 @@ export default function GoogleCallback() {
                 const userInfo = userData.data || userData;
                 
                 // Stocker les données d'authentification
-                localStorage.setItem("token", accessToken);
+                localStorage.setItem("token", jwt);
                 localStorage.setItem("user", JSON.stringify(userInfo.documentId || userInfo.id));
                 localStorage.setItem("IDUser", userInfo.id);
                 localStorage.setItem("role", "user");
