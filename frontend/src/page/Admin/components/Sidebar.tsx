@@ -13,6 +13,7 @@ import {
   Package2,
   User
 } from "lucide-react";
+import { getUserId } from '../../../utils/auth';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userId = localStorage.getItem("IDUser");
+        const userId = getUserId();
         if (!userId) return;
 
         const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate=*`);

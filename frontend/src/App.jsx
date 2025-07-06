@@ -13,20 +13,21 @@ import RouteAdmin from "./page/Admin/Route";
 import Stores from "./page/Stores";
 import GoogleCallback from "./page/GoogleCallback";
 import SetupPassword from "./page/SetupPassword";
+import { getUserRole, isAuthenticated } from "./utils/auth";
 
 // Protected Route component for Owner registration
 const ProtectedOwnerRoute = () => {
-  const userRole = localStorage.getItem('role');
+  const userRole = getUserRole();
   return userRole === 'Owner' ? <Navigate to="/" replace /> : <Owner />;
 };
 
 // Protected Route component for Controll panel
 const ProtectedControllRoute = () => {
-  const userRole = localStorage.getItem('role');
+  const userRole = getUserRole();
   const location = useLocation();
   
   // Check if user is logged in
-  if (!userRole) {
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 
@@ -67,10 +68,10 @@ const ProtectedControllRoute = () => {
 
 // Protected Route component for Admin panel
 const ProtectedAdminRoute = () => {
-  const userRole = localStorage.getItem('role');
+  const userRole = getUserRole();
   
   // Check if user is logged in
-  if (!userRole) {
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 

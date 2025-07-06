@@ -3,12 +3,13 @@ import { Check, ChevronLeft, ChevronRight, Globe, Settings, Store, UserPlus } fr
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { getUserRole, getUserId } from "../utils/auth";
 
 export default function Step1() {
     const { t } = useTranslation();
     const language = localStorage.getItem("lang") || "en";
-    const userRole = localStorage.getItem("role");
-    const userId = localStorage.getItem("IDUser");
+    const userRole = getUserRole();
+    const userId = getUserId();
     
     const [boutiquesCount, setBoutiquesCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -203,57 +204,29 @@ export default function Step1() {
     };
     
     return (
-        <div className="p-4 sm:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 sm:px-5">
-                <div className="space-y-3 max-w-2xl mx-auto lg:mx-0">
-                    <div className="flex items-center gap-4">
-                        <h1 className="bg-[#6D28D9] flex w-8 h-8 sm:w-12 sm:h-12 rounded-full text-white items-center justify-center text-xl sm:text-2xl">1</h1>
-                        <p className="text-[#6D28D9] text-2xl sm:text-3xl font-medium">{t('step1Title')}</p>
-                    </div>
-                    <p className="text-gray-500 text-base sm:text-lg">{t('step1Description')}</p>
-                    <div className="space-y-4">
-                        <div className="flex gap-4 sm:gap-5 items-start">
-                            <div className="text-[#6D28D9] rounded-full bg-[#c8c2fd] w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex justify-center items-center">
-                                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-base sm:text-lg font-medium">{t('simpleRegistration')}</h2>
-                                <p className="text-base sm:text-lg text-gray-500">{t('simpleRegistrationDesc')}</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 sm:gap-5 items-start">
-                            <div className="text-[#6D28D9] rounded-full bg-[#c8c2fd] w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex justify-center items-center">
-                                <Store className="w-4 h-4 sm:w-5 sm:h-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-base sm:text-lg font-medium">{t('storeCustomization')}</h2>
-                                <p className="text-base sm:text-lg text-gray-500">{t('storeCustomizationDesc')}</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 sm:gap-5 items-start">
-                            <div className="text-[#6D28D9] rounded-full bg-[#c8c2fd] w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex justify-center items-center">
-                                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-base sm:text-lg font-medium">{t('basicSettings')}</h2>
-                                <p className="text-base sm:text-lg text-gray-500">{t('basicSettingsDesc')}</p>
-                            </div>
-                        </div>
-                    </div>
+        <div className="max-w-2xl mx-auto p-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                        {t('getStarted')}
+                    </h1>
+                    <p className="text-gray-600">
+                        {t('getStartedDescription')}
+                    </p>
                 </div>
-                <div className="flex w-full justify-center items-center">
-                    <div className="bg-white border border-[#c8c2fd] shadow p-4 sm:p-6 rounded-xl w-full max-w-md">
-                        <div className="flex w-full justify-between pb-4">
-                            <h2 className="text-xl sm:text-2xl font-medium">{t('controlPanel')}</h2>
-                            <p className="bg-[#c8c2fd] px-2 py-0.5 text-[#6D28D9] rounded-lg text-sm sm:text-base">{t('step1')}</p>
-                        </div>
-                        {renderError()}
-                        <div className="space-y-3 sm:space-y-4">
-                            {renderCreateAccountStep()}
-                            {renderConfigureStoreStep()}
-                            {renderChooseDomainStep()}
-                        </div>
-                    </div>
+
+                {renderError()}
+
+                <div className="space-y-4">
+                    {renderCreateAccountStep()}
+                    {renderConfigureStoreStep()}
+                    {renderChooseDomainStep()}
+                </div>
+
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-500">
+                        {t('needHelp')} <Link to="/help" className="text-purple-600 hover:text-purple-700 underline">{t('contactSupport')}</Link>
+                    </p>
                 </div>
             </div>
         </div>

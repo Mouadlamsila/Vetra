@@ -21,6 +21,7 @@ import ShinyButton from "../../../blocks/TextAnimations/ShinyButton/ShinyButton"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { getAuthToken } from '../../../utils/auth'
 
 export default function AddStorePage() {
   const { t } = useTranslation()
@@ -98,7 +99,7 @@ export default function AddStorePage() {
     setError(null)
 
     try {
-      const token = localStorage.getItem("token")
+      const token = getAuthToken()
       if (!token) {
         throw new Error(t('store.createStore.errorToken'))
       }

@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { getUserId } from '../utils/auth';
 
 const RatingStars = ({ storeId, rating_boutiques, isInteractive = false, onStarClick, currentRating }) => {
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -79,7 +80,7 @@ const RatingForm = ({
   const handleSubmit = async () => {
     try {
       setIsRating(true);
-      const userId = localStorage.getItem('IDUser');
+      const userId = getUserId();
       
       if (!userId) {
         toast.error(t('stores.ratingForm.loginRequired'));

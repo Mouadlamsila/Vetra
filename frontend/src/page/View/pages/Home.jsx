@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules"
 import {
@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
+import { getUserId } from "../../utils/auth"
 
 // Import Swiper styles
 import "swiper/css"
@@ -29,6 +30,7 @@ import "swiper/css/effect-fade"
 
 export default function HomeView() {
   const { t } = useTranslation();
+  const { id } = useParams();
   const [isMounted, setIsMounted] = useState(false)
   const [boutique, setBoutique] = useState(null)
   const [products, setProducts] = useState([])
@@ -36,8 +38,8 @@ export default function HomeView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("all")
-  const userId = localStorage.getItem("IDUser")
-  const id = localStorage.getItem("IDBoutique")
+  const userId = getUserId()
+  const idBoutique = localStorage.getItem("IDBoutique")
   const idOwner = localStorage.getItem("idOwner");
   const lang = localStorage.getItem('lang');
   
@@ -46,7 +48,7 @@ export default function HomeView() {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
+        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${idBoutique}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutique(boutiqueResponse.data.data)
 
         // Fetch products data

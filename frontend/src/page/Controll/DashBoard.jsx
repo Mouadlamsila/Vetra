@@ -1,13 +1,14 @@
 import { ChartColumn, CircleHelp, CirclePlus, CreditCard, Home, Lock, LogOut, Package, PackagePlus, Settings, Shield, ShoppingBag, Store, User, UserPen } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getUserRole, clearAuth } from "../../utils/auth";
 
 export default function DashBoard() {
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const language = localStorage.getItem("lang");
-    const userRole = localStorage.getItem("role");
+    const userRole = getUserRole();
 
     // Function to check if menu item should be disabled
     const isMenuItemDisabled = (menuType) => {
@@ -163,12 +164,7 @@ export default function DashBoard() {
                             </li>
                         </Link>
                         <div onClick={() => {
-                            localStorage.removeItem("user");
-                            localStorage.removeItem("IDUser");
-                            localStorage.removeItem("token");
-                            localStorage.removeItem("role");
-                            localStorage.removeItem('IDBoutique');
-                            localStorage.removeItem('idOwner');
+                            clearAuth();
                             localStorage.setItem("location", "login");
                             navigate("/login");
                         }} className={`hover:bg-[#c8c2fd] hover:text-[#6D28D9] transition-all  py-2 flex items-center duration-300 w-full ${location.pathname === '/controll/Modification' ? (language === 'ar' ? 'pr-6 bg-[#c8c2fd] text-[#6D28D9] pl-4' : 'pl-6 pr-4 bg-[#c8c2fd] text-[#6D28D9]') : 'px-4'}`}>

@@ -29,6 +29,7 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
+import { getUserId, getAuthToken } from '../../../utils/auth'
 
 export default function EditProduct() {
   const { t } = useTranslation()
@@ -67,16 +68,16 @@ export default function EditProduct() {
   const [additionalImagePreviews, setAdditionalImagePreviews] = useState([])
   const navigate = useNavigate()
   const { id } = useParams()
-  const IDUser = localStorage.getItem("IDUser")
+  const IDUser = getUserId()
   const [additionalImageLoading, setAdditionalImageLoading] = useState(false)
   const [mainImageLoading, setMainImageLoading] = useState(false)
   const lang = localStorage.getItem("lang")
+  const token = getAuthToken()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setPageLoading(true)
-        const token = localStorage.getItem("token")
         if (!token) {
           throw new Error("Token non trouvé. Veuillez vous connecter.")
         }
@@ -150,7 +151,7 @@ export default function EditProduct() {
     }
 
     fetchData()
-  }, [id, IDUser, t])
+  }, [id, IDUser, t, token])
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target
@@ -193,7 +194,6 @@ export default function EditProduct() {
     formData.append("files", files[0])
 
     try {
-      const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }
@@ -281,7 +281,6 @@ export default function EditProduct() {
     setError(null)
 
     try {
-      const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }

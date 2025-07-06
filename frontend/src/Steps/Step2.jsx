@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getUserRole, getUserId, getAuthToken } from '../../utils/auth';
 
 export default function Step2() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const language = localStorage.getItem("lang") || "en";
-    const userRole = localStorage.getItem("role");
-    const userId = localStorage.getItem("IDUser");
-    const token = localStorage.getItem("token");
+    const userRole = getUserRole();
+    const userId = getUserId();
+    const token = getAuthToken();
     
     const [stores, setStores] = useState([]);
     const [products, setProducts] = useState([]);

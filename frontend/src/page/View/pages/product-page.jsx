@@ -6,6 +6,7 @@ import { ChevronRight, Heart, Minus, Plus, Share2, ShoppingCart, Star, Truck, Me
 import axios from "axios"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
+import { getUserId, getAuthToken } from "../../utils/auth"
 
 import stripePromise from "../../../utils/stripe"
 import { Elements } from "@stripe/react-stripe-js"
@@ -39,6 +40,7 @@ export default function ProductPage() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false)
   const [checkoutAmount, setCheckoutAmount] = useState(0)
   const [orderId, setOrderId] = useState(null)
+  const userId = getUserId()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +92,6 @@ export default function ProductPage() {
   // Fetch cart items to check stock
   useEffect(() => {
     const fetchCartItems = async () => {
-      const userId = localStorage.getItem("IDUser")
       if (!userId) return
 
       try {
@@ -104,7 +105,7 @@ export default function ProductPage() {
     }
 
     fetchCartItems()
-  }, [])
+  }, [userId])
 
   // Calculate available stock considering items in cart
   const getAvailableStock = () => {
@@ -116,7 +117,6 @@ export default function ProductPage() {
   }
 
   const handleAddToCart = async () => {
-    const userId = localStorage.getItem("IDUser")
     if (!userId) {
       setCartMessage(t("view.productDetails.error.loginRequired"))
       return
@@ -150,6 +150,10 @@ export default function ProductPage() {
           data: {
             qte: newQuantity,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
 
         if (response.data) {
@@ -169,6 +173,10 @@ export default function ProductPage() {
             product: id,
             qte: quantity,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
 
         if (response.data) {
@@ -192,8 +200,6 @@ export default function ProductPage() {
 
   const handleRating = async (productId, rating, opinion) => {
     try {
-      const userId = localStorage.getItem("IDUser")
-
       if (!userId) {
         toast.error(t("view.productDetails.loginToReview"))
         return
@@ -213,6 +219,10 @@ export default function ProductPage() {
             user: Number.parseInt(userId),
             product: productId,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
       } else {
         // Create new rating
@@ -223,6 +233,10 @@ export default function ProductPage() {
             user: Number.parseInt(userId),
             product: productId,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
       }
 
@@ -245,7 +259,6 @@ export default function ProductPage() {
   }
 
   const openRatingModal = (product) => {
-    const userId = localStorage.getItem("IDUser")
     const existingRating = product.rating_products?.find((rating) => rating.user?.id === Number.parseInt(userId))
 
     if (existingRating) {
@@ -319,7 +332,6 @@ export default function ProductPage() {
   // Add this new useEffect to check if product is in favorites
   useEffect(() => {
     const checkFavorite = async () => {
-      const userId = localStorage.getItem("IDUser")
       if (!userId || !product) return
 
       try {
@@ -333,11 +345,10 @@ export default function ProductPage() {
     }
 
     checkFavorite()
-  }, [product])
+  }, [product, userId])
 
   // Add this new function to handle adding/removing from favorites
   const handleFavorite = async () => {
-    const userId = localStorage.getItem("IDUser")
     if (!userId) {
       toast.error(t("view.productDetails.loginToFavorite"))
       return
@@ -350,7 +361,11 @@ export default function ProductPage() {
           `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
         )
         if (response.data.data.length > 0) {
-          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
+          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`, {
+            headers: {
+              Authorization: `Bearer ${getAuthToken()}`
+            }
+          })
           toast.success(t("view.productDetails.removedFromFavorites"))
           setTimeout(() => window.location.reload(), 1000)
         }
@@ -361,6 +376,10 @@ export default function ProductPage() {
             user: Number.parseInt(userId),
             product: product.id,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
         toast.success(t("view.productDetails.addedToFavorites"))
         setTimeout(() => window.location.reload(), 1000)
@@ -375,13 +394,12 @@ export default function ProductPage() {
   // Add useEffect to fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
-      const userId = localStorage.getItem("IDUser")
       if (!userId) return
 
       try {
         const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getAuthToken()}`,
           },
         })
         setUserData(response.data)
@@ -392,10 +410,9 @@ export default function ProductPage() {
     }
 
     fetchUserData()
-  }, [])
+  }, [userId, t])
 
   const handleBuyNow = async () => {
-    const userId = localStorage.getItem("IDUser")
     if (!userId) {
       toast.error(t("view.productDetails.loginRequired"))
       return
@@ -441,7 +458,7 @@ export default function ProductPage() {
       const orderResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/orders", orderData, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken()}`,
         },
       })
 
@@ -473,7 +490,7 @@ export default function ProductPage() {
           quantities: {
             [product.id]: Number.parseInt(quantity),
           },
-          user: Number.parseInt(localStorage.getItem("IDUser")),
+          user: Number.parseInt(userId),
           amount: checkoutAmount,
           currency: "usd",
           status_checkout: "pending",
@@ -506,7 +523,7 @@ export default function ProductPage() {
       const response = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions", checkoutData, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken()}`,
         },
       })
 
@@ -968,7 +985,7 @@ export default function ProductPage() {
 
             <h2 className="text-xl font-bold mb-4">
               {selectedProduct?.rating_products?.find(
-                (rating) => rating.user?.id === Number.parseInt(localStorage.getItem("IDUser")),
+                (rating) => rating.user?.id === Number.parseInt(userId),
               )
                 ? t("view.productDetails.updateReview")
                 : t("view.productDetails.writeReview")}
@@ -1071,6 +1088,7 @@ function ProductCard({ product }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
+  const userId = getUserId()
 
   const averageRating = useMemo(() => {
     if (!product?.rating_products || product.rating_products.length === 0) return 0
@@ -1081,7 +1099,6 @@ function ProductCard({ product }) {
   // Add this new useEffect to check if product is in favorites
   useEffect(() => {
     const checkFavorite = async () => {
-      const userId = localStorage.getItem("IDUser")
       if (!userId || !product) return
 
       try {
@@ -1095,12 +1112,11 @@ function ProductCard({ product }) {
     }
 
     checkFavorite()
-  }, [product])
+  }, [product, userId])
 
   // Add this new function to handle adding/removing from favorites
   const handleFavorite = async (e) => {
     e.preventDefault() // Prevent navigation when clicking the favorite button
-    const userId = localStorage.getItem("IDUser")
     if (!userId) {
       toast.error(t("view.productDetails.loginToFavorite"))
       return
@@ -1113,7 +1129,11 @@ function ProductCard({ product }) {
           `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
         )
         if (response.data.data.length > 0) {
-          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
+          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`, {
+            headers: {
+              Authorization: `Bearer ${getAuthToken()}`
+            }
+          })
           toast.success(t("view.productDetails.removedFromFavorites"))
         }
       } else {
@@ -1123,6 +1143,10 @@ function ProductCard({ product }) {
             user: Number.parseInt(userId),
             product: product.id,
           },
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         })
         toast.success(t("view.productDetails.addedToFavorites"))
       }

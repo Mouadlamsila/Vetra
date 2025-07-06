@@ -18,6 +18,7 @@ import axios from "axios"
 import { useTranslation } from "react-i18next"
 import { toast } from 'react-hot-toast'
 import { generateOrderInvoice } from '../../../utils/pdfGenerator'
+import { getUserId, getAuthToken } from "../../../utils/auth"
 
 export default function OrdersPage() {
   const { t } = useTranslation()
@@ -30,12 +31,13 @@ export default function OrdersPage() {
   const [filteredOrders, setFilteredOrders] = useState([])
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const IDUser = localStorage.getItem("IDUser")
+  const userId = getUserId()
   const lang = localStorage.getItem("lang")
   const [showCheckoutForm, setShowCheckoutForm] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [checkoutAmount, setCheckoutAmount] = useState(0)
   const [orderId, setOrderId] = useState(null)
+  const [showOrderDetails, setShowOrderDetails] = useState(false)
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -58,10 +60,10 @@ export default function OrdersPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${userId}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${getAuthToken()}`,
             },
           },
         )
@@ -76,7 +78,7 @@ export default function OrdersPage() {
     }
 
     fetchOrders()
-  }, [IDUser, t])
+  }, [userId, t])
 
   // Add useEffect for filtering
   useEffect(() => {
@@ -173,10 +175,10 @@ export default function OrdersPage() {
       
       // Refresh orders list
       const response = await axios.get(
-        `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
+        `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?populate=*&filters[user][id][$eq]=${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getAuthToken()}`,
           },
         }
       )
@@ -197,6 +199,51 @@ export default function OrdersPage() {
     setSelectedOrder(null)
   }
 
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/orders/${orderId}`, {
+        data: {
+          status: newStatus
+        }
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      })
+
+      // Update local state
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId
+            ? { ...order, status: newStatus }
+            : order
+        )
+      )
+
+      toast.success(`Order status updated to ${newStatus}`)
+    } catch (error) {
+      console.error("Error updating order status:", error)
+      toast.error("Failed to update order status")
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'processing':
+        return 'bg-blue-100 text-blue-800'
+      case 'shipped':
+        return 'bg-purple-100 text-purple-800'
+      case 'delivered':
+        return 'bg-green-100 text-green-800'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
   // Mobile order card component
   const OrderCard = ({ order }) => (
     <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
@@ -208,9 +255,9 @@ export default function OrdersPage() {
           <p className="text-xs text-gray-500">{new Date(order?.createdAt).toLocaleDateString()}</p>
         </div>
         <span
-          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}
+          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order?.status)}`}
         >
-          {getStatusText(order?.statusOrder)}
+          {order?.status}
         </span>
       </div>
 
@@ -500,8 +547,8 @@ export default function OrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order?.statusOrder)}`}>
-                          {getStatusText(order?.statusOrder)}
+                        <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order?.status)}`}>
+                          {order?.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -540,11 +587,11 @@ export default function OrdersPage() {
       )}
 
       {/* Order Details Modal */}
-      {selectedOrder && (
+      {showOrderDetails && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-2xl w-full p-6 relative">
             <button
-              onClick={() => setSelectedOrder(null)}
+              onClick={() => setShowOrderDetails(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
             >
               <X className="h-5 w-5" />
@@ -564,8 +611,8 @@ export default function OrdersPage() {
                 <div className="flex flex-col items-end space-y-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">{t('orders.orders.table.status')}:</span>
-                    <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedOrder.statusOrder)}`}>
-                      {getStatusText(selectedOrder.statusOrder)}
+                    <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
+                      {selectedOrder.status}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">

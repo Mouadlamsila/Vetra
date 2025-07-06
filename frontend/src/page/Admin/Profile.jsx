@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, CheckCircle } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from 'react-i18next'
+import { toast } from "react-toastify"
+import { getUserId } from "../../utils/auth"
+import { getAuthToken } from "../../utils/auth"
 
 export default function Profile() {
   const { t } = useTranslation()
@@ -30,24 +33,28 @@ export default function Profile() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [passwordError, setPasswordError] = useState("")
-  const id = localStorage.getItem("IDUser")
+  const userId = getUserId()
   const language = localStorage.getItem("lang")
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
+        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
+        })
         const userData = response.data
         setUser(userData)
         setFormData({
           username: userData.username || "",
           email: userData.email || "",
           phone: userData.phone || "",
-          addressLine1: userData.adress?.addressLine1 || "",
-          addressLine2: userData.adress?.addressLine2 || "",
-          city: userData.adress?.city || "",
-          country: userData.adress?.country || "",
-          postalCode: userData.adress?.postalCode || "",
+          addressLine1: userData.address?.line1 || "",
+          addressLine2: userData.address?.line2 || "",
+          city: userData.address?.city || "",
+          country: userData.address?.country || "",
+          postalCode: userData.address?.postalCode || "",
         })
         if (userData.photo) {
           setPreviewUrl(`${userData.photo.url}`)
@@ -57,11 +64,25 @@ export default function Profile() {
       }
     }
     fetchUser()
-  }, [id])
+  }, [userId])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".")
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
   }
 
   const handlePasswordChange = (e) => {
@@ -87,14 +108,19 @@ export default function Profile() {
     setIsSubmitting(true)
 
     try {
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
         username: formData.username,
         email: formData.email,
         phone: formData.phone,
+        address: formData.address,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
       })
 
-      if (user.adress) {
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.adress.documentId}`, {
+      if (user.address) {
+        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.address.documentId}`, {
           data: {
             addressLine1: formData.addressLine1,
             addressLine2: formData.addressLine2,
@@ -102,22 +128,38 @@ export default function Profile() {
             country: formData.country,
             postalCode: formData.postalCode,
           }
+        }, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
         })
       }
 
       if (selectedFile) {
         const formData = new FormData()
         formData.append("files", selectedFile)
-        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData)
+        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
+        })
         
         if (uploadResponse.data[0]) {
-          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
             photo: uploadResponse.data[0].id,
+          }, {
+            headers: {
+              Authorization: `Bearer ${getAuthToken()}`,
+            },
           })
         }
       }
 
-      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
+      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate=*`, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      })
       setUser(response.data)
       setEditMode(false)
       showSuccessMessage(t('profileAdmin.messages.updateSuccess'))
@@ -150,6 +192,10 @@ export default function Profile() {
       const verifyResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local", {
         identifier: user.email,
         password: passwordData.currentPassword,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
       })
 
       if (!verifyResponse.data.jwt) {
@@ -158,8 +204,12 @@ export default function Profile() {
         return
       }
 
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`, {
         password: passwordData.newPassword,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
       })
 
       setPasswordData({
@@ -185,6 +235,14 @@ export default function Profile() {
     setTimeout(() => {
       setSuccessMessage("")
     }, 3000)
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      </div>
+    )
   }
 
   return (
@@ -400,11 +458,11 @@ export default function Profile() {
                                   username: user.username || "",
                                   email: user.email || "",
                                   phone: user.phone || "",
-                                  addressLine1: user.adress?.addressLine1 || "",
-                                  addressLine2: user.adress?.addressLine2 || "",
-                                  city: user.adress?.city || "",
-                                  country: user.adress?.country || "",
-                                  postalCode: user.adress?.postalCode || "",
+                                  addressLine1: user.address?.line1 || "",
+                                  addressLine2: user.address?.line2 || "",
+                                  city: user.address?.city || "",
+                                  country: user.address?.country || "",
+                                  postalCode: user.address?.postalCode || "",
                                 })
                               }}
                               disabled={isSubmitting}
@@ -455,8 +513,8 @@ export default function Profile() {
                             <div>
                               <p className="text-sm text-gray-500">{t('profileAdmin.personalInfo.address')}</p>
                               <p className="font-medium">
-                                {user.adress
-                                  ? `${user.adress.addressLine1}, ${user.adress.addressLine2}, ${user.adress.city}, ${user.adress.country}, ${user.adress.postalCode}`
+                                {user.address
+                                  ? `${user.address.line1}, ${user.address.line2}, ${user.address.city}, ${user.address.country}, ${user.address.postalCode}`
                                   : t('profileAdmin.personalInfo.addressNotSet')}
                               </p>
                             </div>

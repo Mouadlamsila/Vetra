@@ -27,6 +27,7 @@ import {
   Info,
   Loader,
 } from "lucide-react"
+import { getUserId, getAuthToken } from '../../../utils/auth'
 
 export default function AddProductPage() {
   const { t } = useTranslation()
@@ -71,13 +72,14 @@ export default function AddProductPage() {
 
   const navigate = useNavigate()
   const { id } = useParams()
-  const IDUser = localStorage.getItem("IDUser")
+  const IDUser = getUserId()
   const lang = localStorage.getItem("lang")
+  const token = getAuthToken()
+
   useEffect(() => {
     // Fetch stores when component mounts
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token")
         if (!token) {
           throw new Error("Token non trouvé. Veuillez vous connecter.")
         }
@@ -121,7 +123,6 @@ export default function AddProductPage() {
   const fetchProductData = async (productId) => {
     try {
       setLoading(true)
-      const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }
@@ -228,7 +229,6 @@ export default function AddProductPage() {
     formData.append("files", files[0])
 
     try {
-      const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }
@@ -291,7 +291,6 @@ export default function AddProductPage() {
     setError(null)
 
     try {
-      const token = localStorage.getItem("token")
       if (!token) {
         throw new Error(t('product.createProduct.errorToken'))
       }

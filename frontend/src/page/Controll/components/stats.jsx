@@ -20,6 +20,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import axios from "axios"
+import { getUserId } from '../../../utils/auth'
 
 export default function StatsPage() {
   const { t } = useTranslation()
@@ -44,7 +45,7 @@ export default function StatsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = localStorage.getItem("IDUser")
+        const userId = getUserId()
         if (!userId) return
 
         // Fetch categories

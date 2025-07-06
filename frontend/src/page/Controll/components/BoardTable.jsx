@@ -3,6 +3,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { getUserId } from '../../../utils/auth';
 
 export default function BoardTable() {
     const { t } = useTranslation();
@@ -15,10 +16,11 @@ export default function BoardTable() {
     const [recentOrders, setRecentOrders] = useState([]);
     const [salesData, setSalesData] = useState([]);
 
+    const userId = getUserId();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userId = localStorage.getItem('IDUser');
                 if (!userId) return;
 
                 // Fetch stores
@@ -71,7 +73,7 @@ export default function BoardTable() {
         };
 
         fetchData();
-    }, []);
+    }, [userId]);
 
     const card = [
         {

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, use } from "react";
-import { Bell, Search, LogOut, Languages } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { changeLanguage } from '../../../i18n/i18n';
+import { Bell, Languages, LogOut } from 'lucide-react';
 import axios from 'axios';
+import { clearAuth, setLocation } from '../../../utils/auth';
+import { changeLanguage } from '../../../i18n/i18n';
 
 interface TopBarProps {
   onMenuClick: () => void;
@@ -19,23 +20,21 @@ interface Notification {
 }
 
 const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const language = localStorage.getItem('lang');
+  const [title, setTitle] = useState('');
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const location = useLocation();
-  const [title, setTitle] = useState(t('usersAdmin.topBar.titles.dashboard'));
-  const language = localStorage.getItem('lang');
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [language]);
 
   useEffect(() => {
     if(location.pathname === "/admin"){
-      setTitle(t('usersAdmin.topBar.titles.dashboard'));
+      setTitle(t('dashboardAdmin.topBar.titles.dashboard'));
+    }else if(location.pathname === "/admin/profile"){
+      setTitle(t('usersAdmin.topBar.titles.profile'));
     }else if(location.pathname === "/admin/users"){
       setTitle(t('usersAdmin.topBar.titles.users'));
     }else if(location.pathname === "/admin/stores"){
@@ -73,19 +72,15 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("IDUser");
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("IDBoutique");
-    localStorage.removeItem("idOwner");
-    localStorage.setItem("location", "login");
+    // Clear all authentication data securely
+    clearAuth();
+    setLocation("login");
     navigate("/login");
   };
   
 
   const handleLanguageChange = (newLanguage: string) => {
-    changeLanguage(newLanguage);
+    i18n.changeLanguage(newLanguage);
     setShowLangMenu(false);
   };
 

@@ -11,6 +11,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import stripePromise from '../../../utils/stripe'
 import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from '../../../components/CheckoutForm'
+import { getUserId, getAuthToken, getLanguage } from "../../utils/auth"
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -19,17 +20,17 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false)
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
-  const [boutiques, setBoutiques] = useState([])
+  const [boutiques, setBoutiques] = useState(null)
   const [categories, setCategories] = useState([])
-  const [user, setUser] = useState([])
+  const [user, setUser] = useState(null)
   const [cartItems, setCartItems] = useState([])
   const [cartLoading, setCartLoading] = useState(true)
   const id = localStorage.getItem("IDBoutique")
-  const IDUser = localStorage.getItem("IDUser");
+  const IDUser = getUserId();
   const idOwner = localStorage.getItem("idOwner");
   const navigate = useNavigate('');
   const [refresh, setRefresh] = useState(false);
-  const lang = localStorage.getItem('lang');
+  const lang = getLanguage();
   const [favorites, setFavorites] = useState([])
   const [favoritesOpen, setFavoritesOpen] = useState(false)
   const [favoritesLoading, setFavoritesLoading] = useState(true)
@@ -223,8 +224,8 @@ export default function Header() {
   const handleRemoveFromFavorites = async (favoriteId) => {
     try {
       await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${favoriteId}`);
-      setFavorites(prevFavorites => prevFavorites.filter(item => item.documentId !== favoriteId));
-      toast.success(t('header.removedFromFavorites'), {
+      setFavorites(prevFavorites => prevFavorites.filter(fav => fav.documentId !== favoriteId));
+      toast.success("Produit retiré des favoris", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -232,10 +233,9 @@ export default function Header() {
         pauseOnHover: true,
         draggable: true,
       });
-      setTimeout(()=>window.location.reload(),1000);
     } catch (error) {
       console.error('Error removing from favorites:', error);
-      toast.error(t('header.errorRemovingFavorite'), {
+      toast.error("Erreur lors de la suppression du favori", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -247,162 +247,142 @@ export default function Header() {
   };
 
   const handleCheckout = async () => {
-    const userId = localStorage.getItem("IDUser")
-    if (!userId) {
-      toast.error(t('header.loginRequired'))
-      return
-    }
-
     if (cartItems.length === 0) {
-      toast.error(t('header.emptyCart'))
-      return
+      toast.error("Votre panier est vide", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
     }
 
-    setIsProcessingPayment(true)
+    // Calculate total amount
+    const total = cartItems.reduce((sum, item) => {
+      const product = item?.product;
+      return sum + (product?.prix || 0) * (item?.qte || 0);
+    }, 0);
 
+    setCheckoutAmount(total);
+    setShowCheckoutForm(true);
+  };
+
+  const handlePaymentSuccess = async (response) => {
     try {
-      // Generate a unique order number
-      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      setIsProcessingPayment(true);
 
-      // Calculate total amount
-      const totalAmount = cartItems.reduce((sum, item) => {
-        const product = item?.product;
-        return sum + (product?.prix || 0) * (item?.qte || 0);
-      }, 0);
-
-      // Create the order first
+      // Create order
       const orderData = {
         data: {
-          statusOrder: "pending",
-          totalAmount: totalAmount,
-          user: parseInt(userId),
-          orderNumber: orderNumber,
-          currency: 'usd',
-          products: cartItems.map(item => parseInt(item.product.id)),
-          quantities: cartItems.reduce((acc, item) => ({
-            ...acc,
-            [item.product.id]: parseInt(item.qte)
-          }), {}),
-          shippingAddress: {
-            line1: user?.address?.line1 || '',
-            line2: user?.address?.line2 || '',
-            city: user?.address?.city || '',
-            state: user?.address?.state || '',
-            postal_code: user?.address?.postal_code || '',
-            country: user?.address?.country || 'US'
-          },
-          paymentStatus: "pending"
+          user: IDUser,
+          boutique: id,
+          products: cartItems.map(item => ({
+            product: item.product.documentId,
+            quantity: item.qte,
+            price: item.product.prix
+          })),
+          total: checkoutAmount,
+          status: 'pending',
+          payment_method: 'stripe',
+          payment_id: response.payment_intent?.id || 'stripe_payment'
         }
       };
 
-      // Create the order
-      const orderResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/orders', orderData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      const orderResponse = await axios.post(
+        'https://stylish-basket-710b77de8f.strapiapp.com/api/orders',
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`
+          }
         }
+      );
+
+      setOrderId(orderResponse.data.data.documentId);
+
+      // Clear cart
+      for (const item of cartItems) {
+        try {
+          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts/${item.documentId}`);
+        } catch (error) {
+          console.error('Error clearing cart item:', error);
+        }
+      }
+
+      setCartItems([]);
+      setShowCheckoutForm(false);
+
+      toast.success("Paiement réussi! Votre commande a été créée.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
 
-      console.log('Order created:', orderResponse.data);
-      
-      // Set the order ID and amount for the checkout form
-      setOrderId(orderResponse.data.data.id);
-      setCheckoutAmount(totalAmount);
-      setShowCheckoutForm(true);
-      setCartOpen(false); // Close the cart sidebar
-      
+      // Redirect to order confirmation
+      setTimeout(() => {
+        navigate(`/view/orders/${orderResponse.data.data.documentId}`);
+      }, 2000);
+
     } catch (error) {
-      console.error('Error in checkout process:', error);
-      if (error.response) {
-        console.error('Error response:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error details:', error.response.data.error);
-      }
-      toast.error(t('header.paymentError'));
+      console.error('Error creating order:', error);
+      toast.error("Erreur lors de la création de la commande", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsProcessingPayment(false);
     }
   };
 
-  const handlePaymentSuccess = async (response) => {
-    try {
-      // Show success message
-      toast.success(t('header.paymentSuccess'));
-      
-      // Redirect to orders page
-      window.location.href = '/view/orders';
-    } catch (error) {
-      console.error('Error handling payment success:', error);
-      if (error.type === 'card_error') {
-        switch (error.code) {
-          case 'invalid_number':
-            toast.error(t('payment.errors.invalidCardNumber'));
-            break;
-          case 'incomplete_number':
-            toast.error(t('payment.errors.incompleteCardNumber'));
-            break;
-          case 'invalid_expiry':
-            toast.error(t('payment.errors.invalidExpiryDate'));
-            break;
-          case 'incomplete_expiry':
-            toast.error(t('payment.errors.incompleteExpiryDate'));
-            break;
-          case 'invalid_cvc':
-            toast.error(t('payment.errors.invalidCVC'));
-            break;
-          case 'incomplete_cvc':
-            toast.error(t('payment.errors.incompleteCVC'));
-            break;
-          case 'card_declined':
-            toast.error(t('payment.errors.cardDeclined'));
-            break;
-          default:
-            toast.error(t('payment.errors.processingError'));
-        }
-      } else if (error.message?.includes('incomplete')) {
-        // Handle Stripe's default incomplete messages
-        if (error.message.includes('card number')) {
-          toast.error(t('payment.errors.incompleteCardNumber'));
-        } else if (error.message.includes('expiry')) {
-          toast.error(t('payment.errors.incompleteExpiryDate'));
-        } else if (error.message.includes('cvc')) {
-          toast.error(t('payment.errors.incompleteCVC'));
-        } else {
-          toast.error(t('payment.errors.processingError'));
-        }
-      } else {
-        toast.error(t('payment.errors.processingError'));
-      }
-    }
-  };
-
   const handlePaymentCancel = () => {
     setShowCheckoutForm(false);
+    toast.info("Paiement annulé", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
   };
 
-  // Add validation function for payment form
   const validatePaymentForm = (formData) => {
-    if (!formData.cardNumber) {
-      toast.error(t('payment.errors.incompleteCardNumber'));
-      return false;
+    const errors = {};
+
+    if (!formData.name || formData.name.trim().length < 2) {
+      errors.name = "Le nom doit contenir au moins 2 caractères";
     }
-    if (!formData.expiryDate) {
-      toast.error(t('payment.errors.incompleteExpiryDate'));
-      return false;
+
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Veuillez entrer une adresse email valide";
     }
-    if (!formData.cvc) {
-      toast.error(t('payment.errors.incompleteCVC'));
-      return false;
+
+    if (!formData.phone || formData.phone.trim().length < 10) {
+      errors.phone = "Le numéro de téléphone doit contenir au moins 10 chiffres";
     }
-    if (!formData.name) {
-      toast.error(t('payment.errors.incompleteName'));
-      return false;
+
+    if (!formData.address || formData.address.trim().length < 10) {
+      errors.address = "L'adresse doit contenir au moins 10 caractères";
     }
-    if (!formData.address) {
-      toast.error(t('payment.errors.incompleteAddress'));
-      return false;
+
+    if (!formData.city || formData.city.trim().length < 2) {
+      errors.city = "La ville doit contenir au moins 2 caractères";
     }
-    return true;
+
+    if (!formData.postalCode || formData.postalCode.trim().length < 4) {
+      errors.postalCode = "Le code postal doit contenir au moins 4 caractères";
+    }
+
+    return errors;
   };
 
   return (

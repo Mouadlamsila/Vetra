@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import { 
+    setAuthToken, 
+    getAndClearAuthIntent, 
+    setStoreData 
+} from "../utils/auth";
 
 export default function GoogleCallback() {
     const navigate = useNavigate();
@@ -120,17 +125,11 @@ export default function GoogleCallback() {
                     throw new Error("Impossible d'obtenir les données d'authentification");
                 }
 
-                // Store authentication data
-                localStorage.setItem("token", strapiJWT);
-                localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
-                localStorage.setItem("IDUser", userData.id);
-                localStorage.setItem("role", "user");
-                localStorage.setItem("userEmail", userEmail); // Always use the original email
-                localStorage.setItem("userName", userData.username);
+                // Store only the token securely
+                setAuthToken(strapiJWT);
 
                 // Check if this is a new Google user (needs password setup)
-                const authIntent = localStorage.getItem('auth_intent');
-                localStorage.removeItem('auth_intent');
+                const authIntent = getAndClearAuthIntent();
 
                 setStatus('success');
                 setMessage(t('loginSuccess'));
