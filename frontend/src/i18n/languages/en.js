@@ -324,6 +324,15 @@ const en = {
   passwordNumber: "At least one number",
   passwordSpecial: "At least one special character",
   skipForNow: "Skip for now",
+  // Forgot Password
+  forgotPasswordDescription: "Enter your email address and we'll send you a link to reset your password.",
+  sendResetLink: "Send Reset Link",
+  passwordResetEmailSent: "Password reset email sent! Please check your inbox.",
+  passwordResetError: "Failed to send password reset email",
+  emailNotFound: "Email not found. Please check your email address.",
+  invalidEmailFormat: "Please enter a valid email address.",
+  backToLogin: "Back to Login",
+  forgotPasswordHelp: "If you don't receive an email within a few minutes, check your spam folder.",
   //footer
   companyName: "Servis",
   allRightsReserved: "All rights reserved",

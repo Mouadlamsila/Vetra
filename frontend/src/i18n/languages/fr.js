@@ -324,6 +324,15 @@ const fr = {
   passwordNumber: "Au moins un chiffre",
   passwordSpecial: "Au moins un caractère spécial",
   skipForNow: "Passer pour l'instant",
+  // Forgot Password
+  forgotPasswordDescription: "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+  sendResetLink: "Envoyer le lien de réinitialisation",
+  passwordResetEmailSent: "E-mail de réinitialisation envoyé ! Veuillez vérifier votre boîte de réception.",
+  passwordResetError: "Échec de l'envoi de l'e-mail de réinitialisation",
+  emailNotFound: "E-mail non trouvé. Veuillez vérifier votre adresse e-mail.",
+  invalidEmailFormat: "Veuillez entrer une adresse e-mail valide.",
+  backToLogin: "Retour à la connexion",
+  forgotPasswordHelp: "Si vous ne recevez pas d'e-mail dans quelques minutes, vérifiez votre dossier spam.",
   //footer
   companyName: "Servis",
   allRightsReserved: "Tous droits réservés",

@@ -327,6 +327,15 @@ const ar = {
   passwordNumber: "رقم واحد على الأقل",
   passwordSpecial: "رمز خاص واحد على الأقل",
   skipForNow: "تخطي الآن",
+  // Forgot Password
+  forgotPasswordDescription: "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
+  sendResetLink: "إرسال رابط إعادة التعيين",
+  passwordResetEmailSent: "تم إرسال بريد إعادة تعيين كلمة المرور! يرجى التحقق من صندوق الوارد.",
+  passwordResetError: "فشل في إرسال بريد إعادة تعيين كلمة المرور",
+  emailNotFound: "البريد الإلكتروني غير موجود. يرجى التحقق من عنوان بريدك الإلكتروني.",
+  invalidEmailFormat: "يرجى إدخال عنوان بريد إلكتروني صحيح.",
+  backToLogin: "العودة إلى تسجيل الدخول",
+  forgotPasswordHelp: "إذا لم تستلم بريداً إلكترونياً خلال بضع دقائق، تحقق من مجلد الرسائل غير المرغوب فيها.",
   //footer
   companyName: "شركة سيرفيس",
   allRightsReserved: "جميع الحقوق محفوظة",

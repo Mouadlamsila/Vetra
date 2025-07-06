@@ -13,6 +13,7 @@ import RouteAdmin from "./page/Admin/Route";
 import Stores from "./page/Stores";
 import GoogleCallback from "./page/GoogleCallback";
 import SetupPassword from "./page/SetupPassword";
+import ForgotPassword from "./page/ForgotPassword";
 
 // Protected Route component for Owner registration
 const ProtectedOwnerRoute = () => {
@@ -94,6 +95,7 @@ function AppContent() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/stores" element={<Stores />} />
         <Route path="/to-owner" element={<ProtectedOwnerRoute />} />
         <Route path="/controll/*" element={<ProtectedControllRoute />}>
