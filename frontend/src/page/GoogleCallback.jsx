@@ -6,35 +6,39 @@ export default function GoogleCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const getUserData = async () => {
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.slice(1));
+      const accessToken = params.get("access_token");
+
+      if (!accessToken) {
+        console.error("No access token found");
+        return;
+      }
+
       try {
-        const url = new URL(window.location.href);
-        const access_token = url.searchParams.get("access_token");
+        const response = await axios.get(
+          "https://stylish-basket-710b77de8f.strapiapp.com/api/users/me",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
-        if (!access_token) {
-          throw new Error("Token not found in URL");
-        }
-
-        // Get user data from Strapi
-        const res = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me", {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-
-        localStorage.setItem("token", access_token);
-        localStorage.setItem("user", JSON.stringify(res.data));
+        const user = response.data;
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("role", "user");
 
         navigate("/to-owner");
       } catch (error) {
-        console.error("Google callback error:", error);
-        navigate("/register");
+        console.error("Error fetching user data", error);
       }
     };
 
-    fetchUser();
-  }, [navigate]);
+    getUserData();
+  }, []);
 
-  return <div className="text-white text-center py-10 text-xl">جارٍ التحقق من الحساب...</div>;
+  return <div className="text-white p-10">جارٍ تسجيل الدخول...</div>;
 }

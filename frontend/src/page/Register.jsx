@@ -42,6 +42,7 @@ export default function Register() {
    const handleGoogleRegister = () => {
     // يوجه المستخدم مباشرة إلى رابط Google عبر Strapi
     window.location.href = "https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=https://vetra-dev.web.app/auth/google/callback";
+
 };
 
 
