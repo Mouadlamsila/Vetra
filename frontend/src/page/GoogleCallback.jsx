@@ -14,7 +14,7 @@ export default function GoogleCallback() {
 
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const jwt = urlParams.get("jwt");
+                const jwt = urlParams.get("jwt") || urlParams.get("id_token");
                 const error = urlParams.get("error");
                 if (jwt) {
                     localStorage.setItem("token", jwt);
