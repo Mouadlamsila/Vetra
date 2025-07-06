@@ -11,12 +11,15 @@ export default function GoogleCallback() {
         const handleCallback = async () => {
             console.log("=== CALLBACK GOOGLE STRAPI ===");
             console.log("URL:", window.location.href);
-            
+
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const jwt = urlParams.get("jwt");
                 const error = urlParams.get("error");
-                
+                if (jwt) {
+                    localStorage.setItem("token", jwt);
+                    // redirect or update auth state
+                }
                 if (error) {
                     console.error("Erreur d'authentification:", error);
                     setStatus('error');
@@ -24,7 +27,7 @@ export default function GoogleCallback() {
                     setTimeout(() => navigate("/login?error=" + error), 2000);
                     return;
                 }
-                
+
                 if (!jwt) {
                     console.error("Pas de token reçu");
                     setStatus('error');
@@ -34,7 +37,7 @@ export default function GoogleCallback() {
                 }
 
                 console.log("Token reçu de Strapi:", jwt);
-                
+
                 // Méthode 1: Essayer d'abord avec /api/users/me
                 let userData = null;
                 try {
@@ -50,14 +53,14 @@ export default function GoogleCallback() {
                     console.log("Données utilisateur via /me:", userData);
                 } catch (meError) {
                     console.log("Erreur avec /me, tentative avec décodage du token:", meError);
-                    
+
                     // Méthode 2: Décoder le JWT pour obtenir l'ID utilisateur
                     try {
                         const tokenParts = jwt.split('.');
                         if (tokenParts.length === 3) {
                             const payload = JSON.parse(atob(tokenParts[1]));
                             console.log("Payload du token:", payload);
-                            
+
                             const userId = payload.id;
                             if (userId) {
                                 // Utiliser l'endpoint avec l'ID spécifique
@@ -84,7 +87,7 @@ export default function GoogleCallback() {
 
                 // Traitement des données utilisateur
                 const userInfo = userData.data || userData;
-                
+
                 // Stocker les données d'authentification
                 localStorage.setItem("token", jwt);
                 localStorage.setItem("user", JSON.stringify(userInfo.documentId || userInfo.id));
@@ -98,10 +101,10 @@ export default function GoogleCallback() {
 
                 setStatus('success');
                 setMessage('تم تسجيل الدخول بنجاح!');
-                
+
                 // Rediriger vers la page principale
                 setTimeout(() => navigate("/to-owner"), 1500);
-                
+
             } catch (error) {
                 console.error("Erreur lors du traitement du callback:", error);
                 setStatus('error');
@@ -119,7 +122,7 @@ export default function GoogleCallback() {
                 {status === 'processing' && (
                     <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 )}
-                
+
                 {status === 'success' && (
                     <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +130,7 @@ export default function GoogleCallback() {
                         </svg>
                     </div>
                 )}
-                
+
                 {status === 'error' && (
                     <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +138,7 @@ export default function GoogleCallback() {
                         </svg>
                     </div>
                 )}
-                
+
                 <div className={`text-xl ${status === 'success' ? 'text-green-300' : status === 'error' ? 'text-red-300' : 'text-white'}`}>
                     {message}
                 </div>
