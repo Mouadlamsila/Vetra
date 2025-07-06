@@ -11,6 +11,7 @@ import HomeView from "./page/View/pages/Home";
 import Owner from "./page/Owner";
 import RouteAdmin from "./page/Admin/Route";
 import Stores from "./page/Stores";
+import GoogleCallback from "./page/GoogleCallback";
 
 // Protected Route component for Owner registration
 const ProtectedOwnerRoute = () => {
@@ -87,6 +88,7 @@ function AppContent() {
       {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/auth/google/callback" element={<GoogleCallback />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/stores" element={<Stores />} />

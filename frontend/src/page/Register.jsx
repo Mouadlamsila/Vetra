@@ -39,23 +39,12 @@ export default function Register() {
 
 
     // Function to handle Google sign-in
-    const handleGoogleRegister = async () => {
-        setError(""); // مسح الأخطاء القديمة
-        try {
-            window.location.href = "https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google";
+   const handleGoogleRegister = () => {
+    // يوجه المستخدم مباشرة إلى رابط Google عبر Strapi
+    window.location.href = "https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google";
+};
 
-            const { jwt, user: returnedUser } = response.data;
 
-            localStorage.setItem("token", jwt);
-            localStorage.setItem("user", JSON.stringify(returnedUser));
-            localStorage.setItem("role", "user");
-
-            navigate("/to-owner");
-        } catch (error) {
-            console.error("Google login error:", error);
-            setError("فشل تسجيل الدخول بواسطة Google");
-        }
-    };
 
 
     const handleSubmit = async (e) => {
