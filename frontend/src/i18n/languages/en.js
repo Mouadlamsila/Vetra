@@ -310,6 +310,15 @@ const en = {
   emailExistsUsePassword: "An account with this email already exists. Please log in with your password instead of using Google.",
   continueWithGoogle: "Continue with Google",
   googleLoginError: "Google login error",
+  // Email validation messages
+  validateEmailWithGoogle: "Validate Email with Google",
+  validatingEmail: "Validating email...",
+  emailValidatedSuccessfully: "Email validated successfully!",
+  emailNotValidInGoogle: "This email is not valid in Google. Please use a different email address.",
+  pleaseValidateEmailFirst: "Please validate your email with Google first.",
+  pleaseEnterEmail: "Please enter an email address.",
+  emailValidationSuccess: "Email validation successful!",
+  emailValidationFailed: "Email validation failed. Please try again.",
   // Password setup page
   setupPassword: "Set Up Your Password",
   setupPasswordDescription: "Please set a secure password for your account",

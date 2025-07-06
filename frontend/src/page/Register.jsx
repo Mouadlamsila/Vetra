@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import {
     Mail, Lock, Eye, EyeOff, User,
-    ArrowRight, ArrowLeft
+    ArrowRight, ArrowLeft, CheckCircle, XCircle
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
@@ -15,6 +15,8 @@ export default function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [isHovering, setIsHovering] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isValidatingEmail, setIsValidatingEmail] = useState(false)
+    const [emailValidationStatus, setEmailValidationStatus] = useState(null) // null, 'valid', 'invalid'
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -45,6 +47,58 @@ export default function Register() {
         return null;
     };
 
+    // Email validation with Google
+    const validateEmailWithGoogle = async (email) => {
+        if (!email || !email.includes('@')) {
+            setEmailValidationStatus('invalid');
+            return false;
+        }
+
+        setIsValidatingEmail(true);
+        setEmailValidationStatus(null);
+
+        try {
+            // First, try to authenticate with Google to check if email exists
+            const googleAuthUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&email=${encodeURIComponent(email)}`;
+            
+            // Store the email for validation
+            localStorage.setItem('email_to_validate', email);
+            localStorage.setItem('auth_intent', 'email_validation');
+
+            // Redirect to Google auth with email parameter
+            window.location.href = googleAuthUrl;
+
+            return true; // This will be handled by the callback
+        } catch (error) {
+            console.error('Email validation error:', error);
+            setEmailValidationStatus('invalid');
+            setIsValidatingEmail(false);
+            return false;
+        }
+    };
+
+    // Check email validation status on component mount
+    useEffect(() => {
+        const validatedEmail = localStorage.getItem('email_validated');
+        const validationResult = localStorage.getItem('email_validation_result');
+        
+        if (validatedEmail && validationResult) {
+            const email = formData.email;
+            if (validatedEmail === email) {
+                if (validationResult === 'valid') {
+                    setEmailValidationStatus('valid');
+                } else {
+                    setEmailValidationStatus('invalid');
+                    setError(t('emailNotValidInGoogle'));
+                }
+            }
+            
+            // Clear the stored validation data
+            localStorage.removeItem('email_validated');
+            localStorage.removeItem('email_validation_result');
+        }
+    }, [formData.email, t]);
+
     useEffect(() => {
         const animationTimer = setInterval(() => {
             setActiveFeatureIndex((prev) => (prev + 1) % features.length)
@@ -71,11 +125,27 @@ export default function Register() {
         }
     };
 
+    // Handle email validation button click
+    const handleEmailValidation = async () => {
+        if (!formData.email) {
+            setError(t('pleaseEnterEmail'));
+            return;
+        }
+        
+        await validateEmailWithGoogle(formData.email);
+    };
+
     // Dans votre fonction handleSubmit du Register.jsx
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
         setSuccess("")
+
+        // Check if email is validated
+        if (emailValidationStatus !== 'valid') {
+            setError(t('pleaseValidateEmailFirst'));
+            return;
+        }
 
         // Validate password strength
         const passwordError = validatePassword(formData.password);
@@ -142,6 +212,11 @@ export default function Register() {
             ...prev,
             [name]: value,
         }))
+        
+        // Reset email validation status when email changes
+        if (name === 'email') {
+            setEmailValidationStatus(null);
+        }
     }
 
     useEffect(() => {
@@ -209,20 +284,62 @@ export default function Register() {
                                     />
                                 </div>
 
-                                {/* email */}
-                                <div className="relative group">
-                                    <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
-                                        <Mail className="h-5 w-5 text-purple-200" />
+                                {/* Email with validation */}
+                                <div className="space-y-2">
+                                    <div className="relative group">
+                                        <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                                            <Mail className="h-5 w-5 text-purple-200" />
+                                        </div>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
+                                            placeholder={t('emailPlaceholder')}
+                                            required
+                                        />
+                                        {/* Email validation status indicator */}
+                                        {emailValidationStatus === 'valid' && (
+                                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}>
+                                                <CheckCircle className="h-5 w-5 text-green-400" />
+                                            </div>
+                                        )}
+                                        {emailValidationStatus === 'invalid' && (
+                                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}>
+                                                <XCircle className="h-5 w-5 text-red-400" />
+                                            </div>
+                                        )}
                                     </div>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
-                                        placeholder={t('emailPlaceholder')}
-                                        required
-                                    />
+                                    
+                                    {/* Email validation button */}
+                                    <button
+                                        type="button"
+                                        onClick={handleEmailValidation}
+                                        disabled={!formData.email || isValidatingEmail}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-900 transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isValidatingEmail ? (
+                                            <div className="flex items-center justify-center">
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                                {t('validatingEmail')}
+                                            </div>
+                                        ) : (
+                                            <span>{t('validateEmailWithGoogle')}</span>
+                                        )}
+                                    </button>
+                                    
+                                    {/* Email validation status message */}
+                                    {emailValidationStatus === 'valid' && (
+                                        <div className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-200 text-sm">
+                                            {t('emailValidatedSuccessfully')}
+                                        </div>
+                                    )}
+                                    {emailValidationStatus === 'invalid' && (
+                                        <div className="p-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 text-sm">
+                                            {t('emailNotValidInGoogle')}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Password */}
@@ -275,10 +392,10 @@ export default function Register() {
                             {/* Register Button */}
                             <button
                                 type="submit"
-                                disabled={isLoading}
+                                disabled={isLoading || emailValidationStatus !== 'valid'}
                                 onMouseEnter={() => setIsHovering(true)}
                                 onMouseLeave={() => setIsHovering(false)}
-                                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group"
+                                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="relative z-10 flex items-center justify-center">
                                     {isLoading ? (
