@@ -313,15 +313,6 @@ const ar = {
   emailExistsUsePassword: "حساب بهذا البريد الإلكتروني موجود بالفعل. يرجى تسجيل الدخول بكلمة المرور بدلاً من استخدام Google.",
   continueWithGoogle: "المتابعة مع Google",
   googleLoginError: "خطأ في تسجيل الدخول بـ Google",
-  // Email validation messages
-  validateEmailWithGoogle: "التحقق من صحة البريد الإلكتروني مع Google",
-  validatingEmail: "جارٍ التحقق من صحة البريد الإلكتروني...",
-  emailValidatedSuccessfully: "تم التحقق من صحة البريد الإلكتروني بنجاح!",
-  emailNotValidInGoogle: "هذا البريد الإلكتروني غير صالح في Google. يرجى استخدام عنوان بريد إلكتروني مختلف.",
-  pleaseValidateEmailFirst: "يرجى التحقق من صحة بريدك الإلكتروني مع Google أولاً.",
-  pleaseEnterEmail: "يرجى إدخال عنوان بريد إلكتروني.",
-  emailValidationSuccess: "تم التحقق من صحة البريد الإلكتروني بنجاح!",
-  emailValidationFailed: "فشل التحقق من صحة البريد الإلكتروني. يرجى المحاولة مرة أخرى.",
   // Password setup page
   setupPassword: "إعداد كلمة المرور",
   setupPasswordDescription: "يرجى تعيين كلمة مرور آمنة لحسابك",

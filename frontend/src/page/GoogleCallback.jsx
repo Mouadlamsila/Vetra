@@ -50,55 +50,6 @@ export default function GoogleCallback() {
                 const userEmail = payload.email;
                 const baseUsername = userEmail.split('@')[0];
                 
-                // Check if this is an email validation request
-                const authIntent = localStorage.getItem('auth_intent');
-                const emailToValidate = localStorage.getItem('email_to_validate');
-                
-                if (authIntent === 'email_validation' && emailToValidate) {
-                    console.log("Email validation mode detected");
-                    
-                    // Check if the validated email matches the email to validate
-                    if (userEmail.toLowerCase() === emailToValidate.toLowerCase()) {
-                        console.log("Email validation successful");
-                        
-                        // Store validation result
-                        localStorage.setItem('email_validated', emailToValidate);
-                        localStorage.setItem('email_validation_result', 'valid');
-                        
-                        setStatus('success');
-                        setMessage(t('emailValidationSuccess'));
-                        
-                        // Clean up
-                        localStorage.removeItem('auth_intent');
-                        localStorage.removeItem('email_to_validate');
-                        
-                        // Redirect back to register page
-                        setTimeout(() => {
-                            navigate("/register");
-                        }, 1500);
-                        return;
-                    } else {
-                        console.log("Email validation failed - emails don't match");
-                        
-                        // Store validation result
-                        localStorage.setItem('email_validated', emailToValidate);
-                        localStorage.setItem('email_validation_result', 'invalid');
-                        
-                        setStatus('error');
-                        setMessage(t('emailValidationFailed'));
-                        
-                        // Clean up
-                        localStorage.removeItem('auth_intent');
-                        localStorage.removeItem('email_to_validate');
-                        
-                        // Redirect back to register page
-                        setTimeout(() => {
-                            navigate("/register");
-                        }, 2000);
-                        return;
-                    }
-                }
-                
                 // Generate a secure password for Google users
                 const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
 
@@ -178,6 +129,7 @@ export default function GoogleCallback() {
                 localStorage.setItem("userName", userData.username);
 
                 // Check if this is a new Google user (needs password setup)
+                const authIntent = localStorage.getItem('auth_intent');
                 localStorage.removeItem('auth_intent');
 
                 setStatus('success');

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Lock, Eye, EyeOff, ArrowLeft, ArrowRight, CheckCircle, AlertCircle } from "lucide-react"
+import { Lock, Eye, EyeOff, ArrowLeft, ArrowRight, CheckCircle, AlertCircle, XCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { motion } from "framer-motion"
@@ -16,6 +16,7 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordFocused, setPasswordFocused] = useState(false)
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [passwordErrors, setPasswordErrors] = useState({})
@@ -59,6 +60,16 @@ export default function ResetPassword() {
     setPassword(newPassword)
     setPasswordErrors(validatePassword(newPassword))
   }
+
+  // Calculate password strength
+  const getPasswordStrength = () => {
+    const errors = Object.keys(passwordErrors).length
+    const total = 5
+    const passed = total - errors
+    return { passed, total, percentage: (passed / total) * 100 }
+  }
+
+  const strength = getPasswordStrength()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -187,6 +198,8 @@ export default function ResetPassword() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={handlePasswordChange}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
                     className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                     placeholder={t('newPasswordPlaceholder')}
                     required
@@ -200,6 +213,34 @@ export default function ResetPassword() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+
+                {/* Password Requirements Tooltip */}
+                {passwordFocused && password && (
+                  <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs">
+                    <div className="text-xs space-y-2">
+                      <div className={`flex items-center space-x-2 ${passwordErrors.tooShort ? 'text-red-400' : 'text-green-400'}`}>
+                        {passwordErrors.tooShort ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        <span>{t('passwordMinLength')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordErrors.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
+                        {passwordErrors.noUpperCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        <span>{t('passwordUppercase')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordErrors.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
+                        {passwordErrors.noLowerCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        <span>{t('passwordLowercase')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordErrors.noNumber ? 'text-red-400' : 'text-green-400'}`}>
+                        {passwordErrors.noNumber ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        <span>{t('passwordNumber')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordErrors.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
+                        {passwordErrors.noSpecialChar ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        <span>{t('passwordSpecial')}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Confirm Password */}
                 <div className="relative group">
@@ -222,33 +263,6 @@ export default function ResetPassword() {
                   >
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
-                </div>
-              </div>
-
-              {/* Password Requirements */}
-              <div className="bg-white/5 rounded-lg p-4 border border-purple-300/20">
-                <h3 className="text-sm font-medium text-purple-200 mb-3">{t('passwordRequirements')}</h3>
-                <div className="space-y-2 text-xs">
-                  <div className={`flex items-center space-x-2 ${passwordErrors.tooShort ? 'text-red-400' : 'text-green-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${passwordErrors.tooShort ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span>{t('passwordMinLength')}</span>
-                  </div>
-                  <div className={`flex items-center space-x-2 ${passwordErrors.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${passwordErrors.noUpperCase ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span>{t('passwordUppercase')}</span>
-                  </div>
-                  <div className={`flex items-center space-x-2 ${passwordErrors.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${passwordErrors.noLowerCase ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span>{t('passwordLowercase')}</span>
-                  </div>
-                  <div className={`flex items-center space-x-2 ${passwordErrors.noNumber ? 'text-red-400' : 'text-green-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${passwordErrors.noNumber ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span>{t('passwordNumber')}</span>
-                  </div>
-                  <div className={`flex items-center space-x-2 ${passwordErrors.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${passwordErrors.noSpecialChar ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span>{t('passwordSpecial')}</span>
-                  </div>
                 </div>
               </div>
 

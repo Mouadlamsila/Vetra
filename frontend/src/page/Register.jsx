@@ -15,8 +15,7 @@ export default function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [isHovering, setIsHovering] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [isValidatingEmail, setIsValidatingEmail] = useState(false)
-    const [emailValidationStatus, setEmailValidationStatus] = useState(null) // null, 'valid', 'invalid'
+    const [passwordFocused, setPasswordFocused] = useState(false)
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -25,79 +24,40 @@ export default function Register() {
     })
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
+    const [passwordErrors, setPasswordErrors] = useState({})
     const language = localStorage.getItem('lang')
     const features = ['seamlessIntegration', 'advancedSecurity', 'realtimeCollaboration']
     const [activeFeatureIndex, setActiveFeatureIndex] = useState(0)
     const navigate = useNavigate()
 
-    // Password strength validation
+    // Password validation function (same as ResetPassword.jsx)
     const validatePassword = (password) => {
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const errors = {}
         
-        if (password.length < minLength) return t('passwordTooShort');
-        if (!hasUpperCase) return t('passwordNoUpperCase');
-        if (!hasLowerCase) return t('passwordNoLowerCase');
-        if (!hasNumbers) return t('passwordNoNumber');
-        if (!hasSpecialChar) return t('passwordNoSpecialChar');
+        if (password.length < 8) {
+            errors.tooShort = true
+        }
+        if (!/[A-Z]/.test(password)) {
+            errors.noUpperCase = true
+        }
+        if (!/[a-z]/.test(password)) {
+            errors.noLowerCase = true
+        }
+        if (!/\d/.test(password)) {
+            errors.noNumber = true
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            errors.noSpecialChar = true
+        }
         
-        return null;
-    };
+        return errors
+    }
 
-    // Email validation with Google
-    const validateEmailWithGoogle = async (email) => {
-        if (!email || !email.includes('@')) {
-            setEmailValidationStatus('invalid');
-            return false;
-        }
-
-        setIsValidatingEmail(true);
-        setEmailValidationStatus(null);
-
-        try {
-            // First, try to authenticate with Google to check if email exists
-            const googleAuthUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&email=${encodeURIComponent(email)}`;
-            
-            // Store the email for validation
-            localStorage.setItem('email_to_validate', email);
-            localStorage.setItem('auth_intent', 'email_validation');
-
-            // Redirect to Google auth with email parameter
-            window.location.href = googleAuthUrl;
-
-            return true; // This will be handled by the callback
-        } catch (error) {
-            console.error('Email validation error:', error);
-            setEmailValidationStatus('invalid');
-            setIsValidatingEmail(false);
-            return false;
-        }
-    };
-
-    // Check email validation status on component mount
-    useEffect(() => {
-        const validatedEmail = localStorage.getItem('email_validated');
-        const validationResult = localStorage.getItem('email_validation_result');
-        
-        if (validatedEmail && validationResult) {
-            const email = formData.email;
-            if (validatedEmail === email) {
-                if (validationResult === 'valid') {
-                    setEmailValidationStatus('valid');
-                } else {
-                    setEmailValidationStatus('invalid');
-                    setError(t('emailNotValidInGoogle'));
-                }
-            }
-            
-            // Clear the stored validation data
-            localStorage.removeItem('email_validated');
-            localStorage.removeItem('email_validation_result');
-        }
-    }, [formData.email, t]);
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value
+        setFormData(prev => ({ ...prev, password: newPassword }))
+        setPasswordErrors(validatePassword(newPassword))
+    }
 
     useEffect(() => {
         const animationTimer = setInterval(() => {
@@ -125,32 +85,16 @@ export default function Register() {
         }
     };
 
-    // Handle email validation button click
-    const handleEmailValidation = async () => {
-        if (!formData.email) {
-            setError(t('pleaseEnterEmail'));
-            return;
-        }
-        
-        await validateEmailWithGoogle(formData.email);
-    };
-
     // Dans votre fonction handleSubmit du Register.jsx
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
         setSuccess("")
 
-        // Check if email is validated
-        if (emailValidationStatus !== 'valid') {
-            setError(t('pleaseValidateEmailFirst'));
-            return;
-        }
-
-        // Validate password strength
-        const passwordError = validatePassword(formData.password);
-        if (passwordError) {
-            setError(passwordError);
+        // Validate password requirements
+        const errors = validatePassword(formData.password)
+        if (Object.keys(errors).length > 0) {
+            setError(t('passwordRequirementsNotMet'));
             return;
         }
 
@@ -212,16 +156,21 @@ export default function Register() {
             ...prev,
             [name]: value,
         }))
-        
-        // Reset email validation status when email changes
-        if (name === 'email') {
-            setEmailValidationStatus(null);
-        }
     }
 
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
+
+    // Calculate password strength
+    const getPasswordStrength = () => {
+        const errors = Object.keys(passwordErrors).length
+        const total = 5
+        const passed = total - errors
+        return { passed, total, percentage: (passed / total) * 100 }
+    }
+
+    const strength = getPasswordStrength()
 
     return (
         <div className="min-h-screen pt-12 w-full bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
@@ -284,62 +233,20 @@ export default function Register() {
                                     />
                                 </div>
 
-                                {/* Email with validation */}
-                                <div className="space-y-2">
-                                    <div className="relative group">
-                                        <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
-                                            <Mail className="h-5 w-5 text-purple-200" />
-                                        </div>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
-                                            placeholder={t('emailPlaceholder')}
-                                            required
-                                        />
-                                        {/* Email validation status indicator */}
-                                        {emailValidationStatus === 'valid' && (
-                                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}>
-                                                <CheckCircle className="h-5 w-5 text-green-400" />
-                                            </div>
-                                        )}
-                                        {emailValidationStatus === 'invalid' && (
-                                            <div className={`absolute inset-y-0 ${language === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}>
-                                                <XCircle className="h-5 w-5 text-red-400" />
-                                            </div>
-                                        )}
+                                {/* email */}
+                                <div className="relative group">
+                                    <div className={`absolute inset-y-0 ${language === 'ar' ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110`}>
+                                        <Mail className="h-5 w-5 text-purple-200" />
                                     </div>
-                                    
-                                    {/* Email validation button */}
-                                    <button
-                                        type="button"
-                                        onClick={handleEmailValidation}
-                                        disabled={!formData.email || isValidatingEmail}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-900 transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isValidatingEmail ? (
-                                            <div className="flex items-center justify-center">
-                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                                                {t('validatingEmail')}
-                                            </div>
-                                        ) : (
-                                            <span>{t('validateEmailWithGoogle')}</span>
-                                        )}
-                                    </button>
-                                    
-                                    {/* Email validation status message */}
-                                    {emailValidationStatus === 'valid' && (
-                                        <div className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-200 text-sm">
-                                            {t('emailValidatedSuccessfully')}
-                                        </div>
-                                    )}
-                                    {emailValidationStatus === 'invalid' && (
-                                        <div className="p-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 text-sm">
-                                            {t('emailNotValidInGoogle')}
-                                        </div>
-                                    )}
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className={`w-full ${language === 'ar' ? 'pl-4 pr-10' : 'pl-10 pr-4'} py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40`}
+                                        placeholder={t('emailPlaceholder')}
+                                        required
+                                    />
                                 </div>
 
                                 {/* Password */}
@@ -351,7 +258,9 @@ export default function Register() {
                                         type={showPassword ? "text" : "password"}
                                         name="password"
                                         value={formData.password}
-                                        onChange={handleChange}
+                                        onChange={handlePasswordChange}
+                                        onFocus={() => setPasswordFocused(true)}
+                                        onBlur={() => setPasswordFocused(false)}
                                         className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                         placeholder={t('passwordPlaceholder')}
                                         required
@@ -363,7 +272,37 @@ export default function Register() {
                                     >
                                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                     </button>
+                                    
+                                   
                                 </div>
+
+                                {/* Password Requirements Tooltip */}
+                                {passwordFocused && formData.password && (
+                                    <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs">
+                                        <div className="text-xs space-y-2">
+                                            <div className={`flex items-center space-x-2 ${passwordErrors.tooShort ? 'text-red-400' : 'text-green-400'}`}>
+                                                {passwordErrors.tooShort ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                                <span>{t('passwordMinLength')}</span>
+                                            </div>
+                                            <div className={`flex items-center space-x-2 ${passwordErrors.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
+                                                {passwordErrors.noUpperCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                                <span>{t('passwordUppercase')}</span>
+                                            </div>
+                                            <div className={`flex items-center space-x-2 ${passwordErrors.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
+                                                {passwordErrors.noLowerCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                                <span>{t('passwordLowercase')}</span>
+                                            </div>
+                                            <div className={`flex items-center space-x-2 ${passwordErrors.noNumber ? 'text-red-400' : 'text-green-400'}`}>
+                                                {passwordErrors.noNumber ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                                <span>{t('passwordNumber')}</span>
+                                            </div>
+                                            <div className={`flex items-center space-x-2 ${passwordErrors.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
+                                                {passwordErrors.noSpecialChar ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                                <span>{t('passwordSpecial')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Confirm Password */}
                                 <div className="relative group">
@@ -392,10 +331,10 @@ export default function Register() {
                             {/* Register Button */}
                             <button
                                 type="submit"
-                                disabled={isLoading || emailValidationStatus !== 'valid'}
+                                disabled={isLoading}
                                 onMouseEnter={() => setIsHovering(true)}
                                 onMouseLeave={() => setIsHovering(false)}
-                                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-900 transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group"
                             >
                                 <span className="relative z-10 flex items-center justify-center">
                                     {isLoading ? (
