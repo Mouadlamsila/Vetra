@@ -11,7 +11,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import stripePromise from '../../../utils/stripe'
 import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from '../../../components/CheckoutForm'
-import { getUserId, getAuthToken, getLanguage } from "../../utils/auth"
+import { getUserId, getAuthToken, getLanguage } from "../../../utils/auth"
 
 export default function Header() {
   const { t, i18n } = useTranslation();

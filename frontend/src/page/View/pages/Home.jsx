@@ -20,7 +20,7 @@ import {
 } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
-import { getUserId } from "../../utils/auth"
+import { getUserId } from "../../../utils/auth"
 
 // Import Swiper styles
 import "swiper/css"

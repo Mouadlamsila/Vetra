@@ -5,8 +5,7 @@ import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, CheckCir
 import axios from "axios"
 import { useTranslation } from 'react-i18next'
 import { toast } from "react-toastify"
-import { getUserId } from "../../utils/auth"
-import { getAuthToken } from "../../utils/auth"
+import { getUserId, getAuthToken } from "../../utils/auth"
 
 export default function Profile() {
   const { t } = useTranslation()

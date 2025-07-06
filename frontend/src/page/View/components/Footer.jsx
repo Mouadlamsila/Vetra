@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { FaPaypal } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { getUserId } from "../../utils/auth";
+import { getUserId } from "../../../utils/auth";
 
 export default function Footer() {
   const { t } = useTranslation();

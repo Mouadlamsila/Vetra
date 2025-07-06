@@ -6,7 +6,7 @@ import { ChevronRight, Heart, Minus, Plus, Share2, ShoppingCart, Star, Truck, Me
 import axios from "axios"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
-import { getUserId, getAuthToken } from "../../utils/auth"
+import { getUserId, getAuthToken } from "../../../utils/auth"
 
 import stripePromise from "../../../utils/stripe"
 import { Elements } from "@stripe/react-stripe-js"
