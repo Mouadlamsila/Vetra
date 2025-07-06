@@ -307,6 +307,8 @@ const ar = {
   userDataRetrievalError: "فشل في استرداد بيانات المستخدم",
   invalidGoogleTokenError: "تم استلام رمز Google غير صالح",
   googleUserCreationError: "فشل في إنشاء أو توصيل مستخدم Google",
+  sessionCreationError: "فشل في إنشاء جلسة للمستخدم الموجود",
+  authenticationDataError: "فشل في الحصول على بيانات المصادقة",
   emailAlreadyExistsGoogle: "حساب بهذا البريد الإلكتروني موجود بالفعل. يرجى تسجيل الدخول بكلمة المرور الخاصة بك.",
   emailExistsUsePassword: "حساب بهذا البريد الإلكتروني موجود بالفعل. يرجى تسجيل الدخول بكلمة المرور بدلاً من استخدام Google.",
   continueWithGoogle: "المتابعة مع Google",

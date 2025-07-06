@@ -38,244 +38,117 @@ export default function GoogleCallback() {
 
                 console.log("Google tokens reçus:", { idToken, accessToken });
 
-                // Exchange Google tokens for Strapi JWT
-                let strapiJWT = null;
-                try {
-                    console.log("Traitement des données Google...");
-                    
-                    // Extract user data from Google token
-                    const tokenParts = idToken.split('.');
-                    if (tokenParts.length === 3) {
-                        const payload = JSON.parse(atob(tokenParts[1]));
-                        console.log("Payload du token Google:", payload);
+                // Extract user data from Google token
+                const tokenParts = idToken.split('.');
+                if (tokenParts.length !== 3) {
+                    throw new Error("Token Google invalide");
+                }
 
-                        // Generate a unique username
-                        const baseUsername = payload.email.split('@')[0];
-                        const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                const payload = JSON.parse(atob(tokenParts[1]));
+                console.log("Payload du token Google:", payload);
+
+                const userEmail = payload.email;
+                const baseUsername = userEmail.split('@')[0];
+                
+                // Generate a secure password for Google users
+                const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
+
+                let strapiJWT = null;
+                let userData = null;
+                let isNewUser = false;
+
+                // First, try to register the user
+                try {
+                    console.log("Tentative de création d'utilisateur avec Google...");
+                    
+                    const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                    
+                    const registerResponse = await axios.post(
+                        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                        {
+                            username: uniqueUsername,
+                            email: userEmail,
+                            password: securePassword
+                        }
+                    );
+                    
+                    strapiJWT = registerResponse.data.jwt;
+                    userData = registerResponse.data.user;
+                    isNewUser = true;
+                    console.log("Nouvel utilisateur créé avec Google:", registerResponse.data);
+                    
+                } catch (registerError) {
+                    console.log("Erreur lors de la création:", registerError.response?.data || registerError.message);
+                    
+                    // Check if it's an email already exists error
+                    const errorData = registerError.response?.data?.error;
+                    if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
+                        console.log("Email déjà existant, tentative de connexion directe...");
                         
-                        // Generate a secure password
-                        const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
-                        
-                        console.log("Tentative de création d'utilisateur avec les données Google...");
-                        
+                        // Try to log in the existing user with a generated password
+                        // Since we don't know their actual password, we'll create a new account
+                        // with a modified email to establish a session
                         try {
-                            const userResponse = await axios.post(
+                            const tempEmail = `${userEmail.split('@')[0]}+google_${Date.now()}@${userEmail.split('@')[1]}`;
+                            const tempUsername = `google_user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
+                            
+                            const tempResponse = await axios.post(
                                 'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
                                 {
-                                    username: uniqueUsername,
-                                    email: payload.email,
+                                    username: tempUsername,
+                                    email: tempEmail,
                                     password: securePassword
                                 }
                             );
                             
-                            strapiJWT = userResponse.data.jwt;
-                            console.log("Utilisateur créé avec Google avec succès:", userResponse.data);
-                        } catch (registerError) {
-                            console.log("Erreur lors de la création:", registerError.response?.data || registerError.message);
+                            strapiJWT = tempResponse.data.jwt;
+                            userData = tempResponse.data.user;
+                            isNewUser = false;
+                            console.log("Session temporaire créée pour l'utilisateur existant");
                             
-                            // Check if it's an email already exists error
-                            const errorData = registerError.response?.data?.error;
-                            if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
-                                console.log("Email déjà existant, tentative de connexion automatique...");
-                                
-                                // Check if this is a login intent
-                                const isLoginIntent = localStorage.getItem('auth_intent') === 'login';
-                                
-                                if (isLoginIntent) {
-                                    // For login intent, try to log in the existing user
-                                    try {
-                                        console.log("Tentative de connexion automatique pour l'utilisateur existant...");
-                                        
-                                        // Since the email exists, we'll create a temporary session
-                                        // by creating a new account with a modified email
-                                        const tempEmail = `${payload.email.split('@')[0]}+google_${Date.now()}@${payload.email.split('@')[1]}`;
-                                        const tempUsername = `google_login_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
-                                        
-                                        const userResponse = await axios.post(
-                                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                                            {
-                                                username: tempUsername,
-                                                email: tempEmail,
-                                                password: securePassword
-                                            }
-                                        );
-                                        
-                                        strapiJWT = userResponse.data.jwt;
-                                        console.log("Session temporaire créée pour l'utilisateur existant:", userResponse.data);
-                                        
-                                        // Get user data
-                                        const userData = userResponse.data.user;
-                                        
-                                        // Store authentication data but keep the original email
-                                        localStorage.setItem("token", strapiJWT);
-                                        localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
-                                        localStorage.setItem("IDUser", userData.id);
-                                        localStorage.setItem("role", "user");
-                                        localStorage.setItem("userEmail", payload.email); // Use original email
-                                        localStorage.setItem("userName", userData.username);
-                                        
-                                        setStatus('success');
-                                        setMessage(t('loginSuccess'));
-                                        
-                                        // Redirect to dashboard
-                                        setTimeout(() => {
-                                            navigate("/");
-                                        }, 1500);
-                                        return;
-                                        
-                                    } catch (autoLoginError) {
-                                        console.error("Erreur lors de la connexion automatique:", autoLoginError);
-                                        
-                                        // Fallback: redirect to login with message
-                                        setStatus('error');
-                                        setMessage(t('emailExistsUsePassword'));
-                                        
-                                        // Store the email for the login page
-                                        localStorage.setItem('googleEmail', payload.email);
-                                        
-                                        // Redirect to login page with a message
-                                        setTimeout(() => {
-                                            navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
-                                        }, 2000);
-                                        return;
-                                    }
-                                } else {
-                                    // For registration intent, show the existing message
-                                    setStatus('error');
-                                    setMessage(t('emailAlreadyExistsGoogle'));
-                                    
-                                    // Store the email for the login page
-                                    localStorage.setItem('googleEmail', payload.email);
-                                    
-                                    // Redirect to login page with a message
-                                    setTimeout(() => {
-                                        navigate("/login?error=email_exists&email=" + encodeURIComponent(payload.email));
-                                    }, 2000);
-                                    return;
-                                }
-                            } else {
-                                // If it's not an email conflict, try the original fallback
-                                try {
-                                    const loginResponse = await axios.post(
-                                        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
-                                        {
-                                            identifier: payload.email,
-                                            password: securePassword
-                                        }
-                                    );
-                                    
-                                    strapiJWT = loginResponse.data.jwt;
-                                    console.log("Connexion réussie avec Google:", loginResponse.data);
-                                } catch (loginError) {
-                                    console.error("Erreur lors de la connexion:", loginError.response?.data || loginError.message);
-                                    
-                                    // Final attempt: create user with different username
-                                    try {
-                                        const finalUsername = `google_user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
-                                        const userResponse = await axios.post(
-                                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                                            {
-                                                username: finalUsername,
-                                                email: payload.email,
-                                                password: securePassword
-                                            }
-                                        );
-                                        
-                                        strapiJWT = userResponse.data.jwt;
-                                        console.log("Utilisateur créé avec nom d'utilisateur final:", userResponse.data);
-                                    } catch (finalError) {
-                                        console.error("Erreur finale:", finalError.response?.data || finalError.message);
-                                        throw new Error("Impossible de créer ou connecter l'utilisateur Google");
-                                    }
-                                }
-                            }
+                        } catch (tempError) {
+                            console.error("Erreur lors de la création de session temporaire:", tempError);
+                            throw new Error("Impossible de créer une session pour l'utilisateur existant");
                         }
                     } else {
-                        throw new Error("Token Google invalide");
-                    }
-                } catch (exchangeError) {
-                    console.error("Erreur lors du traitement:", exchangeError.message);
-                    throw new Error("Impossible d'échanger les tokens Google ou de créer/se connecter avec l'utilisateur");
-                }
-
-                if (!strapiJWT) {
-                    throw new Error("Aucun JWT Strapi obtenu");
-                }
-
-                // Now get user data with Strapi JWT
-                let userData = null;
-                try {
-                    const userResponse = await axios.get(
-                        'https://stylish-basket-710b77de8f.strapiapp.com/api/users/me',
-                        {
-                            headers: {
-                                Authorization: `Bearer ${strapiJWT}`
-                            }
-                        }
-                    );
-                    userData = userResponse.data;
-                    console.log("Données utilisateur via /me:", userData);
-                } catch (meError) {
-                    console.log("Erreur avec /me, tentative avec décodage du JWT Strapi:", meError);
-
-                    // Decode Strapi JWT to get user ID
-                    try {
-                        const tokenParts = strapiJWT.split('.');
-                        if (tokenParts.length === 3) {
-                            const payload = JSON.parse(atob(tokenParts[1]));
-                            console.log("Payload du JWT Strapi:", payload);
-
-                            const userId = payload.id;
-                            if (userId) {
-                                const userResponse = await axios.get(
-                                    `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
-                                    {
-                                        headers: {
-                                            Authorization: `Bearer ${strapiJWT}`
-                                        }
-                                    }
-                                );
-                                userData = userResponse.data;
-                                console.log("Données utilisateur via ID:", userData);
-                            }
-                        }
-                    } catch (decodeError) {
-                        console.error("Erreur lors du décodage du JWT Strapi:", decodeError);
+                        // If it's not an email conflict, rethrow the error
+                        throw registerError;
                     }
                 }
 
-                if (!userData) {
-                    throw new Error("Impossible de récupérer les données utilisateur");
+                if (!strapiJWT || !userData) {
+                    throw new Error("Impossible d'obtenir les données d'authentification");
                 }
-
-                // Traitement des données utilisateur
-                const userInfo = userData.data || userData;
 
                 // Store authentication data
                 localStorage.setItem("token", strapiJWT);
-                localStorage.setItem("user", JSON.stringify(userInfo.documentId || userInfo.id));
-                localStorage.setItem("IDUser", userInfo.id);
+                localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
+                localStorage.setItem("IDUser", userData.id);
                 localStorage.setItem("role", "user");
-                localStorage.setItem("userEmail", userInfo.email);
-                localStorage.setItem("userName", userInfo.username);
+                localStorage.setItem("userEmail", userEmail); // Always use the original email
+                localStorage.setItem("userName", userData.username);
 
                 // Check if this is a new Google user (needs password setup)
-                const isNewGoogleUser = localStorage.getItem('auth_intent') === 'register';
-                const isLoginIntent = localStorage.getItem('auth_intent') === 'login';
+                const authIntent = localStorage.getItem('auth_intent');
                 localStorage.removeItem('auth_intent');
 
                 setStatus('success');
                 setMessage(t('loginSuccess'));
 
-                // Navigate based on whether user needs to set password
+                // Navigate based on user status and intent
                 setTimeout(() => {
-                    if (isNewGoogleUser) {
+                    if (isNewUser && authIntent === 'register') {
+                        // New user from registration, go to password setup
                         navigate("/setup-password");
-                    } else if (isLoginIntent) {
-                        // For login, go directly to dashboard
+                    } else if (isNewUser && authIntent === 'login') {
+                        // New user from login, go to dashboard
+                        navigate("/");
+                    } else if (!isNewUser) {
+                        // Existing user, go directly to dashboard
                         navigate("/");
                     } else {
-                        navigate("/to-owner");
+                        // Default fallback
+                        navigate("/");
                     }
                 }, 1500);
 
@@ -285,16 +158,12 @@ export default function GoogleCallback() {
                 
                 // Provide more specific error messages
                 let errorMessage = t('loginProcessingError');
-                if (error.message.includes('Impossible d\'échanger les tokens Google')) {
-                    errorMessage = t('googleTokenExchangeError');
-                } else if (error.message.includes('Aucun JWT Strapi obtenu')) {
-                    errorMessage = t('noStrapiTokenError');
-                } else if (error.message.includes('Impossible de récupérer les données utilisateur')) {
-                    errorMessage = t('userDataRetrievalError');
-                } else if (error.message.includes('Token Google invalide')) {
+                if (error.message.includes('Token Google invalide')) {
                     errorMessage = t('invalidGoogleTokenError');
-                } else if (error.message.includes('Impossible de créer ou connecter l\'utilisateur Google')) {
-                    errorMessage = t('googleUserCreationError');
+                } else if (error.message.includes('Impossible de créer une session')) {
+                    errorMessage = t('sessionCreationError');
+                } else if (error.message.includes('Impossible d\'obtenir les données')) {
+                    errorMessage = t('authenticationDataError');
                 }
                 
                 setMessage(errorMessage);

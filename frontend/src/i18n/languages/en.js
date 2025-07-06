@@ -304,6 +304,8 @@ const en = {
   userDataRetrievalError: "Failed to retrieve user data",
   invalidGoogleTokenError: "Invalid Google token received",
   googleUserCreationError: "Failed to create or connect Google user",
+  sessionCreationError: "Failed to create session for existing user",
+  authenticationDataError: "Failed to obtain authentication data",
   emailAlreadyExistsGoogle: "An account with this email already exists. Please log in with your password.",
   emailExistsUsePassword: "An account with this email already exists. Please log in with your password instead of using Google.",
   continueWithGoogle: "Continue with Google",

@@ -304,6 +304,8 @@ const fr = {
   userDataRetrievalError: "Échec de la récupération des données utilisateur",
   invalidGoogleTokenError: "Token Google invalide reçu",
   googleUserCreationError: "Échec de la création ou connexion de l'utilisateur Google",
+  sessionCreationError: "Échec de la création de session pour l'utilisateur existant",
+  authenticationDataError: "Échec de l'obtention des données d'authentification",
   emailAlreadyExistsGoogle: "Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe.",
   emailExistsUsePassword: "Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe au lieu d'utiliser Google.",
   continueWithGoogle: "Continuer avec Google",
