@@ -333,6 +333,16 @@ const fr = {
   invalidEmailFormat: "Veuillez entrer une adresse e-mail valide.",
   backToLogin: "Retour à la connexion",
   forgotPasswordHelp: "Si vous ne recevez pas d'e-mail dans quelques minutes, vérifiez votre dossier spam.",
+  // Reset Password
+  resetPassword: "Réinitialiser le mot de passe",
+  resetPasswordDescription: "Entrez votre nouveau mot de passe ci-dessous pour terminer le processus de réinitialisation.",
+  newPasswordPlaceholder: "Nouveau mot de passe",
+  confirmPasswordPlaceholder: "Confirmer le mot de passe",
+  passwordResetSuccess: "Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+  passwordRequirementsNotMet: "Le mot de passe ne respecte pas les exigences.",
+  passwordsDoNotMatch: "Les mots de passe ne correspondent pas.",
+  invalidResetCode: "Code de réinitialisation invalide ou expiré. Veuillez en demander un nouveau.",
+  resetCodeNotFound: "Code de réinitialisation non trouvé. Veuillez demander une nouvelle réinitialisation de mot de passe.",
   //footer
   companyName: "Servis",
   allRightsReserved: "Tous droits réservés",

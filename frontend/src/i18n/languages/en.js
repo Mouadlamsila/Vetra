@@ -333,6 +333,16 @@ const en = {
   invalidEmailFormat: "Please enter a valid email address.",
   backToLogin: "Back to Login",
   forgotPasswordHelp: "If you don't receive an email within a few minutes, check your spam folder.",
+  // Reset Password
+  resetPassword: "Reset Password",
+  resetPasswordDescription: "Enter your new password below to complete the reset process.",
+  newPasswordPlaceholder: "New Password",
+  confirmPasswordPlaceholder: "Confirm Password",
+  passwordResetSuccess: "Password reset successfully! You can now log in with your new password.",
+  passwordRequirementsNotMet: "Password does not meet the requirements.",
+  passwordsDoNotMatch: "Passwords do not match.",
+  invalidResetCode: "Invalid or expired reset code. Please request a new one.",
+  resetCodeNotFound: "Reset code not found. Please request a new password reset.",
   //footer
   companyName: "Servis",
   allRightsReserved: "All rights reserved",

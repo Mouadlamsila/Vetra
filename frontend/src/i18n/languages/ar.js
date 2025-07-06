@@ -336,6 +336,16 @@ const ar = {
   invalidEmailFormat: "يرجى إدخال عنوان بريد إلكتروني صحيح.",
   backToLogin: "العودة إلى تسجيل الدخول",
   forgotPasswordHelp: "إذا لم تستلم بريداً إلكترونياً خلال بضع دقائق، تحقق من مجلد الرسائل غير المرغوب فيها.",
+  // Reset Password
+  resetPassword: "إعادة تعيين كلمة المرور",
+  resetPasswordDescription: "أدخل كلمة المرور الجديدة أدناه لإكمال عملية إعادة التعيين.",
+  newPasswordPlaceholder: "كلمة المرور الجديدة",
+  confirmPasswordPlaceholder: "تأكيد كلمة المرور",
+  passwordResetSuccess: "تم إعادة تعيين كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.",
+  passwordRequirementsNotMet: "كلمة المرور لا تستوفي المتطلبات.",
+  passwordsDoNotMatch: "كلمات المرور غير متطابقة.",
+  invalidResetCode: "رمز إعادة التعيين غير صالح أو منتهي الصلاحية. يرجى طلب رمز جديد.",
+  resetCodeNotFound: "رمز إعادة التعيين غير موجود. يرجى طلب إعادة تعيين كلمة مرور جديدة.",
   //footer
   companyName: "شركة سيرفيس",
   allRightsReserved: "جميع الحقوق محفوظة",
