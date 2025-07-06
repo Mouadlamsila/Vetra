@@ -169,7 +169,7 @@ export default function GoogleCallback() {
                 // Traitement des données utilisateur
                 const userInfo = userData.data || userData;
 
-                // Stocker les données d'authentification
+                // Store authentication data
                 localStorage.setItem("token", strapiJWT);
                 localStorage.setItem("user", JSON.stringify(userInfo.documentId || userInfo.id));
                 localStorage.setItem("IDUser", userInfo.id);
@@ -177,14 +177,21 @@ export default function GoogleCallback() {
                 localStorage.setItem("userEmail", userInfo.email);
                 localStorage.setItem("userName", userInfo.username);
 
-                // Nettoyer l'intention d'auth
+                // Check if this is a new Google user (needs password setup)
+                const isNewGoogleUser = localStorage.getItem('auth_intent') === 'register';
                 localStorage.removeItem('auth_intent');
 
                 setStatus('success');
                 setMessage(t('loginSuccess'));
 
-                // Rediriger vers la page principale
-                setTimeout(() => navigate("/to-owner"), 1500);
+                // Navigate based on whether user needs to set password
+                setTimeout(() => {
+                    if (isNewGoogleUser) {
+                        navigate("/setup-password");
+                    } else {
+                        navigate("/to-owner");
+                    }
+                }, 1500);
 
             } catch (error) {
                 console.error("Erreur lors du traitement du callback:", error);
