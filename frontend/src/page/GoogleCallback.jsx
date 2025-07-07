@@ -128,7 +128,7 @@ export default function GoogleCallback() {
                             
                             // Store Google authentication data without creating new Strapi user
                             localStorage.setItem("token", accessToken); // Use Google access token
-                            localStorage.setItem("user", JSON.stringify(existingUser.documentId || existingUser.id));
+                            localStorage.setItem("user", userData.id);
                             localStorage.setItem("IDUser", existingUser.id);
                             localStorage.setItem("role", "user");
                             localStorage.setItem("userEmail", userEmail);
@@ -224,7 +224,7 @@ export default function GoogleCallback() {
                             // Don't create a new user, just store Google info and navigate
                             localStorage.setItem("token", accessToken); // Use Google access token
                             localStorage.setItem("user", JSON.stringify("google_user")); // Placeholder
-                            localStorage.setItem("IDUser", "google_user"); // Placeholder
+                            localStorage.setItem("IDUser", userData.id); // Placeholder
                             localStorage.setItem("role", "user");
                             localStorage.setItem("userEmail", userEmail);
                             localStorage.setItem("userName", baseUsername);
