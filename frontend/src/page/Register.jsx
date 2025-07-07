@@ -70,16 +70,11 @@ export default function Register() {
     const handleGoogleRegister = () => {
         try {
             setIsLoading(true);
-
-            // Sauvegarder l'intention d'inscription (pas de connexion)
             localStorage.setItem('auth_intent', 'register');
-
-            // Rediriger vers l'authentification Google via Strapi avec le bon redirect URI
+            // Redirect to Google auth with register callback
             const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
             window.location.href = redirectUrl;
-
         } catch (error) {
-            console.error('Erreur lors de l\'inscription Google:', error);
             setError(t('googleRegisterError'));
             setIsLoading(false);
         }

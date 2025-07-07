@@ -107,16 +107,11 @@ export default function Login() {
   const handleGoogleLogin = () => {
     try {
       setIsLoading(true);
-
-      // Save login intent (not registration)
       localStorage.setItem('auth_intent', 'login');
-
-      // Redirect to Google authentication via Strapi with proper redirect URI
-      const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
+      // Redirect to Google auth with login callback
+      const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback-login')}`;
       window.location.href = redirectUrl;
-
     } catch (error) {
-      console.error('Error during Google login:', error);
       setError(t('googleLoginError'));
       setIsLoading(false);
     }

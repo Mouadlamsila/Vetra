@@ -11,7 +11,8 @@ import HomeView from "./page/View/pages/Home";
 import Owner from "./page/Owner";
 import RouteAdmin from "./page/Admin/Route";
 import Stores from "./page/Stores";
-import GoogleCallback from "./page/GoogleCallback";
+import CallbackOfRegister from "./page/CallbackOfRegister";
+import CallbackOfLogin from "./page/CallbackOfLogin";
 import SetupPassword from "./page/SetupPassword";
 import ForgotPassword from "./page/ForgotPassword";
 import ResetPassword from "./page/ResetPassword";
@@ -92,7 +93,8 @@ function AppContent() {
       {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/auth/google/callback" element={<GoogleCallback />} />
+        <Route path="/auth/google/callback" element={<CallbackOfRegister />} />
+        <Route path="/auth/google/callback-login" element={<CallbackOfLogin />} />
         <Route path="/setup-password" element={<SetupPassword />} />
 
         <Route path="/login" element={<Login />} />
