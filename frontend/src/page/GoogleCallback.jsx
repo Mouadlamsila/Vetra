@@ -16,6 +16,7 @@ export default function GoogleCallback() {
                 const idToken = urlParams.get("id_token");
                 const accessToken = urlParams.get("access_token");
                 const error = urlParams.get("error");
+
                 if (error) {
                     setStatus('error');
                     setMessage(t('loginFailed'));
@@ -28,90 +29,48 @@ export default function GoogleCallback() {
                     setTimeout(() => navigate("/login?error=no_token"), 2000);
                     return;
                 }
-                // Extract user data from Google token
+
+                // Decode Google id_token to get email
                 const tokenParts = idToken.split('.');
-                if (tokenParts.length !== 3) {
-                    throw new Error("Token Google invalide");
-                }
+                if (tokenParts.length !== 3) throw new Error("Token Google invalide");
                 const payload = JSON.parse(atob(tokenParts[1]));
                 const userEmail = payload.email;
-                const baseUsername = userEmail.split('@')[0];
-                // Generate a secure password for Google users
-                const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
-                let strapiJWT = null;
-                let userData = null;
-                let isNewUser = false;
-                // 1. Try to register the user
-                try {
-                    const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
-                    const registerResponse = await axios.post(
-                        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                        {
-                            username: uniqueUsername,
-                            email: userEmail,
-                            password: securePassword
-                        }
-                    );
-                    strapiJWT = registerResponse.data.jwt;
-                    userData = registerResponse.data.user;
-                    isNewUser = true;
-                } catch (registerError) {
-                    // 2. If email exists, try to log in the user
-                    const errorData = registerError.response?.data?.error;
-                    if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
-                        try {
-                            // Try to login with a special endpoint (Strapi social login or custom backend)
-                            // Here, we use the Strapi Google provider endpoint
-                            const loginResponse = await axios.get(
-                                `https://stylish-basket-710b77de8f.strapiapp.com/api/auth/google/callback?access_token=${accessToken}`
-                            );
-                            strapiJWT = loginResponse.data.jwt;
-                            userData = loginResponse.data.user;
-                            isNewUser = false;
-                        } catch (loginError) {
-                            setStatus('error');
-                            setMessage(t('loginFailed'));
-                            setTimeout(() => navigate("/login?error=google_login_failed"), 2000);
-                            return;
-                        }
-                    } else {
-                        throw registerError;
-                    }
+
+                // Check if user exists in Strapi
+                const res = await axios.get(
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/users?filters[email][$eq]=${userEmail}`
+                );
+                const userExists = res.data.data?.length > 0;
+
+                if (userExists) {
+                    const existingUser = res.data.data[0];
+
+                    // Store user info and Google access token
+                    localStorage.setItem("token", accessToken); // Google access_token
+                    localStorage.setItem("user", JSON.stringify(existingUser.id));
+                    localStorage.setItem("IDUser", existingUser.id);
+                    localStorage.setItem("role", "user");
+                    localStorage.setItem("userEmail", userEmail);
+                    localStorage.setItem("userName", existingUser.username || userEmail.split("@")[0]);
+                    localStorage.setItem("googleAuth", "true");
+
+                    setStatus('success');
+                    setMessage(t('loginSuccess'));
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1000);
+                } else {
+                    setStatus('error');
+                    setMessage(t('User not found. Please register first.'));
+                    setTimeout(() => navigate("/register"), 2000);
                 }
-                if (!strapiJWT || !userData) {
-                    throw new Error("Impossible d'obtenir les données d'authentification");
-                }
-                // Store authentication data
-                localStorage.setItem("token", strapiJWT);
-                localStorage.setItem("user", JSON.stringify(userData.documentId || userData.id));
-                localStorage.setItem("IDUser", userData.id);
-                localStorage.setItem("role", "user");
-                localStorage.setItem("userEmail", userEmail);
-                localStorage.setItem("userName", userData.username);
-                // Check if this is a new Google user (needs password setup)
-                const authIntent = localStorage.getItem('auth_intent');
-                localStorage.removeItem('auth_intent');
-                setStatus('success');
-                setMessage(t('loginSuccess'));
-                setTimeout(() => {
-                    if (isNewUser && authIntent === 'register') {
-                        navigate("/setup-password");
-                    } else {
-                        navigate("/");
-                    }
-                }, 1500);
             } catch (error) {
                 setStatus('error');
-                let errorMessage = t('loginProcessingError');
-                if (error.message.includes('Token Google invalide')) {
-                    errorMessage = t('invalidGoogleTokenError');
-                } else if (error.message.includes('Impossible d\'obtenir les données')) {
-                    errorMessage = t('authenticationDataError');
-                }
-                setMessage(errorMessage);
+                setMessage(t('loginProcessingError'));
                 setTimeout(() => navigate("/login?error=processing_error"), 2000);
             }
         };
+
         handleCallback();
     }, [navigate, t]);
 
@@ -140,5 +99,5 @@ export default function GoogleCallback() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
