@@ -97,13 +97,48 @@ export default function Header() {
         try {
             // Search stores
             const storesResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
             );
 
-            // Search products
-            const productsResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
-            );
+            // First, try to find categories that match the search query
+            let matchingCategoryIds = [];
+            try {
+                // Get all categories first, then filter locally
+                const categoriesResponse = await axios.get(
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+                );
+                const allCategories = categoriesResponse.data.data;
+                const matchingCategories = allCategories.filter(cat => 
+                    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                matchingCategoryIds = matchingCategories.map(cat => cat.id);
+
+            } catch (categoryError) {
+                console.log('Category search failed:', categoryError);
+            }
+
+            // Search products with multiple approaches
+            let productsResponse;
+            try {
+                if (matchingCategoryIds.length > 0) {
+                    // If we found matching categories, search for products in those categories
+                    const categoryFilters = matchingCategoryIds.map(id => `filters[category][id][$eq]=${id}`).join('&');
+                    productsResponse = await axios.get(
+                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                    );
+                } else {
+                    // Fallback to basic search
+                    productsResponse = await axios.get(
+                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                    );
+                }
+            } catch (productError) {
+                console.log('Product search failed, trying basic search:', productError);
+                // Final fallback to basic search
+                productsResponse = await axios.get(
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                );
+            }
 
             setSearchResults({
                 stores: storesResponse.data.data.slice(0, 3),
@@ -148,10 +183,12 @@ export default function Header() {
 
     const handleResultClick = (type, item) => {
         if (type === 'store') {
-            // Navigate to store view
+            // Navigate to store view - fix the path to match the routing structure
+            localStorage.setItem('IDBoutique', item.documentId);
+            localStorage.setItem('idOwner', item.owner?.id);
             navigate(`/view/${item.documentId}`);
         } else if (type === 'product') {
-            // Navigate to product view
+            // Navigate to product view - fix the path to match the routing structure
             navigate(`/view/products/${item.documentId}`);
         }
         setShowSearch(false);
@@ -512,7 +549,7 @@ export default function Header() {
                             <div className="flex items-center justify-between p-6 border-b border-gray-100">
                                 <div className="flex items-center space-x-4">
                                     <Search className="h-6 w-6 text-purple-600" />
-                                    <h2 className="text-xl font-semibold text-gray-800">{t('Search')}</h2>
+                                    <h2 className="text-xl font-semibold text-gray-800">{t('search.title')}</h2>
                                 </div>
                                 <button 
                                     onClick={() => setShowSearch(false)}
@@ -530,7 +567,7 @@ export default function Header() {
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                        placeholder={t("Search for stores, products...")}
+                                        placeholder={t("header.searchPlaceholderFull")}
                                         className="w-full pl-12 pr-4 py-4 text-black border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
                                         autoFocus
                                     />
@@ -611,7 +648,7 @@ export default function Header() {
                                         {searchResults.stores.length === 0 && searchResults.products.length === 0 && !isSearching && (
                                             <div className="text-center py-8">
                                                 <Package className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-                                                <p className="text-gray-500">{t('No results found for')} "{query}"</p>
+                                                <p className="text-gray-500">{t('search.noResultsFoundFor')} "{query}"</p>
                                             </div>
                                         )}
                                     </div>
@@ -621,7 +658,7 @@ export default function Header() {
                                         {/* Recent Searches */}
                                         {recentSearches.length > 0 && (
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('Recent Searches')}</h3>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('search.recentSearches')}</h3>
                                                 <div className="flex flex-wrap gap-2">
                                                     {recentSearches.map((search, index) => (
                                                         <button
@@ -638,7 +675,7 @@ export default function Header() {
 
                                         {/* Popular Searches */}
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('Popular Searches')}</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('search.popularSearches')}</h3>
                                             <div className="flex flex-wrap gap-2">
                                                 {popularSearches.map((search, index) => (
                                                     <button

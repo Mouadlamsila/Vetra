@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSearchParams, Link } from "react-router-dom"
+import { useSearchParams, Link, useNavigate } from "react-router-dom"
 import { Search, Filter, X, Store, Package, Star, MapPin, ArrowLeft, SortAsc, SortDesc } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
@@ -10,6 +10,7 @@ export default function SearchResults() {
     const { t } = useTranslation()
     const [searchParams] = useSearchParams()
     const query = searchParams.get('q') || ''
+    const navigate = useNavigate()
     
     const [results, setResults] = useState({ stores: [], products: [] })
     const [loading, setLoading] = useState(true)
@@ -28,6 +29,8 @@ export default function SearchResults() {
     useEffect(() => {
         if (query) {
             performSearch()
+        } else {
+            setLoading(false)
         }
     }, [query])
 
@@ -38,24 +41,101 @@ export default function SearchResults() {
         try {
             // Search stores
             const storesResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[$or][0][nom][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&filters[$or][2][category][$containsi]=${query}&populate=*`
             )
 
-            // Search products
-            const productsResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
-            )
+            // First, try to find categories that match the search query
+            let matchingCategoryIds = [];
+            try {
+                // Get all categories first, then filter locally
+                const categoriesResponse = await axios.get(
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+                );
+                const allCategories = categoriesResponse.data.data;
+                const matchingCategories = allCategories.filter(cat => 
+                    cat.name.toLowerCase().includes(query.toLowerCase())
+                );
+                matchingCategoryIds = matchingCategories.map(cat => cat.id);
+                console.log('Search query:', query);
+                console.log('All categories:', allCategories.map(c => ({ id: c.id, name: c.name })));
+                console.log('Matching categories:', matchingCategories.map(c => ({ id: c.id, name: c.name })));
+                console.log('Matching category IDs:', matchingCategoryIds);
+            } catch (categoryError) {
+                console.log('Category search failed:', categoryError);
+            }
 
+            // Search products with multiple approaches
+            let productsResponse;
+            try {
+                if (matchingCategoryIds.length > 0) {
+                    // If we found matching categories, search for products in each category separately
+                    console.log('Searching products with category IDs:', matchingCategoryIds);
+                    
+                    // Search for products in each category and combine results
+                    const productPromises = matchingCategoryIds.map(categoryId => 
+                        axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][id][$eq]=${categoryId}&populate=*`)
+                    );
+                    
+                    // Also search for products with matching name/description
+                    productPromises.push(
+                        axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`)
+                    );
+                    
+                    const responses = await Promise.all(productPromises);
+                    
+                    // Combine all results and remove duplicates
+                    const allProducts = responses.flatMap(response => response.data.data);
+                    const uniqueProducts = allProducts.filter((product, index, self) => 
+                        index === self.findIndex(p => p.id === product.id)
+                    );
+                    
+                    console.log('Combined products from all searches:', uniqueProducts.length);
+                    productsResponse = { data: { data: uniqueProducts } };
+                } else {
+                    // Fallback to basic search
+                    console.log('No matching categories, using basic search');
+                    productsResponse = await axios.get(
+                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+                    );
+                }
+            } catch (productError) {
+                console.log('Product search failed, trying basic search:', productError);
+                // Final fallback to basic search
+                productsResponse = await axios.get(
+                    `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+                );
+            }
+
+            
+            
             setResults({
                 stores: storesResponse.data.data,
                 products: productsResponse.data.data
             })
+            
+            console.log('Final results - stores:', storesResponse.data.data.length);
+            console.log('Final results - products:', productsResponse.data.data.length);
+            console.log('Sample products:', productsResponse.data.data.slice(0, 2).map(p => ({ 
+                id: p.id, 
+                name: p.name, 
+                category: p.category?.name || 'No category' 
+            })));
         } catch (error) {
             console.error('Search error:', error)
-            setError('Failed to perform search')
+            setError(t('search.error'))
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleStoreClick = (store) => {
+        localStorage.setItem('IDBoutique', store.documentId);
+        localStorage.setItem('idOwner', store.owner?.id);
+        navigate(`/view/${store.documentId}`);
+    }
+
+    const handleProductClick = (product) => {
+        navigate(`/view/products/${product.documentId}`);
     }
 
     const getFilteredResults = () => {
@@ -151,15 +231,15 @@ export default function SearchResults() {
         return (
             <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
                 <div className="container mx-auto px-4 py-8">
-                    <div className="text-center">
-                        <p className="text-red-500 text-xl">{error}</p>
-                        <button 
-                            onClick={performSearch}
-                            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-                        >
-                            Try Again
-                        </button>
-                    </div>
+                                            <div className="text-center">
+                            <p className="text-red-500 text-xl">{error}</p>
+                            <button 
+                                onClick={performSearch}
+                                className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                            >
+                                {t('search.tryAgain')}
+                            </button>
+                        </div>
                 </div>
             </div>
         )
@@ -173,7 +253,7 @@ export default function SearchResults() {
                     <div className="flex items-center space-x-4 mb-4">
                         <Link to="/" className="flex items-center space-x-2 text-purple-600 hover:text-purple-700">
                             <ArrowLeft className="h-5 w-5" />
-                            <span>Back</span>
+                            <span>{t('search.back')}</span>
                         </Link>
                     </div>
                     
@@ -181,10 +261,10 @@ export default function SearchResults() {
                         <Search className="h-8 w-8 text-purple-600" />
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">
-                                {t('Search Results')}
+                                {t('search.searchResults')}
                             </h1>
                             <p className="text-gray-600">
-                                {totalResults} {t('results found for')} "{query}"
+                                {totalResults} {t('search.resultsFoundFor')} "{query}"
                             </p>
                         </div>
                     </div>
@@ -202,7 +282,7 @@ export default function SearchResults() {
                                     : 'text-gray-600 hover:text-gray-800'
                             }`}
                         >
-                            {t('All')} ({totalResults})
+                            {t('search.all')} ({totalResults})
                         </button>
                         <button
                             onClick={() => setActiveTab('stores')}
@@ -212,7 +292,7 @@ export default function SearchResults() {
                                     : 'text-gray-600 hover:text-gray-800'
                             }`}
                         >
-                            {t('Stores')} ({sortedStores.length})
+                            {t('search.stores')} ({sortedStores.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('products')}
@@ -222,7 +302,7 @@ export default function SearchResults() {
                                     : 'text-gray-600 hover:text-gray-800'
                             }`}
                         >
-                            {t('Products')} ({sortedProducts.length})
+                            {t('search.products')} ({sortedProducts.length})
                         </button>
                     </div>
 
@@ -234,10 +314,10 @@ export default function SearchResults() {
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                             >
-                                <option value="relevance">{t('Relevance')}</option>
-                                <option value="name">{t('Name')}</option>
-                                <option value="price">{t('Price')}</option>
-                                <option value="rating">{t('Rating')}</option>
+                                <option value="relevance">{t('search.relevance')}</option>
+                                <option value="name">{t('search.name')}</option>
+                                <option value="price">{t('search.price')}</option>
+                                <option value="rating">{t('search.rating')}</option>
                             </select>
                             <button
                                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
@@ -252,7 +332,7 @@ export default function SearchResults() {
                             className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                         >
                             <Filter className="h-4 w-4" />
-                            <span>{t('Filters')}</span>
+                            <span>{t('search.filters')}</span>
                         </button>
                     </div>
                 </div>
@@ -263,14 +343,14 @@ export default function SearchResults() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('Category')}
+                                    {t('search.category')}
                                 </label>
                                 <select
                                     value={filters.category}
                                     onChange={(e) => setFilters({...filters, category: e.target.value})}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 >
-                                    <option value="">{t('All Categories')}</option>
+                                    <option value="">{t('search.allCategories')}</option>
                                     <option value="electronics">Electronics</option>
                                     <option value="fashion">Fashion</option>
                                     <option value="home">Home</option>
@@ -281,7 +361,7 @@ export default function SearchResults() {
                             
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('Price Range')}
+                                    {t('search.priceRange')}
                                 </label>
                                 <div className="flex items-center space-x-2">
                                     <input
@@ -316,7 +396,7 @@ export default function SearchResults() {
                                         onChange={(e) => setFilters({...filters, inStockOnly: e.target.checked})}
                                         className="mr-2"
                                     />
-                                    <span className="text-sm text-gray-700">{t('In Stock Only')}</span>
+                                    <span className="text-sm text-gray-700">{t('search.inStockOnly')}</span>
                                 </label>
                             </div>
                         </div>
@@ -330,11 +410,15 @@ export default function SearchResults() {
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                                 <Store className="h-6 w-6 mr-2 text-purple-600" />
-                                {t('Stores')} ({sortedStores.length})
+                                {t('search.stores')} ({sortedStores.length})
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {sortedStores.map((store) => (
-                                    <div key={store.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                                    <div 
+                                        key={store.id} 
+                                        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                                        onClick={() => handleStoreClick(store)}
+                                    >
                                         <div className="flex items-start space-x-4">
                                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                                 <Store className="h-6 w-6 text-purple-600" />
@@ -373,11 +457,15 @@ export default function SearchResults() {
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                                 <Package className="h-6 w-6 mr-2 text-purple-600" />
-                                {t('Products')} ({sortedProducts.length})
+                                {t('search.products')} ({sortedProducts.length})
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {sortedProducts.map((product) => (
-                                    <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                                    <div 
+                                        key={product.id} 
+                                        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                                        onClick={() => handleProductClick(product)}
+                                    >
                                         <div className="aspect-square overflow-hidden">
                                             <img 
                                                 src={product.imgMain?.url || '/placeholder.svg'} 
@@ -427,10 +515,10 @@ export default function SearchResults() {
                         <div className="text-center py-12">
                             <Package className="h-16 w-16 mx-auto text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                                {t('No results found')}
+                                {t('search.noResultsFound')}
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                {t('Try adjusting your search terms or filters')}
+                                {t('search.tryAdjusting')}
                             </p>
                             <button
                                 onClick={() => {
@@ -444,7 +532,7 @@ export default function SearchResults() {
                                 }}
                                 className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
                             >
-                                {t('Clear Filters')}
+                                {t('search.clearFilters')}
                             </button>
                         </div>
                     )}

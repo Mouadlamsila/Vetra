@@ -37,10 +37,114 @@ export default function Header() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
   const [orderId, setOrderId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState({ stores: [], products: [] });
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleLanguageChange = (lng) => {
     changeLanguage(lng);
     setLanguageMenuOpen(false);
+  };
+
+  // Perform search
+  const performSearch = async (searchQuery) => {
+    if (!searchQuery.trim()) {
+      setSearchResults({ stores: [], products: [] });
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      // Search stores
+      const storesResponse = await axios.get(
+        `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
+      );
+
+      // First, try to find categories that match the search query
+      let matchingCategoryIds = [];
+      try {
+        // Get all categories first, then filter locally
+        const categoriesResponse = await axios.get(
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+        );
+        const allCategories = categoriesResponse.data.data;
+        const matchingCategories = allCategories.filter(cat => 
+          cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        matchingCategoryIds = matchingCategories.map(cat => cat.id);
+
+      } catch (categoryError) {
+        console.log('Category search failed:', categoryError);
+      }
+
+      // Search products with multiple approaches
+      let productsResponse;
+      try {
+        if (matchingCategoryIds.length > 0) {
+          // If we found matching categories, search for products in those categories
+          const categoryFilters = matchingCategoryIds.map(id => `filters[category][id][$eq]=${id}`).join('&');
+          productsResponse = await axios.get(
+            `https://stylish-basket-710b77de8f.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+          );
+        } else {
+          // Fallback to basic search
+          productsResponse = await axios.get(
+            `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+          );
+        }
+      } catch (productError) {
+        console.log('Product search failed, trying basic search:', productError);
+        // Final fallback to basic search
+        productsResponse = await axios.get(
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+        );
+      }
+
+      setSearchResults({
+        stores: storesResponse.data.data.slice(0, 3),
+        products: productsResponse.data.data.slice(0, 6)
+      });
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults({ stores: [], products: [] });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        performSearch(searchQuery);
+      } else {
+        setSearchResults({ stores: [], products: [] });
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setShowSearch(false);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleResultClick = (type, item) => {
+    if (type === 'store') {
+      // Navigate to store view - fix the path to match the routing structure
+      localStorage.setItem('IDBoutique', item.documentId);
+      localStorage.setItem('idOwner', item.owner?.id);
+      navigate(`/view/${item.documentId}`);
+    } else if (type === 'product') {
+      // Navigate to product view - fix the path to match the routing structure
+      navigate(`/view/products/${item.documentId}`);
+    }
+    setShowSearch(false);
   };
 
   useEffect(() => {
@@ -436,14 +540,21 @@ export default function Header() {
           <div className="hidden md:block flex-1 max-w-xl mx-4 ">
             <div className="relative">
               <Search className={` ${lang === 'ar' ? 'right-3' : 'left-3'} absolute  top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4`} />
-              <input
-                type="text"
-                placeholder={t('header.searchPlaceholder')}
-                className={`${lang === 'ar' ? 'pr-10 pl-12' : 'pl-10 pr-12'} w-full  py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]`}
-              />
-              <button className={`absolute ${lang === 'ar' ? 'left-1' : 'right-1'}  top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm`}>
-                {t('header.search')}
-              </button>
+              <form onSubmit={handleSearchSubmit}>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('header.searchPlaceholderFull')}
+                  className={`${lang === 'ar' ? 'pr-10 pl-12' : 'pl-10 pr-12'} w-full  py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]`}
+                />
+                <button 
+                  type="submit"
+                  className={`absolute ${lang === 'ar' ? 'left-1' : 'right-1'}  top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm`}
+                >
+                  {t('header.search')}
+                </button>
+              </form>
             </div>
           </div>
 
@@ -863,6 +974,20 @@ export default function Header() {
                 </div>
 
                 <div className="py-4">
+                  {/* Mobile Search */}
+                  <div className="px-3 mb-4">
+                    <form onSubmit={handleSearchSubmit} className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={t('header.searchPlaceholderFull')}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                      />
+                    </form>
+                  </div>
+
                   <nav className="space-y-1 px-3">
                     <Link
                       to={`/view/${id}`}
