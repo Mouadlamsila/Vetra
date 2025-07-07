@@ -178,23 +178,23 @@ export default function SetupPassword() {
                                 <div className="text-xs space-y-2">
                                     <div className={`flex items-center space-x-2 ${passwordErrors.tooShort ? 'text-red-400' : 'text-green-400'}`}>
                                         {passwordErrors.tooShort ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                                    <span>{t('passwordMinLength')}</span>
-                                </div>
+                                        <span>{t('passwordMinLength')}</span>
+                                    </div>
                                     <div className={`flex items-center space-x-2 ${passwordErrors.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
                                         {passwordErrors.noUpperCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                                    <span>{t('passwordUppercase')}</span>
-                                </div>
+                                        <span>{t('passwordUppercase')}</span>
+                                    </div>
                                     <div className={`flex items-center space-x-2 ${passwordErrors.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
                                         {passwordErrors.noLowerCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                                    <span>{t('passwordLowercase')}</span>
-                                </div>
+                                        <span>{t('passwordLowercase')}</span>
+                                    </div>
                                     <div className={`flex items-center space-x-2 ${passwordErrors.noNumber ? 'text-red-400' : 'text-green-400'}`}>
                                         {passwordErrors.noNumber ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                                    <span>{t('passwordNumber')}</span>
-                                </div>
+                                        <span>{t('passwordNumber')}</span>
+                                    </div>
                                     <div className={`flex items-center space-x-2 ${passwordErrors.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
                                         {passwordErrors.noSpecialChar ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                                    <span>{t('passwordSpecial')}</span>
+                                        <span>{t('passwordSpecial')}</span>
                                     </div>
                                 </div>
                             </div>
