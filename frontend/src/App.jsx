@@ -1,141 +1,149 @@
-import Header from "./Home/Header";
-import Home from "./page/Home";
-import Footer from "./Home/Footer";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Login from "./page/Login";
-import Register from "./page/Register";
-import Controll from "./page/Controll";
-import Middle from "./page/Controll/middle";
-import ViewRoute from "./page/View/App";
-import HomeView from "./page/View/pages/Home";
-import Owner from "./page/Owner";
-import RouteAdmin from "./page/Admin/Route";
-import Stores from "./page/Stores";
-import GoogleCallback from "./page/GoogleCallback";
-import SetupPassword from "./page/SetupPassword";
-import ForgotPassword from "./page/ForgotPassword";
-import ResetPassword from "./page/ResetPassword";
-import SearchResults from "./page/SearchResults";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import axios from "axios";
 
-// Protected Route component for Owner registration
-const ProtectedOwnerRoute = () => {
-  const userRole = localStorage.getItem('role');
-  return userRole === 'Owner' ? <Navigate to="/" replace /> : <Owner />;
-};
+export default function GoogleCallback() {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+    const [status, setStatus] = useState("processing");
+    const [message, setMessage] = useState(t("processingLogin"));
 
-// Protected Route component for Controll panel
-const ProtectedControllRoute = () => {
-  const userRole = localStorage.getItem('role');
-  const location = useLocation();
-  
-  // Check if user is logged in
-  if (!userRole) {
-    return <Navigate to="/login" replace />;
-  }
+    useEffect(() => {
+        const handleCallback = async () => {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const idToken = urlParams.get("id_token");
+                const accessToken = urlParams.get("access_token");
+                const error = urlParams.get("error");
 
-  // List of restricted routes that only Owners can access
-  const restrictedRoutes = [
-    '/controll/',
-    '/controll/Stores',
-    '/controll/Products',
-    '/controll/Orders',
-    '/controll/Stats',
-    '/controll/Payment',
-    '/controll/AddStore',
-    '/controll/AddProduct'
-  ];
+                if (error || !idToken || !accessToken) {
+                    setStatus("error");
+                    setMessage(error ? t("loginFailed") : t("noTokenReceived"));
+                    setTimeout(() => navigate("/login?error=auth_error"), 2000);
+                    return;
+                }
 
-  // Check if the current path matches any restricted patterns
-  const isRestrictedRoute = () => {
-    // Check exact matches
-    if (restrictedRoutes.includes(location.pathname)) {
-      return true;
-    }
+                const tokenParts = idToken.split(".");
+                if (tokenParts.length !== 3) throw new Error("Token Google invalide");
 
-    // Check dynamic routes for edit product and store
-    const editProductPattern = /^\/controll\/edit-product\/\d+$/;
-    const editStorePattern = /^\/controll\/edit-store\/\d+$/;
+                const payload = JSON.parse(atob(tokenParts[1]));
+                const userEmail = payload.email;
+                const baseUsername = userEmail.split("@")[0];
+                const securePassword = Math.random().toString(36).slice(-12) + "!A1a";
+                const authIntent = localStorage.getItem("auth_intent") || "login";
+                localStorage.removeItem("auth_intent");
 
-    return editProductPattern.test(location.pathname) || 
-           editStorePattern.test(location.pathname);
-  };
+                await handleLoginOrRegister({
+                    userEmail,
+                    baseUsername,
+                    accessToken,
+                    securePassword,
+                    authIntent
+                });
+            } catch (err) {
+                console.error("Erreur callback:", err);
+                setStatus("error");
+                setMessage(t("loginProcessingError"));
+                setTimeout(() => navigate("/login?error=callback"), 2000);
+            }
+        };
 
-  // If trying to access a restricted route and not an Owner, redirect to Profile
-  if (isRestrictedRoute() && userRole !== 'Owner') {
-    return <Navigate to="/controll/Profil" replace />;
-  }
+        handleCallback();
+    }, [navigate, t]);
 
-  return <Controll />;
-};
+    const handleLoginOrRegister = async ({ userEmail, baseUsername, accessToken, securePassword, authIntent }) => {
+        try {
+            const res = await axios.get(
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/users?filters[email][$eq]=${userEmail}`
+            );
 
-// Protected Route component for Admin panel
-const ProtectedAdminRoute = () => {
-  const userRole = localStorage.getItem('role');
-  
-  // Check if user is logged in
-  if (!userRole) {
-    return <Navigate to="/login" replace />;
-  }
+            const userExists = res.data.data?.length > 0;
 
-  // If not admin, redirect to home
-  if (userRole !== 'Admin') {
-    return <Navigate to="/" replace />;
-  }
+            if (userExists) {
+                const existingUser = res.data.data[0];
 
-  return <RouteAdmin />;
-};
+                // ✅ حتى إذا كانت نية "register" و الإيميل كاين → ندير login
+                localStorage.setItem("token", accessToken);
+                localStorage.setItem("user", JSON.stringify(existingUser.id));
+                localStorage.setItem("IDUser", existingUser.id);
+                localStorage.setItem("role", "user");
+                localStorage.setItem("userEmail", userEmail);
+                localStorage.setItem("userName", existingUser.username || baseUsername);
+                localStorage.setItem("googleAuth", "true");
 
-function AppContent() {
-  const location = useLocation();
-  return (
-    <>
-      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Header />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth/google/callback" element={<GoogleCallback />} />
-        <Route path="/setup-password" element={<SetupPassword />} />
+                setStatus("success");
+                setMessage(t("loginSuccess"));
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/stores" element={<Stores />} />
-        <Route path="/search" element={<SearchResults />} />
-        <Route path="/to-owner" element={<ProtectedOwnerRoute />} />
-        <Route path="/controll/*" element={<ProtectedControllRoute />}>
-          <Route index element={<Middle />} />
-          <Route path="Profil" element={<Middle />} />
-          <Route path="Modification" element={<Middle />} />
-          <Route path="Stores" element={<Middle />} />
-          <Route path="Products" element={<Middle />} />
-          <Route path="Orders" element={<Middle />} />
-          <Route path="Stats" element={<Middle />} />
-          <Route path="Payment" element={<Middle />} />
-          <Route path="Settings" element={<Middle />} />
-          <Route path="Help" element={<Middle />} />
-          <Route path="Security" element={<Middle />} />
-          <Route path="edit-product/:id" element={<Middle />} />
-          <Route path="edit-store/:id" element={<Middle />} />
-        </Route>
-        <Route path="/view/*" element={<ViewRoute />} >
-          <Route index element={<HomeView />} />
-          <Route path=":id" element={<HomeView />} />
-          <Route path="categories/:category" element={<HomeView />} />
-          <Route path="products/:id" element={<HomeView />} />
-        </Route>
-        <Route path="/admin/*" element={<ProtectedAdminRoute />} />
-      </Routes>
-      {!location.pathname.startsWith('/controll') && !location.pathname.startsWith('/view') && !location.pathname.startsWith('/admin') && <Footer />}
-    </>
-  );
+                setTimeout(() => navigate("/"), 1500);
+                return;
+            }
+
+            // 🆕 Register New User
+            const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+            const registerRes = await axios.post(
+                "https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register",
+                {
+                    username: uniqueUsername,
+                    email: userEmail,
+                    password: securePassword
+                }
+            );
+
+            const { jwt, user } = registerRes.data;
+
+            localStorage.setItem("token", jwt);
+            localStorage.setItem("user", JSON.stringify(user.id));
+            localStorage.setItem("IDUser", user.id);
+            localStorage.setItem("role", "user");
+            localStorage.setItem("userEmail", userEmail);
+            localStorage.setItem("userName", user.username);
+
+            setStatus("success");
+            setMessage(t("loginSuccess"));
+
+            setTimeout(() => {
+                if (authIntent === "register") {
+                    navigate("/setup-password");
+                } else {
+                    navigate("/");
+                }
+            }, 1500);
+        } catch (err) {
+            console.error("Login/Register failed:", err.response?.data || err.message);
+            setStatus("error");
+            setMessage(t("loginProcessingError"));
+            setTimeout(() => navigate("/login?error=register_or_login"), 2000);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#1e3a8a] flex items-center justify-center">
+            <div className="text-center">
+                {status === "processing" && (
+                    <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                )}
+
+                {status === "success" && (
+                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                )}
+
+                {status === "error" && (
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                )}
+
+                <div className={`text-xl ${status === "success" ? "text-green-300" : status === "error" ? "text-red-300" : "text-white"}`}>
+                    {message}
+                </div>
+            </div>
+        </div>
+    );
 }
-
-function App() {
-  return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
-  );
-}
-
-export default App;
