@@ -120,25 +120,30 @@ export default function GoogleCallback() {
                             }
                         } else {
                             // User is trying to register but account already exists
-                            console.log("Tentative d'inscription avec un email existant - redirection vers la connexion");
+                            console.log("Tentative d'inscription avec un email existant - connexion directe sans créer de doublon");
                             
-                            // Create a temporary session for the existing user
-                            const tempEmail = `${Date.now()}_${userEmail}`;
-                            const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                            // Don't create a new user in Strapi, just store the Google info locally
+                            // and navigate directly
+                            const existingUser = searchResponse.data.data[0];
                             
-                            const tempResponse = await axios.post(
-                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                                {
-                                    username: uniqueUsername,
-                                    email: tempEmail,
-                                    password: securePassword
-                                }
-                            );
+                            // Store Google authentication data without creating new Strapi user
+                            localStorage.setItem("token", accessToken); // Use Google access token
+                            localStorage.setItem("user", JSON.stringify(existingUser.documentId || existingUser.id));
+                            localStorage.setItem("IDUser", existingUser.id);
+                            localStorage.setItem("role", "user");
+                            localStorage.setItem("userEmail", userEmail);
+                            localStorage.setItem("userName", existingUser.username || baseUsername);
+                            localStorage.setItem("googleAuth", "true"); // Flag to indicate Google auth
                             
-                            strapiJWT = tempResponse.data.jwt;
-                            userData = tempResponse.data.user;
-                            isNewUser = false;
-                            console.log("Session temporaire créée pour l'utilisateur existant (inscription)");
+                            setStatus('success');
+                            setMessage(t('loginSuccess'));
+                            
+                            // Navigate directly to dashboard for existing user
+                            setTimeout(() => {
+                                navigate("/");
+                            }, 1500);
+                            
+                            return; // Exit early since we handled the existing user case
                         }
                     } else {
                         // User doesn't exist - handle based on auth intent
@@ -214,25 +219,26 @@ export default function GoogleCallback() {
                         // Check if it's an email already exists error
                         const errorData = registerError.response?.data?.error;
                         if (errorData?.message?.includes('email') || errorData?.message?.includes('Email')) {
-                            console.log("Email déjà existant, création de session temporaire...");
+                            console.log("Email déjà existant, connexion directe sans créer de doublon...");
                             
-                            // Create a temporary session for existing user
-                      
-                            const tempUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
+                            // Don't create a new user, just store Google info and navigate
+                            localStorage.setItem("token", accessToken); // Use Google access token
+                            localStorage.setItem("user", JSON.stringify("google_user")); // Placeholder
+                            localStorage.setItem("IDUser", "google_user"); // Placeholder
+                            localStorage.setItem("role", "user");
+                            localStorage.setItem("userEmail", userEmail);
+                            localStorage.setItem("userName", baseUsername);
+                            localStorage.setItem("googleAuth", "true"); // Flag to indicate Google auth
                             
-                            const tempResponse = await axios.post(
-                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                                {
-                                    username: tempUsername,
-                                    email: userEmail,
-                                    password: securePassword
-                                }
-                            );
+                            setStatus('success');
+                            setMessage(t('loginSuccess'));
                             
-                            strapiJWT = tempResponse.data.jwt;
-                            userData = tempResponse.data.user;
-                            isNewUser = false;
-                            console.log("Session temporaire créée pour l'utilisateur existant");
+                            // Navigate directly to dashboard
+                            setTimeout(() => {
+                                navigate("/");
+                            }, 1500);
+                            
+                            return; // Exit early
                             
                         } else {
                             // If it's not an email conflict, rethrow the error
