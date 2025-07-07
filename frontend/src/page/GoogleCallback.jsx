@@ -35,6 +35,7 @@ export default function GoogleCallback() {
                 if (tokenParts.length !== 3) throw new Error("Token Google invalide");
                 const payload = JSON.parse(atob(tokenParts[1]));
                 const userEmail = payload.email;
+                const baseUsername = userEmail.split('@')[0];
 
                 // Check if user exists in Strapi
                 const res = await axios.get(
@@ -60,9 +61,38 @@ export default function GoogleCallback() {
                         window.location.href = "/";
                     }, 1000);
                 } else {
-                    setStatus('error');
-                    setMessage(t('User not found. Please register first.'));
-                    setTimeout(() => navigate("/register"), 2000);
+                    // Register the user with Google email
+                    try {
+                        const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                        const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
+                        const registerResponse = await axios.post(
+                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                            {
+                                username: uniqueUsername,
+                                email: userEmail,
+                                password: securePassword
+                            }
+                        );
+                        const userData = registerResponse.data.user;
+                        // Store user info and Google access token
+                        localStorage.setItem("token", accessToken); // Google access_token
+                        localStorage.setItem("user", JSON.stringify(userData.id));
+                        localStorage.setItem("IDUser", userData.id);
+                        localStorage.setItem("role", "user");
+                        localStorage.setItem("userEmail", userEmail);
+                        localStorage.setItem("userName", userData.username || userEmail.split("@")[0]);
+                        localStorage.setItem("googleAuth", "true");
+
+                        setStatus('success');
+                        setMessage(t('registrationSuccess'));
+                        setTimeout(() => {
+                            navigate("/setup-password");
+                        }, 1200);
+                    } catch (registerError) {
+                        setStatus('error');
+                        setMessage(t('registrationError'));
+                        setTimeout(() => navigate("/register?error=google_register_failed"), 2000);
+                    }
                 }
             } catch (error) {
                 setStatus('error');
