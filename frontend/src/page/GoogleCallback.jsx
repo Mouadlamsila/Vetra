@@ -56,6 +56,12 @@ export default function GoogleCallback() {
                 let strapiJWT = null;
                 let userData = null;
                 let isNewUser = false;
+                let authIntent = localStorage.getItem('auth_intent') || 'login';
+
+                // Clear the auth intent immediately
+                localStorage.removeItem('auth_intent');
+
+                console.log("Auth intent:", authIntent);
 
                 // First, try to find existing user by email
                 try {
@@ -67,30 +73,56 @@ export default function GoogleCallback() {
                     );
                     
                     if (searchResponse.data.data && searchResponse.data.data.length > 0) {
-                        // User exists, try to log them in
-                        console.log("Utilisateur existant trouvé, tentative de connexion...");
+                        // User exists - handle based on auth intent
+                        console.log("Utilisateur existant trouvé");
                         
-                        try {
-                            // Try to log in with a temporary password (this won't work for regular users)
-                            // For Google users, we'll create a new session
-                            const loginResponse = await axios.post(
-                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
-                                {
-                                    identifier: userEmail,
-                                    password: securePassword
-                                }
-                            );
+                        if (authIntent === 'login') {
+                            // User is trying to login with existing account
+                            console.log("Tentative de connexion pour un utilisateur existant...");
                             
-                            strapiJWT = loginResponse.data.jwt;
-                            userData = loginResponse.data.user;
-                            isNewUser = false;
-                            console.log("Connexion réussie pour l'utilisateur existant");
+                            try {
+                                // Try to log in with a temporary password (this won't work for regular users)
+                                // For Google users, we'll create a new session
+                                const loginResponse = await axios.post(
+                                    'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
+                                    {
+                                        identifier: userEmail,
+                                        password: securePassword
+                                    }
+                                );
+                                
+                                strapiJWT = loginResponse.data.jwt;
+                                userData = loginResponse.data.user;
+                                isNewUser = false;
+                                console.log("Connexion réussie pour l'utilisateur existant");
+                                
+                            } catch (loginError) {
+                                console.log("Échec de la connexion directe, création d'une nouvelle session...");
+                                
+                                // Since we can't log in with the existing user's password,
+                                // we'll create a new account with a modified email to establish a session
+                                const tempEmail = `${Date.now()}_${userEmail}`;
+                                const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                                
+                                const tempResponse = await axios.post(
+                                    'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                    {
+                                        username: uniqueUsername,
+                                        email: tempEmail,
+                                        password: securePassword
+                                    }
+                                );
+                                
+                                strapiJWT = tempResponse.data.jwt;
+                                userData = tempResponse.data.user;
+                                isNewUser = false;
+                                console.log("Session temporaire créée pour l'utilisateur existant");
+                            }
+                        } else {
+                            // User is trying to register but account already exists
+                            console.log("Tentative d'inscription avec un email existant - redirection vers la connexion");
                             
-                        } catch (loginError) {
-                            console.log("Échec de la connexion directe, création d'une nouvelle session...");
-                            
-                            // Since we can't log in with the existing user's password,
-                            // we'll create a new account with a modified email to establish a session
+                            // Create a temporary session for the existing user
                             const tempEmail = `${Date.now()}_${userEmail}`;
                             const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
                             
@@ -106,27 +138,51 @@ export default function GoogleCallback() {
                             strapiJWT = tempResponse.data.jwt;
                             userData = tempResponse.data.user;
                             isNewUser = false;
-                            console.log("Session temporaire créée pour l'utilisateur existant");
+                            console.log("Session temporaire créée pour l'utilisateur existant (inscription)");
                         }
                     } else {
-                        // User doesn't exist, create new account
-                        console.log("Aucun utilisateur trouvé, création d'un nouveau compte...");
+                        // User doesn't exist - handle based on auth intent
+                        console.log("Aucun utilisateur trouvé");
                         
-                        const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
-                        
-                        const registerResponse = await axios.post(
-                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                            {
-                                username: uniqueUsername,
-                                email: userEmail,
-                                password: securePassword
-                            }
-                        );
-                        
-                        strapiJWT = registerResponse.data.jwt;
-                        userData = registerResponse.data.user;
-                        isNewUser = true;
-                        console.log("Nouvel utilisateur créé avec Google:", registerResponse.data);
+                        if (authIntent === 'register') {
+                            // User is trying to register and account doesn't exist - create new account
+                            console.log("Création d'un nouveau compte pour l'inscription...");
+                            
+                            const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                            
+                            const registerResponse = await axios.post(
+                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                {
+                                    username: uniqueUsername,
+                                    email: userEmail,
+                                    password: securePassword
+                                }
+                            );
+                            
+                            strapiJWT = registerResponse.data.jwt;
+                            userData = registerResponse.data.user;
+                            isNewUser = true;
+                            console.log("Nouvel utilisateur créé avec Google (inscription):", registerResponse.data);
+                        } else {
+                            // User is trying to login but account doesn't exist - create account and log them in
+                            console.log("Tentative de connexion avec un compte inexistant - création d'un nouveau compte...");
+                            
+                            const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
+                            
+                            const registerResponse = await axios.post(
+                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                {
+                                    username: uniqueUsername,
+                                    email: userEmail,
+                                    password: securePassword
+                                }
+                            );
+                            
+                            strapiJWT = registerResponse.data.jwt;
+                            userData = registerResponse.data.user;
+                            isNewUser = true;
+                            console.log("Nouvel utilisateur créé avec Google (connexion):", registerResponse.data);
+                        }
                     }
                     
                 } catch (error) {
@@ -134,7 +190,7 @@ export default function GoogleCallback() {
                     
                     // Fallback: try to register directly
                     try {
-                        console.log("Tentative de création d'utilisateur avec Google...");
+                        console.log("Tentative de création d'utilisateur avec Google (fallback)...");
                         
                         const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
                         
@@ -161,14 +217,14 @@ export default function GoogleCallback() {
                             console.log("Email déjà existant, création de session temporaire...");
                             
                             // Create a temporary session for existing user
-                            const tempEmail = `${Date.now()}_${userEmail}`;
+                      
                             const tempUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
                             
                             const tempResponse = await axios.post(
                                 'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
                                 {
                                     username: tempUsername,
-                                    email: tempEmail,
+                                    email: userEmail,
                                     password: securePassword
                                 }
                             );
@@ -196,10 +252,6 @@ export default function GoogleCallback() {
                 localStorage.setItem("role", "user");
                 localStorage.setItem("userEmail", userEmail); // Always use the original email
                 localStorage.setItem("userName", userData.username);
-
-                // Check if this is a new Google user (needs password setup)
-                const authIntent = localStorage.getItem('auth_intent');
-                localStorage.removeItem('auth_intent');
 
                 setStatus('success');
                 setMessage(t('loginSuccess'));
