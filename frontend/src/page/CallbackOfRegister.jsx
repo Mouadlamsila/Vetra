@@ -46,20 +46,13 @@ export default function CallbackOfRegister() {
         if (userExists) {
           const existingUser = res.data.data[0];
 
-          // Store user info and Google access token
-          localStorage.setItem("token", accessToken); // Google access_token
-          localStorage.setItem("user", JSON.stringify(existingUser.id));
-          localStorage.setItem("IDUser", existingUser.id);
-          localStorage.setItem("role", "user");
-          localStorage.setItem("userEmail", userEmail);
-          localStorage.setItem("userName", existingUser.username || userEmail.split("@")[0]);
-          localStorage.setItem("googleAuth", "true");
-
-          setStatus('success');
-          setMessage(t('loginSuccess'));
+          // Instead of logging in, redirect to login with message
+          setStatus('error');
+          setMessage(t('accountAlreadyExists'));
           setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
+            navigate("/login?error=account_exists");
+          }, 2000);
+          return;
         } else {
           // Register the user with Google email
           try {
