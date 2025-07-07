@@ -89,8 +89,8 @@ export default function GoogleCallback() {
                         // Since we don't know their actual password, we'll create a new account
                         // with a modified email to establish a session
                         try {
-                            const tempEmail = `${userEmail.split('@')[0]}+google_${Date.now()}@${userEmail.split('@')[1]}`;
-                            const tempUsername = `google_user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
+                            const tempEmail = userEmail;
+                            const tempUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
                             
                             const tempResponse = await axios.post(
                                 'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',

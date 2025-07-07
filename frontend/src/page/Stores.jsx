@@ -545,10 +545,10 @@ export default function Stores() {
 
                   <button
                    onClick={() => {
-                    localStorage.setItem("idOwner", store.owner.id);
+                    localStorage.setItem("idOwner", store?.owner?.id);
                     localStorage.setItem("IDBoutique", store.documentId);
                     
-                    navigate(`/view/${store.nom}`)
+                    navigate(`/view/${store.documentId}`)
                    }}
                     className="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition-colors"
                   >

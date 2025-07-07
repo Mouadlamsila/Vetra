@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle } from "lucide-react"
+import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle, XCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
@@ -12,19 +12,14 @@ export default function SetupPassword() {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [passwordFocused, setPasswordFocused] = useState(false)
     const [formData, setFormData] = useState({
         password: "",
         confirmPassword: ""
     })
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
-    const [passwordStrength, setPasswordStrength] = useState({
-        length: false,
-        uppercase: false,
-        lowercase: false,
-        number: false,
-        special: false
-    })
+    const [passwordErrors, setPasswordErrors] = useState({})
     const language = localStorage.getItem('lang')
 
     // Check if user is authenticated
@@ -36,24 +31,33 @@ export default function SetupPassword() {
         }
     }, [navigate])
 
-    // Password strength validation
+    // Password validation function (same as other forms)
     const validatePassword = (password) => {
-        const newStrength = {
-            length: password.length >= 8,
-            uppercase: /[A-Z]/.test(password),
-            lowercase: /[a-z]/.test(password),
-            number: /\d/.test(password),
-            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        const errors = {}
+        
+        if (password.length < 8) {
+            errors.tooShort = true
         }
-        setPasswordStrength(newStrength)
+        if (!/[A-Z]/.test(password)) {
+            errors.noUpperCase = true
+        }
+        if (!/[a-z]/.test(password)) {
+            errors.noLowerCase = true
+        }
+        if (!/\d/.test(password)) {
+            errors.noNumber = true
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            errors.noSpecialChar = true
+        }
         
-        if (!newStrength.length) return t('passwordTooShort')
-        if (!newStrength.uppercase) return t('passwordNoUpperCase')
-        if (!newStrength.lowercase) return t('passwordNoLowerCase')
-        if (!newStrength.number) return t('passwordNoNumber')
-        if (!newStrength.special) return t('passwordNoSpecialChar')
-        
-        return null
+        return errors
+    }
+
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value
+        setFormData(prev => ({ ...prev, password: newPassword }))
+        setPasswordErrors(validatePassword(newPassword))
     }
 
     const handleChange = (e) => {
@@ -62,21 +66,27 @@ export default function SetupPassword() {
             ...prev,
             [name]: value,
         }))
-
-        if (name === 'password') {
-            validatePassword(value)
-        }
     }
+
+    // Calculate password strength
+    const getPasswordStrength = () => {
+        const errors = Object.keys(passwordErrors).length
+        const total = 5
+        const passed = total - errors
+        return { passed, total, percentage: (passed / total) * 100 }
+    }
+
+    const strength = getPasswordStrength()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
         setSuccess("")
 
-        // Validate password
-        const passwordError = validatePassword(formData.password)
-        if (passwordError) {
-            setError(passwordError)
+        // Validate password requirements
+        const errors = validatePassword(formData.password)
+        if (Object.keys(errors).length > 0) {
+            setError(t('passwordRequirementsNotMet'))
             return
         }
 
@@ -125,7 +135,7 @@ export default function SetupPassword() {
         }
     }
 
-    const isPasswordValid = Object.values(passwordStrength).every(Boolean)
+    const isPasswordValid = Object.keys(passwordErrors).length === 0
 
     return (
         <div className="min-h-screen pt-12 w-full bg-[#1e3a8a] flex items-center justify-center relative overflow-hidden">
@@ -146,7 +156,9 @@ export default function SetupPassword() {
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
-                                onChange={handleChange}
+                                onChange={handlePasswordChange}
+                                onFocus={() => setPasswordFocused(true)}
+                                onBlur={() => setPasswordFocused(false)}
                                 className="w-full pl-10 pr-12 py-3 bg-white/5 border border-purple-300/20 rounded-lg text-purple-200 placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300/40"
                                 placeholder={t('newPasswordPlaceholder')}
                                 required
@@ -160,32 +172,33 @@ export default function SetupPassword() {
                             </button>
                         </div>
 
-                        {/* Password Strength Indicator */}
-                        <div className="space-y-2">
-                            <p className="text-sm text-purple-200">{t('passwordRequirements')}:</p>
-                            <div className="space-y-1">
-                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.length ? 'text-green-300' : 'text-red-300'}`}>
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>{t('passwordMinLength')}</span>
-                                </div>
-                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.uppercase ? 'text-green-300' : 'text-red-300'}`}>
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>{t('passwordUppercase')}</span>
-                                </div>
-                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.lowercase ? 'text-green-300' : 'text-red-300'}`}>
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>{t('passwordLowercase')}</span>
-                                </div>
-                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.number ? 'text-green-300' : 'text-red-300'}`}>
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>{t('passwordNumber')}</span>
-                                </div>
-                                <div className={`flex items-center space-x-2 text-sm ${passwordStrength.special ? 'text-green-300' : 'text-red-300'}`}>
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>{t('passwordSpecial')}</span>
+                        {/* Password Requirements Tooltip */}
+                        {passwordFocused && formData.password && (
+                            <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs">
+                                <div className="text-xs space-y-2">
+                                    <div className={`flex items-center space-x-2 ${passwordErrors.tooShort ? 'text-red-400' : 'text-green-400'}`}>
+                                        {passwordErrors.tooShort ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                        <span>{t('passwordMinLength')}</span>
+                                    </div>
+                                    <div className={`flex items-center space-x-2 ${passwordErrors.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
+                                        {passwordErrors.noUpperCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                        <span>{t('passwordUppercase')}</span>
+                                    </div>
+                                    <div className={`flex items-center space-x-2 ${passwordErrors.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
+                                        {passwordErrors.noLowerCase ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                        <span>{t('passwordLowercase')}</span>
+                                    </div>
+                                    <div className={`flex items-center space-x-2 ${passwordErrors.noNumber ? 'text-red-400' : 'text-green-400'}`}>
+                                        {passwordErrors.noNumber ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                        <span>{t('passwordNumber')}</span>
+                                    </div>
+                                    <div className={`flex items-center space-x-2 ${passwordErrors.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
+                                        {passwordErrors.noSpecialChar ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                                        <span>{t('passwordSpecial')}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Confirm Password */}
                         <div className="relative group">

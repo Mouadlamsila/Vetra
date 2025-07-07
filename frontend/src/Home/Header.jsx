@@ -1,4 +1,4 @@
-import { AlignJustify, Languages, Link, Search, User, X } from "lucide-react";
+import { AlignJustify, Search, User, X, Store, Package, MapPin, Star, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from "../i18n/i18n";
@@ -7,6 +7,7 @@ import { Link as LinkDom, useLocation, useNavigate } from "react-router-dom";
 import ShinyButton from "../blocks/TextAnimations/ShinyButton/ShinyButton";
 import { scroller, Link as ScrollLink } from 'react-scroll'
 import BTN1 from "../blocks/Buttons/BTN1";
+import axios from "axios";
 
 export default function Header() {
     const { t, i18n } = useTranslation();
@@ -18,6 +19,12 @@ export default function Header() {
     const location = useLocation();
     const [makeStyle, setMakeStyle] = useState(localStorage.getItem("location"));
     const userID = localStorage.getItem("user");
+    const [showSearch, setShowSearch] = useState(false);
+    const [query, setQuery] = useState('');
+    const [searchResults, setSearchResults] = useState({ stores: [], products: [] });
+    const [isSearching, setIsSearching] = useState(false);
+    const [recentSearches, setRecentSearches] = useState([]);
+    const [popularSearches] = useState(['electronics', 'fashion', 'home', 'beauty', 'sports']);
 
     useEffect(() => {
         if (location.pathname === '/' && location.hash) {
@@ -61,6 +68,94 @@ export default function Header() {
         setLangue(langue)
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
     }, [currentLang]);
+
+    // Load recent searches from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('recentSearches');
+        if (saved) {
+            setRecentSearches(JSON.parse(saved));
+        }
+    }, []);
+
+    // Save recent searches to localStorage
+    const saveRecentSearch = (searchTerm) => {
+        if (!searchTerm.trim()) return;
+        
+        const updated = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
+        setRecentSearches(updated);
+        localStorage.setItem('recentSearches', JSON.stringify(updated));
+    };
+
+    // Perform search
+    const performSearch = async (searchQuery) => {
+        if (!searchQuery.trim()) {
+            setSearchResults({ stores: [], products: [] });
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            // Search stores
+            const storesResponse = await axios.get(
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+            );
+
+            // Search products
+            const productsResponse = await axios.get(
+                `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+            );
+
+            setSearchResults({
+                stores: storesResponse.data.data.slice(0, 3),
+                products: productsResponse.data.data.slice(0, 6)
+            });
+        } catch (error) {
+            console.error('Search error:', error);
+            setSearchResults({ stores: [], products: [] });
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Debounced search
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (query.trim()) {
+                performSearch(query);
+            } else {
+                setSearchResults({ stores: [], products: [] });
+            }
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    }, [query]);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            saveRecentSearch(query);
+            setShowSearch(false);
+            navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+        }
+    };
+
+    const handleSearchClick = (searchTerm) => {
+        setQuery(searchTerm);
+        saveRecentSearch(searchTerm);
+        setShowSearch(false);
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    };
+
+    const handleResultClick = (type, item) => {
+        if (type === 'store') {
+            // Navigate to store view
+            navigate(`/view/${item.documentId}`);
+        } else if (type === 'product') {
+            // Navigate to product view
+            navigate(`/view/products/${item.documentId}`);
+        }
+        setShowSearch(false);
+    };
 
     function logout() {
 
@@ -147,7 +242,7 @@ export default function Header() {
             </div>
             <div className={`${langue === 'ar' ? ' sm:w-[30%]' : 'sm:w-auto'} flex w-full items-center justify-end gap-2`}>
 
-                <div className={`${menu ? "hidden" : ""} duration-300 bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9] text-xl rounded-xl`}>
+                <div onClick={() => setShowSearch(true)} className={`${menu ? "hidden" : ""} duration-300 bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9] text-xl rounded-xl`}>
                     <Search />
                 </div>
                 <div className={`flex justify-center ${menu ? "hidden" : ""}`}>
@@ -395,7 +490,174 @@ export default function Header() {
 
 
             </div>
+            <AnimatePresence>
+                {showSearch && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed top-0 left-0 z-[999] w-full h-full bg-black/50 backdrop-blur-sm flex items-start justify-center pt-20"
+                        onClick={() => setShowSearch(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: -20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-2xl border border-gray-200"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Search Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                                <div className="flex items-center space-x-4">
+                                    <Search className="h-6 w-6 text-purple-600" />
+                                    <h2 className="text-xl font-semibold text-gray-800">{t('Search')}</h2>
+                                </div>
+                                <button 
+                                    onClick={() => setShowSearch(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                    <X className="h-5 w-5 text-gray-500" />
+                                </button>
+                            </div>
 
+                            {/* Search Input */}
+                            <div className="p-6">
+                                <form onSubmit={handleSearchSubmit} className="relative">
+                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                        placeholder={t("Search for stores, products...")}
+                                        className="w-full pl-12 pr-4 py-4 text-black border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                        autoFocus
+                                    />
+                                    {isSearching && (
+                                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
+                                        </div>
+                                    )}
+                                </form>
+                            </div>
+
+                            {/* Search Results or Suggestions */}
+                            <div className="px-6 pb-6">
+                                {query.trim() ? (
+                                    // Search Results
+                                    <div className="space-y-6">
+                                        {/* Stores Results */}
+                                        {searchResults.stores.length > 0 && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                                    <Store className="h-5 w-5 mr-2 text-purple-600" />
+                                                    {t('Stores')}
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {searchResults.stores.map((store) => (
+                                                        <div
+                                                            key={store.id}
+                                                            onClick={() =>{ handleResultClick('store', store) ; localStorage.setItem('IDBoutique', store.documentId)}  }
+                                                            className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                                                        >
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                    <Store className="h-5 w-5 text-purple-600" />
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-medium text-gray-800">{store.nom}</h4>
+                                                                    <p className="text-sm text-gray-500 truncate">{store.description}</p>
+                                                                </div>
+                                                                <ArrowRight className="h-4 w-4 text-gray-400" />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Products Results */}
+                                        {searchResults.products.length > 0 && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                                    <Package className="h-5 w-5 mr-2 text-purple-600" />
+                                                    {t('Products')}
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                    {searchResults.products.map((product) => (
+                                                        <div
+                                                            key={product.id}
+                                                            onClick={() => handleResultClick('product', product)}
+                                                            className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                                                        >
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                    <Package className="h-5 w-5 text-purple-600" />
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-medium text-gray-800">{product.name}</h4>
+                                                                    <p className="text-sm text-gray-500">€{product.prix}</p>
+                                                                </div>
+                                                                <ArrowRight className="h-4 w-4 text-gray-400" />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* No Results */}
+                                        {searchResults.stores.length === 0 && searchResults.products.length === 0 && !isSearching && (
+                                            <div className="text-center py-8">
+                                                <Package className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                                                <p className="text-gray-500">{t('No results found for')} "{query}"</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    // Search Suggestions
+                                    <div className="space-y-6">
+                                        {/* Recent Searches */}
+                                        {recentSearches.length > 0 && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('Recent Searches')}</h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {recentSearches.map((search, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => handleSearchClick(search)}
+                                                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
+                                                        >
+                                                            {search}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Popular Searches */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('Popular Searches')}</h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {popularSearches.map((search, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => handleSearchClick(search)}
+                                                        className="px-4 py-2 bg-purple-100 hover:bg-purple-200 rounded-full text-sm text-purple-700 transition-colors"
+                                                    >
+                                                        {search}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </header>
     )
 }
