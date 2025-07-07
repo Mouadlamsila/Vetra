@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 export default function GoogleCallback() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const [status, setStatus] = useState("processing");
     const [message, setMessage] = useState(t("processingLogin"));
@@ -20,7 +18,7 @@ export default function GoogleCallback() {
                 if (error || !idToken || !accessToken) {
                     setStatus("error");
                     setMessage(error ? t("loginFailed") : t("noTokenReceived"));
-                    setTimeout(() => navigate("/login?error=auth_error"), 2000);
+                    setTimeout(() => window.location.href = "/login?error=auth_error", 2000);
                     return;
                 }
 
@@ -45,12 +43,12 @@ export default function GoogleCallback() {
                 console.error("Erreur callback:", err);
                 setStatus("error");
                 setMessage(t("loginProcessingError"));
-                setTimeout(() => navigate("/login?error=callback"), 2000);
+                setTimeout(() => window.location.href = "/login?error=callback", 2000);
             }
         };
 
         handleCallback();
-    }, [navigate, t]);
+    }, [t]);
 
     const handleLoginOrRegister = async ({ userEmail, baseUsername, accessToken, securePassword, authIntent }) => {
         try {
@@ -63,7 +61,6 @@ export default function GoogleCallback() {
             if (userExists) {
                 const existingUser = res.data.data[0];
 
-                // ✅ حتى إذا كانت نية "register" و الإيميل كاين → ندير login
                 localStorage.setItem("token", accessToken);
                 localStorage.setItem("user", JSON.stringify(existingUser.id));
                 localStorage.setItem("IDUser", existingUser.id);
@@ -75,11 +72,11 @@ export default function GoogleCallback() {
                 setStatus("success");
                 setMessage(t("loginSuccess"));
 
-                setTimeout(() => navigate("/"), 1500);
+                setTimeout(() => window.location.href = "/", 1500);
                 return;
             }
 
-            // 🆕 Register New User
+            // Register new user
             const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
             const registerRes = await axios.post(
                 "https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register",
@@ -104,16 +101,16 @@ export default function GoogleCallback() {
 
             setTimeout(() => {
                 if (authIntent === "register") {
-                    navigate("/setup-password");
+                    window.location.href = "/setup-password";
                 } else {
-                    navigate("/");
+                    window.location.href = "/";
                 }
             }, 1500);
         } catch (err) {
             console.error("Login/Register failed:", err.response?.data || err.message);
             setStatus("error");
             setMessage(t("loginProcessingError"));
-            setTimeout(() => navigate("/login?error=register_or_login"), 2000);
+            setTimeout(() => window.location.href = "/login?error=register_or_login", 2000);
         }
     };
 
