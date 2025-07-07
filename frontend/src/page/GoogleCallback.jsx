@@ -66,12 +66,10 @@ export default function GoogleCallback() {
                 // First, try to find existing user by email
                 try {
                     console.log("Recherche d'utilisateur existant par email...");
-                    
                     // Search for existing user by email
                     const searchResponse = await axios.get(
                         `https://stylish-basket-710b77de8f.strapiapp.com/api/users?filters[email][$eq]=${userEmail}`
                     );
-                    
                     if (searchResponse.data.data && searchResponse.data.data.length > 0) {
                         // User exists - handle based on auth intent
                         console.log("Utilisateur existant trouvé");
@@ -92,25 +90,34 @@ export default function GoogleCallback() {
                         }, 1500);
                         return; // Exit early since we handled the existing user case
                     } else {
-                        // User doesn't exist - handle based on auth intent
+                        // User doesn't exist - create new account
                         console.log("Aucun utilisateur trouvé");
-                        // User is trying to register or login and account doesn't exist - create new account
                         console.log("Création d'un nouveau compte pour l'utilisateur Google...");
                         const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
-                        const registerResponse = await axios.post(
-                            'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
-                            {
-                                username: uniqueUsername,
-                                email: userEmail,
-                                password: securePassword
-                            }
-                        );
-                        strapiJWT = registerResponse.data.jwt;
-                        userData = registerResponse.data.user;
-                        isNewUser = true;
-                        console.log("Nouvel utilisateur créé avec Google:", registerResponse.data);
+                        try {
+                            const registerResponse = await axios.post(
+                                'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                                {
+                                    username: uniqueUsername,
+                                    email: userEmail,
+                                    password: securePassword
+                                }
+                            );
+                            strapiJWT = registerResponse.data.jwt;
+                            userData = registerResponse.data.user;
+                            isNewUser = true;
+                            console.log("Nouvel utilisateur créé avec Google:", registerResponse.data);
+                        } catch (registerError) {
+                            // Registration failed, show error and stop
+                            console.log("Erreur lors de la création:", registerError.response?.data || registerError.message);
+                            setStatus('error');
+                            setMessage(t('registrationError'));
+                            setTimeout(() => navigate("/login?error=registration_error"), 2000);
+                            return;
+                        }
                     }
                 } catch (error) {
+                    // Error in user search
                     console.log("Erreur lors de la recherche/création:", error.response?.data || error.message);
                     setStatus('error');
                     setMessage(t('loginProcessingError'));
