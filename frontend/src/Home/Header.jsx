@@ -242,7 +242,7 @@ export default function Header() {
                         <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="" className="h-12 block sm:hidden" />
                     </LinkDom>
                 )}
-                <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl`} onClick={() => setMenu(!menu)} />
+                <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl  cursor-pointer transition-all transform hover:scale-110 hover:shadow-lg`} onClick={() => setMenu(!menu)} />
                 <ul className="sm:flex hidden items-center gap-8">
 
                     {location.pathname === '/' ? (
@@ -293,12 +293,12 @@ export default function Header() {
             </div>
             <div className={`${langue === 'ar' ? ' sm:w-[30%]' : 'sm:w-auto'} flex w-full items-center justify-end gap-2`}>
 
-                <div onClick={() => setShowSearch(true)} className={`${menu ? "hidden" : ""} duration-300 bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9] text-xl rounded-xl`}>
+                {/* For the search icon button */}
+                <div onClick={() => setShowSearch(true)} className={`${menu ? "hidden" : ""} duration-300 bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9] text-xl rounded-xl  cursor-pointer transition-all transform hover:scale-110 hover:shadow-lg`}>
                     <Search />
                 </div>
                 <div className={`flex justify-center ${menu ? "hidden" : ""}`}>
-                    <div onClick={() => setShow(!Show)} className="flex cursor-pointer relative items-center bg-[#c8c2fd] p-2 h-10 justify-center font-medium text-[#6D28D9] w-10  text-xl rounded-xl">
-
+                    <div onClick={() => setShow(!Show)} className="flex cursor-pointer relative items-center bg-[#c8c2fd] p-2 h-10 justify-center font-medium text-[#6D28D9] w-10  text-xl rounded-xl  transition-all transform hover:scale-110 hover:shadow-lg">
                         {langue === 'ar' ? 'ع' : langue}
                     </div>
                     {/* menu langue */}
@@ -311,18 +311,18 @@ export default function Header() {
                                 transition={{ duration: 0.3 }}
                                 className="absolute top-20 w-[100px] rounded-b-md bg-[#1e3a8a] text-black grid z-[99] items-center"
                             >
-                                <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
+                                <button className={` ${langue === 'en' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:bg-[#6D28D9]/80`} onClick={() => { changeLanguage("en"); setShow(!Show) }}>English</button>
                                 <div className="w-full bg-[#c8c2fd] h-[1.5px]"></div>
-                                <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd]  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
+                                <button className={`${langue === 'fr' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:bg-[#6D28D9]/80`} onClick={() => { changeLanguage("fr"); setShow(!Show) }}>Français</button>
                                 <div className="w-full bg-[#c8c2fd] h-[1.5px] "></div>
-                                <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md  hover:bg-[#6D28D9] `} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
+                                <button className={`${langue === 'ar' ? 'bg-[#6D28D9]' : ''} py-4 text-[#c8c2fd] rounded-b-md cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:bg-[#6D28D9]/80`} onClick={() => { changeLanguage("ar"); setShow(!Show) }}>العربية</button>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
 
                 {userID ? (
-                    <LinkDom to="/controll/" className={`${menu ? "hidden" : ""} duration-300 block bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9]  text-xl rounded-xl`}>
+                    <LinkDom to="/controll/" className={`${menu ? "hidden" : ""} duration-300 block bg-[#c8c2fd] p-2 h-full justify-center font-medium text-[#6D28D9]  text-xl rounded-xl  cursor-pointer transition-all transform hover:scale-110 hover:shadow-lg`}>
                         <User />
                     </LinkDom>
 
@@ -351,7 +351,7 @@ export default function Header() {
                         <BTN1 onClick={logout} />
                     </div>
                 )}
-                <div className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] rounded-xl`} onClick={() => setMenu(!menu)}>
+                <div className={`${menu ? "hidden" : ""}  sm:hidden bg-[#c8c2fd] p-2 h-full text-[#6D28D9] rounded-xl  cursor-pointer transition-all transform hover:scale-110 hover:shadow-lg`} onClick={() => setMenu(!menu)}>
                     <AlignJustify />
                 </div>
                 <div className={`${menu ? "justify-center flex w-full" : "hidden"}`}>

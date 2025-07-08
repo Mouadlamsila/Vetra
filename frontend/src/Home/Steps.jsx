@@ -66,14 +66,14 @@ const Steps = () => {
             {
                 role === "User" ? (
                     <Link to="/to-owner" className="w-full flex justify-center pt-4">
-                        <ShinyButton rounded={true} className="w-full sm:w-auto">
+                        <ShinyButton rounded={true} className="w-full sm:w-auto cursor-pointer">
                             <p className="text-sm sm:text-base">{t('startNow')}</p>
                             <Store className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>
                     </Link>
                 ) : (
                     <Link to="/controll" className="w-full flex justify-center pt-4">
-                        <ShinyButton rounded={true} className="w-full sm:w-auto">
+                        <ShinyButton rounded={true} className="w-full sm:w-auto cursor-pointer">
                             <p className="text-sm sm:text-base">{t('startNow')}</p>
                             <Store className="w-4 h-4 sm:w-5 sm:h-5" />
                         </ShinyButton>

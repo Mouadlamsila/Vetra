@@ -55,7 +55,7 @@ export default function Step1() {
         // User not logged in
         if (!userAuthenticated) {
             return (
-                <Link to="/login" className="block">
+                <Link to="/login" className="block cursor-pointer">
                     <div className="flex justify-between border border-gray-300 rounded-lg px-3 py-2 sm:px-4 sm:py-3 hover:border-purple-500 transition-colors">
                         <div className="flex gap-2 sm:gap-2.5 items-center">
                             <UserPlus className="text-[#6D28D9] w-4 h-4 sm:w-5 sm:h-5" />
@@ -68,7 +68,7 @@ export default function Step1() {
         }
         if (userRole === "user") {
             return (
-                <Link to="/to-owner" className="block">
+                <Link to="/to-owner" className="block cursor-pointer">
                     <div className="flex justify-between border border-gray-300 rounded-lg px-3 py-2 sm:px-4 sm:py-3 hover:border-purple-500 transition-colors">
                         <div className="flex gap-2 sm:gap-2.5 items-center">
                             <UserPlus className="text-[#6D28D9] w-4 h-4 sm:w-5 sm:h-5" />
@@ -151,7 +151,7 @@ export default function Step1() {
         // Owner who needs to create a store
         if (userRole === "Owner" && boutiquesCount === 0) {
             return (
-                <Link to="/controll/AddStore" className="block">
+                <Link to="/controll/AddStore" className="block cursor-pointer">
                     <div className="flex justify-between border border-gray-300 rounded-lg px-3 py-2 sm:px-4 sm:py-3 hover:border-purple-500 transition-colors">
                         <div className="flex gap-2 sm:gap-2.5 items-center">
                             <Store className="text-[#6D28D9] w-4 h-4 sm:w-5 sm:h-5" />

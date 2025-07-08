@@ -138,7 +138,7 @@ const AboutSection = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab
+                  className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer ${activeTab === tab
                     ? "border-[#6D28D9] text-[#6D28D9]"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
@@ -397,12 +397,12 @@ const AboutSection = () => {
           <motion.div variants={itemVariants}>
             {
               role === "User" ? <Link to={'/to-owner'} >
-                <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
+                <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300 cursor-pointer">
                   {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
                 </button>
               </Link> :
                 <Link to={'/controll'} >
-                  <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
+                  <button className="bg-white text-[#6D28D9] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300 cursor-pointer">
                     {t('startNow')} {language === "ar" ? <ChevronLeft className="ml-2 h-5 w-5 inline" /> : <ChevronRight className="ml-2 h-5 w-5 inline" />}
                   </button>
                 </Link>

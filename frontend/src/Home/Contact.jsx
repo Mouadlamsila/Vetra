@@ -157,7 +157,7 @@ const Contact = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-3 md:px-4 py-2 md:py-3 rounded-full transition-colors text-sm md:text-base ${activeTab === tab.id ? "bg-[#6D28D9] text-white" : "bg-white text-gray-700 hover:bg-[#c8c2fd]/20"
+                className={`flex items-center px-3 md:px-4 py-2 md:py-3 rounded-full transition-colors text-sm md:text-base cursor-pointer ${activeTab === tab.id ? "bg-[#6D28D9] text-white" : "bg-white text-gray-700 hover:bg-[#c8c2fd]/20"
                   }`}
               >
                 <span className={` ${langue === "ar" ? "ml-2" : "mr-2"}	 ${activeTab === tab.id ? "text-white" : "text-[#6D28D9]"}`}>{tab.icon}</span>
@@ -440,7 +440,7 @@ const Contact = () => {
                 />
                 <button
                   type="submit"
-                  className={`${langue === "ar" ? "rounded-l-lg" : "rounded-r-lg"} px-4 py-3 bg-[#4C1D95] hover:bg-[#3b1a74] text-white font-medium transition-colors`}
+                  className={`${langue === "ar" ? "rounded-l-lg" : "rounded-r-lg"} px-4 py-3 bg-[#4C1D95] hover:bg-[#3b1a74] cursor-pointer text-white font-medium transition-colors`}
                 >
                   {t("contact.newsletter.button")}
                 </button>
