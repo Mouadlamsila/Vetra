@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 import axios from "axios"
 
 export default function SearchResults() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const [searchParams] = useSearchParams()
     const query = searchParams.get('q') || ''
     const navigate = useNavigate()
@@ -143,9 +143,12 @@ export default function SearchResults() {
 
         // Apply category filter
         if (filters.category) {
-            filtered.products = filtered.products.filter(product => 
-                product.category?.name?.toLowerCase() === filters.category.toLowerCase()
-            )
+            filtered.products = filtered.products.filter(product => {
+                // Accept both translated and English category names for robustness
+                const productCategory = product.category?.name?.toLowerCase();
+                return productCategory === filters.category.toLowerCase() ||
+                    productCategory === t(`search.category_${filters.category}`).toLowerCase();
+            });
         }
 
         // Apply price filter
@@ -244,6 +247,16 @@ export default function SearchResults() {
             </div>
         )
     }
+
+    // Category options for filter (value is the English key, label is translated)
+    const categoryOptions = [
+        { value: '', label: t('search.allCategories') },
+        { value: 'electronics', label: t('search.category_electronics') },
+        { value: 'fashion', label: t('search.category_fashion') },
+        { value: 'home', label: t('search.category_home') },
+        { value: 'beauty', label: t('search.category_beauty') },
+        { value: 'sports', label: t('search.category_sports') },
+    ];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
@@ -350,12 +363,9 @@ export default function SearchResults() {
                                     onChange={(e) => setFilters({...filters, category: e.target.value})}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 >
-                                    <option value="">{t('search.allCategories')}</option>
-                                    <option value="electronics">Electronics</option>
-                                    <option value="fashion">Fashion</option>
-                                    <option value="home">Home</option>
-                                    <option value="beauty">Beauty</option>
-                                    <option value="sports">Sports</option>
+                                    {categoryOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
                                 </select>
                             </div>
                             
@@ -394,7 +404,7 @@ export default function SearchResults() {
                                         type="checkbox"
                                         checked={filters.inStockOnly}
                                         onChange={(e) => setFilters({...filters, inStockOnly: e.target.checked})}
-                                        className="mr-2"
+                                        className={`${i18n.language === 'ar' ? 'ml-2' : 'mr-2'}`}
                                     />
                                     <span className="text-sm text-gray-700">{t('search.inStockOnly')}</span>
                                 </label>

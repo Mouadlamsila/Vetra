@@ -24,7 +24,15 @@ export default function Header() {
     const [searchResults, setSearchResults] = useState({ stores: [], products: [] });
     const [isSearching, setIsSearching] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
-    const [popularSearches] = useState(['electronics', 'fashion', 'home', 'beauty', 'sports']);
+
+    // const [popularSearches] = useState(['electronics', 'fashion', 'home', 'beauty', 'sports']);
+    const popularSearches = [
+        { key: 'electronics', label: t('search.electronics') },
+        { key: 'fashion', label: t('search.fashion') },
+        { key: 'home', label: t('search.home') },
+        { key: 'beauty', label: t('search.beauty') },
+        { key: 'sports', label: t('search.sports') },
+    ];
 
     useEffect(() => {
         if (location.pathname === '/' && location.hash) {
@@ -206,6 +214,12 @@ export default function Header() {
 
         navigate("/login");
     }
+
+    // Compute the display value for the input
+    const displayQuery = (() => {
+        const found = popularSearches.find((search) => search.key === query);
+        return found ? found.label : query;
+    })();
 
     return (
         <header className={`${menu ? "h-screen flex-col" : "items-center h-[80px] flex-row"} duration-300 select-none transition-all ease-in-out bg-[#1e3a8a]  fixed z-[99] text-[#FFFFFF] flex  w-full justify-between py-4 px-4 sm:px-28`}>
@@ -562,16 +576,27 @@ export default function Header() {
                             {/* Search Input */}
                             <div className="p-6">
                                 <form onSubmit={handleSearchSubmit} className="relative">
-                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
+                                    <Search className={`absolute ${langue === 'ar' ? 'right-4' : 'left-4'} top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400`} />
+                                    <input
+                                        type="text"
+                                        value={displayQuery}
+                                        onChange={(e) => setQuery(e.target.value)}
                                         placeholder={t("header.searchPlaceholderFull")}
-                                        className="w-full pl-12 pr-4 py-4 text-black border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                        className={`w-full ${langue === 'ar' ? 'pl-10 pr-12' : 'pr-10 pl-12'} py-4 text-black border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg`}
                                         autoFocus
                                     />
-                                    {isSearching && (
+                                    {query && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuery("")}
+                                            className={`absolute ${langue === 'ar' ? 'left-4' : 'right-4'} top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-200 transition-colors`}
+                                            tabIndex={-1}
+                                            aria-label="Clear search"
+                                        >
+                                            <X className="h-5 w-5 text-gray-400" />
+                                        </button>
+                                    )}
+                                    {isSearching && !query && (
                                         <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                                             <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
                                         </div>
@@ -599,12 +624,12 @@ export default function Header() {
                                                             className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                                                         >
                                                             <div className="flex items-center space-x-3">
-                                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                <div className="w-10 h-10  rounded-lg flex items-center justify-center">
                                                                     <Store className="h-5 w-5 text-purple-600" />
                                                                 </div>
                                                                 <div className="flex-1">
                                                                     <h4 className="font-medium text-gray-800">{store.nom}</h4>
-                                                                    <p className="text-sm text-gray-500 truncate">{store.description}</p>
+                                                                    <p className="text-sm text-gray-500 truncate w-[95%]">{store.description}</p>
                                                                 </div>
                                                                 <ArrowRight className="h-4 w-4 text-gray-400" />
                                                             </div>
@@ -680,10 +705,10 @@ export default function Header() {
                                                 {popularSearches.map((search, index) => (
                                                     <button
                                                         key={index}
-                                                        onClick={() => handleSearchClick(search)}
+                                                        onClick={() => handleSearchClick(search.key)}
                                                         className="px-4 py-2 bg-purple-100 hover:bg-purple-200 rounded-full text-sm text-purple-700 transition-colors"
                                                     >
-                                                        {search}
+                                                        {search.label}
                                                     </button>
                                                 ))}
                                             </div>
