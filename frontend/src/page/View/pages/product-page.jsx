@@ -6,6 +6,7 @@ import { ChevronRight, Heart, Minus, Plus, Share2, ShoppingCart, Star, Truck, Me
 import axios from "axios"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
+import Swal from 'sweetalert2'
 
 import stripePromise from "../../../utils/stripe"
 import { Elements } from "@stripe/react-stripe-js"
@@ -195,7 +196,7 @@ export default function ProductPage() {
       const userId = localStorage.getItem("IDUser")
 
       if (!userId) {
-        toast.error(t("view.productDetails.loginToReview"))
+        Swal.fire({ icon: 'warning', title: t("view.productDetails.loginToReview") })
         return
       }
 
@@ -234,13 +235,11 @@ export default function ProductPage() {
           : [...(prevProduct.rating_products || []), response.data.data],
       }))
 
-      toast.success(
-        existingRating ? t("view.productDetails.reviewUpdateSuccess") : t("view.productDetails.reviewSuccess"),
-      )
+      Swal.fire({ icon: 'success', title: existingRating ? t("view.productDetails.reviewUpdateSuccess") : t("view.productDetails.reviewSuccess") })
       setTimeout(() => window.location.reload(), 1000)
     } catch (error) {
       console.error("Error submitting rating:", error)
-      toast.error(t("view.productDetails.reviewError"))
+      Swal.fire({ icon: 'error', title: t("view.productDetails.reviewError") })
     }
   }
 
@@ -339,7 +338,7 @@ export default function ProductPage() {
   const handleFavorite = async () => {
     const userId = localStorage.getItem("IDUser")
     if (!userId) {
-      toast.error(t("view.productDetails.loginToFavorite"))
+      Swal.fire({ icon: 'warning', title: t("view.productDetails.loginToFavorite") })
       return
     }
 
@@ -351,7 +350,7 @@ export default function ProductPage() {
         )
         if (response.data.data.length > 0) {
           await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
-          toast.success(t("view.productDetails.removedFromFavorites"))
+          Swal.fire({ icon: 'success', title: t("view.productDetails.removedFromFavorites") })
           setTimeout(() => window.location.reload(), 1000)
         }
       } else {
@@ -362,13 +361,13 @@ export default function ProductPage() {
             product: product.id,
           },
         })
-        toast.success(t("view.productDetails.addedToFavorites"))
+        Swal.fire({ icon: 'success', title: t("view.productDetails.addedToFavorites") })
         setTimeout(() => window.location.reload(), 1000)
       }
       setIsFavorite(!isFavorite)
     } catch (error) {
       console.error("Error updating favorite status:", error)
-      toast.error(t("view.productDetails.favoriteError"))
+      Swal.fire({ icon: 'error', title: t("view.productDetails.favoriteError") })
     }
   }
 
@@ -387,7 +386,7 @@ export default function ProductPage() {
         setUserData(response.data)
       } catch (error) {
         console.error("Error fetching user data:", error)
-        toast.error(t("view.productDetails.error.fetchingUserData"))
+        Swal.fire({ icon: 'error', title: t("view.productDetails.error.fetchingUserData") })
       }
     }
 
@@ -397,7 +396,7 @@ export default function ProductPage() {
   const handleBuyNow = async () => {
     const userId = localStorage.getItem("IDUser")
     if (!userId) {
-      toast.error(t("view.productDetails.loginRequired"))
+      Swal.fire({ icon: 'warning', title: t("view.productDetails.loginRequired") })
       return
     }
 
@@ -458,7 +457,7 @@ export default function ProductPage() {
         console.error("Error status:", error.response.status)
         console.error("Error details:", error.response.data.error)
       }
-      toast.error(t("view.productDetails.paymentError"))
+      Swal.fire({ icon: 'error', title: t("view.productDetails.paymentError") })
     } finally {
       setIsProcessingPayment(false)
     }
@@ -516,7 +515,7 @@ export default function ProductPage() {
       setShowCheckoutForm(false)
 
       // Show success message
-      toast.success(t("view.productDetails.paymentSuccess"))
+      Swal.fire({ icon: 'success', title: t("view.productDetails.paymentSuccess") })
 
       // Redirect to order confirmation page or home
       window.location.href = "/view/orders"
@@ -753,7 +752,7 @@ export default function ProductPage() {
                   <button
                     onClick={decrementQuantity}
                     disabled={quantity <= 1}
-                    className={`h-10 w-10 ${lang === "ar" ? "rounded-r-md" : "rounded-l-md"}  border border-gray-300 flex items-center justify-center ${
+                    className={`h-10 w-10 ${lang === "ar" ? "rounded-r-md" : "rounded-l-md"}  border border-gray-300 flex items-center justify-center cursor-pointer ${
                       quantity <= 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
                     }`}
                   >
@@ -765,7 +764,7 @@ export default function ProductPage() {
                   <button
                     onClick={incrementQuantity}
                     disabled={quantity >= getAvailableStock()}
-                    className={`h-10 w-10 ${lang === "ar" ? "rounded-l-md" : "rounded-r-md"}  border border-gray-300 flex items-center justify-center ${
+                    className={`h-10 w-10 ${lang === "ar" ? "rounded-l-md" : "rounded-r-md"}  border border-gray-300 flex items-center justify-center cursor-pointer ${
                       quantity >= getAvailableStock() ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
                     }`}
                   >
@@ -786,7 +785,7 @@ export default function ProductPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart}
-                className={`flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md flex items-center justify-center ${
+                className={`flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md flex items-center justify-center cursor-pointer ${
                   isAddingToCart ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
@@ -796,7 +795,7 @@ export default function ProductPage() {
               <button
                 onClick={handleBuyNow}
                 disabled={isProcessingPayment}
-                className={`flex-1 border border-purple-200 text-purple-700 hover:bg-purple-50 py-3 px-4 rounded-md ${
+                className={`flex-1 border border-purple-200 text-purple-700 hover:bg-purple-50 py-3 px-4 rounded-md cursor-pointer ${
                   isProcessingPayment ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
@@ -856,7 +855,7 @@ export default function ProductPage() {
               </div>
               <button
                 onClick={() => openRatingModal(product)}
-                className="flex items-center gap-1 text-purple-600 hover:text-purple-800"
+                className="flex items-center gap-1 text-purple-600 hover:text-purple-800 cursor-pointer"
               >
                 <MessageSquare className="h-4 w-4" />
                 <span className="text-sm">{t("view.productDetails.rateProduct")}</span>
@@ -961,7 +960,7 @@ export default function ProductPage() {
                 setSelectedProduct(null)
                 setRatingForm({ stars: 0, opinion: "" })
               }}
-              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600`}
+              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600 cursor-pointer`}
             >
               <X className="h-5 w-5" />
             </button>
@@ -1035,7 +1034,7 @@ export default function ProductPage() {
           <div className="bg-white rounded-xl max-w-lg w-full p-6 relative">
             <button
               onClick={handlePaymentCancel}
-              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600`}
+              className={`absolute top-4 ${lang === "ar" ? "left-4" : "right-4"} text-gray-400 hover:text-gray-600 cursor-pointer`}
             >
               <X className="h-5 w-5" />
             </button>
@@ -1048,7 +1047,7 @@ export default function ProductPage() {
                   setShowCheckoutForm(false)
 
                   // Show success message
-                  toast.success(t("view.productDetails.paymentSuccess"))
+                  Swal.fire({ icon: 'success', title: t("view.productDetails.paymentSuccess") })
 
                   // Redirect to order confirmation page
                   window.location.href = "/view/orders"
@@ -1102,7 +1101,7 @@ function ProductCard({ product }) {
     e.preventDefault() // Prevent navigation when clicking the favorite button
     const userId = localStorage.getItem("IDUser")
     if (!userId) {
-      toast.error(t("view.productDetails.loginToFavorite"))
+      Swal.fire({ icon: 'warning', title: t("view.productDetails.loginToFavorite") })
       return
     }
 
@@ -1114,7 +1113,7 @@ function ProductCard({ product }) {
         )
         if (response.data.data.length > 0) {
           await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
-          toast.success(t("view.productDetails.removedFromFavorites"))
+          Swal.fire({ icon: 'success', title: t("view.productDetails.removedFromFavorites") })
         }
       } else {
         // Add to favorites
@@ -1124,13 +1123,13 @@ function ProductCard({ product }) {
             product: product.id,
           },
         })
-        toast.success(t("view.productDetails.addedToFavorites"))
+        Swal.fire({ icon: 'success', title: t("view.productDetails.addedToFavorites") })
       }
       setIsFavorite(!isFavorite)
       setTimeout(() => window.location.reload(), 1000)
     } catch (error) {
       console.error("Error updating favorite status:", error)
-      toast.error(t("view.productDetails.favoriteError"))
+      Swal.fire({ icon: 'error', title: t("view.productDetails.favoriteError") })
     }
   }
 
@@ -1204,7 +1203,7 @@ function ProductCard({ product }) {
               <span className="text-sm text-gray-500 line-through">${product?.comparePrice}</span>
             )}
           </div>
-          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md">
+          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md cursor-pointer">
             <ShoppingCart className="h-3.5 w-3.5" />
           </button>
         </div>

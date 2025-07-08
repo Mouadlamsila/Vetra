@@ -171,7 +171,7 @@ const Contact = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#6D28D9] to-[#1e3a8a] text-white font-semibold py-4 px-8 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[#c8c2fd]"
+                  className="w-full bg-gradient-to-r from-[#6D28D9] to-[#1e3a8a] text-white font-semibold py-4 px-8 rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[#c8c2fd] cursor-pointer"
                 >
                   {t('view.contact.form.sendMessage')}
                 </button>

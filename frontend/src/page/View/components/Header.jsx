@@ -522,11 +522,11 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo and mobile menu */}
           <div className="flex items-center gap-4">
-            <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="lg:hidden cursor-pointer" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <Menu className="h-6 w-6" />
             </button>
 
-            <Link to={`/view/${id}`} className="flex items-center gap-2">
+            <Link to={`/view/${id}`} className="flex items-center gap-2 cursor-pointer">
               <img
                 src={boutiques?.logo?.url ? `${boutiques.logo.url}` : "/placeholder.svg"}
                 alt={boutiques?.nom || "ShopEase"}
@@ -537,7 +537,7 @@ export default function Header() {
           </div>
 
           {/* Search bar - desktop only */}
-          <div className="hidden md:block flex-1 max-w-xl mx-4 ">
+          <div className="hidden md:block flex-1 max-w-xl mx-4 cursor-pointer">
             <div className="relative">
               <Search className={` ${lang === 'ar' ? 'right-3' : 'left-3'} absolute  top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4`} />
               <form onSubmit={handleSearchSubmit}>
@@ -550,7 +550,7 @@ export default function Header() {
                 />
                 <button 
                   type="submit"
-                  className={`absolute ${lang === 'ar' ? 'left-1' : 'right-1'}  top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm`}
+                  className={`absolute ${lang === 'ar' ? 'left-1' : 'right-1'}  top-1/2 transform -translate-y-1/2 h-7 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-3 rounded-md text-sm cursor-pointer`}
                 >
                   {t('header.search')}
                 </button>
@@ -563,7 +563,7 @@ export default function Header() {
             {/* Language Selector */}
             <div className="relative">
               <button
-                className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
+                className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 cursor-pointer"
                 onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
               >
                 <Globe className="h-5 w-5" />
@@ -574,19 +574,19 @@ export default function Header() {
                   <div className="p-1">
                     <button
                       onClick={() => handleLanguageChange('en')}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center cursor-pointer"
                     >
                       English
                     </button>
                     <button
                       onClick={() => handleLanguageChange('fr')}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center cursor-pointer"
                     >
                       Français
                     </button>
                     <button
                       onClick={() => handleLanguageChange('ar')}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-center cursor-pointer"
                     >
                       العربية
                     </button>
@@ -598,7 +598,7 @@ export default function Header() {
             {/* User menu */}
             <div className="relative">
               <button
-                className="hidden sm:flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
+                className="hidden sm:flex items-center justify-center p-2 rounded-full hover:bg-gray-100 cursor-pointer"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 {user?.photo ? <div className="">
@@ -617,13 +617,13 @@ export default function Header() {
                   <div className="p-1">
                     {IDUser ? <Link
                       to="/controll/Profil"
-                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} cursor-pointer`}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       {t('header.profile')}
                     </Link> : <Link
                       to="/Login"
-                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} cursor-pointer`}
                       onClick={() => setUserMenuOpen(false)}
                     >
                       {t('header.login')}
@@ -633,7 +633,7 @@ export default function Header() {
 
                     {IDUser ? (
                       <button
-                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} cursor-pointer`}
                         onClick={() => {
                           setUserMenuOpen(false);
                           const langValue = localStorage.getItem('lang');
@@ -648,7 +648,7 @@ export default function Header() {
                     ) : (
                       <Link
                         to="/register"
-                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} `}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 w-full ${lang === 'ar' ? 'text-right' : 'text-left'} cursor-pointer`}
                       >
                         {t('header.signup')}
                       </Link>
@@ -661,7 +661,7 @@ export default function Header() {
             {/* Favorites button */}
             <div className="relative">
               <button
-                className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                 onClick={() => setFavoritesOpen(!favoritesOpen)}
               >
                 <Heart className="h-5 w-5" />
@@ -694,7 +694,7 @@ export default function Header() {
                                 </div>
                                 <Link
                                   to="/login"
-                                  className="block bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
+                                  className="block bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center cursor-pointer"
                                   onClick={() => setFavoritesOpen(false)}
                                 >
                                   {t('header.login')}
@@ -709,7 +709,7 @@ export default function Header() {
                             </div>
                             <h3 className="font-medium text-lg mb-2">{t('header.emptyFavorites')}</h3>
                             <p className="text-gray-500 mb-6">{t('header.emptyFavoritesDesc')}</p>
-                            <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
+                            <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md cursor-pointer">
                               <p onClick={() => setFavoritesOpen(false)} >{t('header.continueShopping')}</p>
                             </button>
                           </div>
@@ -722,7 +722,7 @@ export default function Header() {
                                   <div key={favorite.id} className="flex gap-4">
                                     <Link 
                                       to={`/view/products/${product?.documentId}`}
-                                      className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white"
+                                      className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white cursor-pointer"
                                       onClick={() => setFavoritesOpen(false)}
                                     >
                                       <img
@@ -735,13 +735,13 @@ export default function Header() {
                                       <div className="flex justify-between">
                                         <Link 
                                           to={`/view/products/${product?.documentId}`} 
-                                          className="font-medium text-sm line-clamp-1 hover:text-purple-700"
+                                          className="font-medium text-sm line-clamp-1 hover:text-purple-700 cursor-pointer"
                                           onClick={() => setFavoritesOpen(false)}
                                         >
                                           {product?.name}
                                         </Link>
                                         <button
-                                          className="text-gray-400 hover:text-red-500"
+                                          className="text-gray-400 hover:text-red-500 cursor-pointer"
                                           onClick={() => handleRemoveFromFavorites(favorite.documentId)}
                                         >
                                           <X className="h-4 w-4" />
@@ -767,7 +767,7 @@ export default function Header() {
             {/* Cart button */}
             <div className="relative">
               <button
-                className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="relative p-2 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                 onClick={() => setCartOpen(!cartOpen)}
               >
                 <ShoppingCart className="h-5 w-5" />
@@ -800,7 +800,7 @@ export default function Header() {
                                 </div>
                                 <Link
                                   to="/login"
-                                  className="block  bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
+                                  className="block  bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center cursor-pointer"
                                   onClick={() => setMobileMenuOpen(false)}
                                 >
                                   {t('header.login')}
@@ -816,7 +816,7 @@ export default function Header() {
                             </div>
                             <h3 className="font-medium text-lg mb-2">{t('header.emptyCart')}</h3>
                             <p className="text-gray-500 mb-6">{t('header.emptyCartDesc')}</p>
-                            <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md">
+                            <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md cursor-pointer">
                               <p  onClick={() => setCartOpen(false)}>{t('header.continueShopping')}</p>
                             </button>
                           </div>
@@ -828,7 +828,7 @@ export default function Header() {
                                   const product = item?.product;
                                   return (
                                     <div key={item.id} className="flex gap-4">
-                                      <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white">
+                                      <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0 border bg-white cursor-pointer">
                                         <img
                                           src={product?.imgMain?.url ? `${product.imgMain.url}` : "/placeholder.svg"}
                                           alt={product?.name}
@@ -839,7 +839,7 @@ export default function Header() {
                                         <div className="flex justify-between">
                                           <h4 className="font-medium text-sm line-clamp-1">{product?.name}</h4>
                                           <button
-                                            className="text-gray-400 hover:text-red-500"
+                                            className="text-gray-400 hover:text-red-500 cursor-pointer"
                                             onClick={() => handleRemoveFromCart(item.documentId)}
                                           >
                                             <X className="h-4 w-4" />
@@ -848,14 +848,14 @@ export default function Header() {
                                         <div className="mt-2 flex items-center justify-between">
                                           <div className="flex items-center border rounded-md">
                                             <button
-                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100"
+                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100 cursor-pointer"
                                               onClick={() => handleUpdateQuantity(item.documentId, item.qte - 1)}
                                             >
                                               <Minus className="h-3 w-3" />
                                             </button>
                                             <span className="px-2 text-sm">{item.qte}</span>
                                             <button
-                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100"
+                                              className="p-1 px-2 text-gray-600 hover:bg-gray-100 cursor-pointer"
                                               onClick={() => handleUpdateQuantity(item.documentId, item.qte + 1)}
                                             >
                                               <Plus className="h-3 w-3" />
@@ -891,7 +891,7 @@ export default function Header() {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 pt-2">
-                                  <button className="border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md">
+                                  <button className="border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md cursor-pointer">
                                     <Link to="/categories/electronics" className="w-full">
                                       {t('header.continue')}
                                     </Link>
@@ -899,7 +899,7 @@ export default function Header() {
                                   <button 
                                     onClick={handleCheckout}
                                     disabled={isProcessingPayment}
-                                    className={`bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md ${
+                                    className={`bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md cursor-pointer ${
                                       isProcessingPayment ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
@@ -921,13 +921,13 @@ export default function Header() {
 
         {/* Navigation - desktop only */}
         <nav className="hidden lg:flex items-center gap-6 mt-4">
-          <Link to={`/view/${id}`} className="text-sm font-medium hover:text-purple-700 transition-colors">
+          <Link to={`/view/${id}`} className="text-sm font-medium hover:text-purple-700 transition-colors cursor-pointer">
             {t('header.home')}
           </Link>
 
           <div className="relative">
             <button
-              className="flex items-center gap-1 text-sm font-medium hover:text-purple-700 transition-colors"
+              className="flex items-center gap-1 text-sm font-medium hover:text-purple-700 transition-colors cursor-pointer"
               onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
             >
               {t('header.categories')} <ChevronDown className="h-4 w-4" />
@@ -940,7 +940,7 @@ export default function Header() {
                     <Link
                       key={category.id}
                       to={`/view/categories/${category.documentId}`}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left cursor-pointer"
                       onClick={() => setCategoryMenuOpen(false)}
                     >
                       {category.name}
@@ -953,7 +953,7 @@ export default function Header() {
 
          
 
-          <Link to="/view/contact" className="text-sm font-medium hover:text-purple-700 transition-colors">
+          <Link to="/view/contact" className="text-sm font-medium hover:text-purple-700 transition-colors cursor-pointer">
             {t('header.contact')}
           </Link>
         </nav>
@@ -991,7 +991,7 @@ export default function Header() {
                   <nav className="space-y-1 px-3">
                     <Link
                       to={`/view/${id}`}
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md cursor-pointer"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('header.home')}
@@ -999,7 +999,7 @@ export default function Header() {
 
                     <div className="py-2">
                       <button
-                        className="flex w-full items-center justify-between px-3 py-2 hover:bg-gray-100 rounded-md"
+                        className="flex w-full items-center justify-between px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer"
                         onClick={() => {
                           const el = document.getElementById("mobile-categories")
                           if (el) {
@@ -1015,6 +1015,7 @@ export default function Header() {
                           <Link
                             key={category.id}
                             to={`/view/categories/${category.documentId}`}
+                            className="cursor-pointer"
                           >
                             {category.name}
                           </Link>
@@ -1037,7 +1038,7 @@ export default function Header() {
               <h2 className="text-xl font-semibold">{t('checkout.title')}</h2>
               <button
                 onClick={handlePaymentCancel}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-6 w-6" />
               </button>

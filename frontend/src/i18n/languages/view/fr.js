@@ -45,6 +45,13 @@ export default {
     shareSuccess: "Lien Produit copie  avec succès!",
     shareError: "Erreur lors du partage du produit",
     loading: "Chargement...",
+    loginToFavorite: "Veuillez vous connecter pour ajouter le produit aux favoris",
+    favoriteError: "Erreur lors de l'ajout du produit aux favoris",
+    loginRequired: "Veuillez vous connecter pour ajouter au panier",
+    stockExceeded: "Désolé, il ne reste que {{count}} unités en stock",
+    cartUpdateError: "Erreur lors de la mise à jour du panier",
+    loginToReview: "Veuillez vous connecter pour écrire un avis",
+   
     error: {
       loginRequired: "Veuillez vous connecter pour ajouter au panier",
       stockExceeded: "Désolé, il ne reste que {{count}} unités en stock",
@@ -69,7 +76,11 @@ export default {
     updateError: "Erreur lors de la mise à jour de l'avis",
     reviewUpdateSuccess: "Avis mis à jour avec succès!",
     reviewUpdateError: "Erreur lors de la mise à jour de l'avis",
-    
+    id: "ID",
+    dimensions: "Dimensions",
+    selectRating: "Veuillez sélectionner une note",
+    productNotFound: "Produit non trouvé",
+    lowStock: "Stock Faible",
   },
   category: {
     filters: "Filtres",

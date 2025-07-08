@@ -158,7 +158,7 @@ export default function HomeView() {
                     <p className="text-lg md:text-xl mb-8 opacity-90">
                       {slide.subtitle}
                     </p>
-                    <Link className="group bg-white text-gray-900 w-45 hover:bg-gray-100 py-3 px-6 rounded-md flex items-center font-medium">
+                    <Link className="group bg-white text-gray-900 w-45 hover:bg-gray-100 py-3 px-6 rounded-md flex items-center font-medium cursor-pointer">
                       <ShoppingCart className={` h-5 w-5 ${lang ==='ar' ? 'ml-2':'mr-2'  } `} />
                       {t('view.home.shopNow')}
                       {lang === 'ar' ? <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" /> :<ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /> }
@@ -171,14 +171,14 @@ export default function HomeView() {
           ))}
           
           {/* Custom Navigation Buttons */}
-          <div className="swiper-button-prev !w-10 !h-10 !bg-transparent !text-white/60 hover:!text-white !left-4 transition-all duration-300 after:!content-none">
+          <div className="swiper-button-prev !w-10 !h-10 !bg-transparent !text-white/60 hover:!text-white !left-4 transition-all duration-300 after:!content-none cursor-pointer">
             <div className="w-full h-full flex items-center justify-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </div>
           </div>
-          <div className="swiper-button-next !w-10 !h-10 !bg-transparent !text-white/60 hover:!text-white !right-4 transition-all duration-300 after:!content-none">
+          <div className="swiper-button-next !w-10 !h-10 !bg-transparent !text-white/60 hover:!text-white !right-4 transition-all duration-300 after:!content-none cursor-pointer">
             <div className="w-full h-full flex items-center justify-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -193,7 +193,7 @@ export default function HomeView() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="flex items-start space-x-4">
+              <div key={index} className="flex items-start space-x-4 cursor-pointer">
                 <div className="bg-purple-100 p-3 rounded-lg text-purple-700">{feature.icon}</div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">{feature.title}</h3>
@@ -220,7 +220,7 @@ export default function HomeView() {
               <Link
                 to={`/view/categories/${category.documentId}`}
                 key={category.id}
-                className="group"
+                className="group cursor-pointer"
               >
                 <div className="relative overflow-hidden rounded-2xl shadow-sm transition-all duration-300 group-hover:shadow-md">
                   <div className="aspect-[4/3] relative">
@@ -237,7 +237,7 @@ export default function HomeView() {
                       <p className="text-white/80 text-sm">
                         {products.filter(p => p.category?.id === category.id).length} {t('view.home.products')}
                       </p>
-                      <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
+                      <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full cursor-pointer">
                         {t('view.home.explore')}
                       </span>
                     </div>
@@ -261,7 +261,7 @@ export default function HomeView() {
               <button
                 onClick={() => setActiveTab("all")}
                 className={`px-4 py-2 text-sm rounded-md ${
-                  activeTab === "all" ? "bg-[#6D28D9] text-white font-medium" : "text-gray-600 hover:text-gray-900"
+                  activeTab === "all" ? "bg-[#6D28D9] text-white font-medium cursor-pointer" : "text-gray-600 hover:text-gray-900 cursor-pointer"
                 }`}
               >
                 {t('view.home.all')}
@@ -271,7 +271,7 @@ export default function HomeView() {
                   key={category.id}
                   onClick={() => setActiveTab(category.id.toString())}
                   className={`px-4 py-2 text-sm rounded-md ${
-                    activeTab === category.id.toString() ? "bg-[#6D28D9] text-white font-medium" : "text-gray-600 hover:text-gray-900"
+                    activeTab === category.id.toString() ? "bg-[#6D28D9] text-white font-medium cursor-pointer" : "text-gray-600 hover:text-gray-900 cursor-pointer"
                   }`}
                 >
                   {category.name}
@@ -282,7 +282,7 @@ export default function HomeView() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="group overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-lg">
+              <div key={product.id} className="group overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-lg cursor-pointer">
                 <Link to={`/view/products/${product.documentId}`} className="block">
                   <div className="relative">
                     <div className="aspect-square overflow-hidden">
@@ -293,7 +293,7 @@ export default function HomeView() {
                       />
                     </div>
                     {product.stock <= 10 && (
-                      <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1 rounded-full backdrop-blur-sm">
+                      <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1 rounded-full backdrop-blur-sm cursor-pointer">
                         {product.stock <= 5 ? t('view.home.onlyLeft', { count: product.stock }) : t('view.home.lowStock')}
                       </div>
                     )}
@@ -302,7 +302,7 @@ export default function HomeView() {
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium line-clamp-1">{product.name}</h3>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full cursor-pointer">
                       {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t('view.category.uncategorized')}
                     </span>
                   </div>
@@ -314,7 +314,7 @@ export default function HomeView() {
                         <span className="text-sm text-gray-500 line-through">${product.comparePrice}</span>
                       )}
                     </div>
-                    <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md">
+                    <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md cursor-pointer">
                       <ShoppingCart className="h-3.5 w-3.5" />
                     </button>
                   </div>

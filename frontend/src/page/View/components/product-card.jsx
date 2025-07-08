@@ -54,10 +54,10 @@ export default function ProductCard({ product, layout = "grid" }) {
             </div>
 
             <div className="flex gap-2">
-              <button className="rounded-full h-9 w-9 flex items-center justify-center border border-gray-300 hover:bg-gray-50">
+              <button className="rounded-full h-9 w-9 flex items-center justify-center border border-gray-300 hover:bg-gray-50 cursor-pointer">
                 <Heart className="h-4 w-4" />
               </button>
-              <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md flex items-center">
+              <button className="bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md flex items-center cursor-pointer">
                 <ShoppingCart className="h-4 w-4 mr-2" /> Ajouter
               </button>
             </div>
@@ -88,12 +88,12 @@ export default function ProductCard({ product, layout = "grid" }) {
             </span>
           )}
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button className="rounded-full h-9 w-9 flex items-center justify-center bg-white/80 backdrop-blur-sm hover:bg-white">
+            <button className="rounded-full h-9 w-9 flex items-center justify-center bg-white/80 backdrop-blur-sm hover:bg-white cursor-pointer">
               <Heart className="h-4 w-4 text-gray-700" />
             </button>
           </div>
           {product?.stock <= 10 && (
-            <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1 rounded-full backdrop-blur-sm">
+            <div className="absolute bottom-3 left-3 right-3 bg-black/70 text-white text-xs text-center py-1 rounded-full backdrop-blur-sm cursor-pointer">
               {product?.stock <= 5 ? "Plus que " + product?.stock + " en stock!" : "Stock limité"}
             </div>
           )}
@@ -122,7 +122,7 @@ export default function ProductCard({ product, layout = "grid" }) {
             <span className="text-lg font-bold text-purple-700">${product?.price}</span>
             {product?.oldPrice && <span className="text-sm text-gray-500 line-through">${product?.oldPrice}</span>}
           </div>
-          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md">
+          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-md cursor-pointer">
             <ShoppingCart className="h-3.5 w-3.5" />
           </button>
         </div>

@@ -24,11 +24,11 @@ export function MobileMenu() {
 
   return (
     <div className="lg:hidden flex items-center gap-2">
-      <button className="p-2 rounded-md hover:bg-gray-100" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+      <button className="p-2 rounded-md hover:bg-gray-100 cursor-pointer" onClick={() => setIsSearchOpen(!isSearchOpen)}>
         {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
       </button>
 
-      <button className="p-2 rounded-md hover:bg-gray-100" onClick={() => setIsMenuOpen(true)}>
+      <button className="p-2 rounded-md hover:bg-gray-100 cursor-pointer" onClick={() => setIsMenuOpen(true)}>
         <Menu className="h-5 w-5" />
       </button>
 
@@ -40,7 +40,7 @@ export function MobileMenu() {
               <div className="h-full flex flex-col bg-white shadow-xl">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h2 className="font-semibold">{t('view.header.menu')}</h2>
-                  <button onClick={() => setIsMenuOpen(false)}>
+                  <button onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -49,7 +49,7 @@ export function MobileMenu() {
                   <nav className="space-y-1 px-3">
                     <Link
                       to="/"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       mala
@@ -57,7 +57,7 @@ export function MobileMenu() {
 
                     <div className="py-2">
                       <button
-                        className="flex w-full items-center justify-between px-3 py-2 hover:bg-gray-100 rounded-md"
+                        className="flex w-full items-center justify-between px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer"
                         onClick={() => {
                           const el = document.getElementById("mobile-categories")
                           if (el) {
@@ -76,7 +76,7 @@ export function MobileMenu() {
 
                     <Link
                       to="/new-arrivals"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t('view.header.newArrivals')}
@@ -84,7 +84,7 @@ export function MobileMenu() {
 
                     <Link
                       to="/about"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t('view.header.about')}
@@ -92,7 +92,7 @@ export function MobileMenu() {
 
                     <Link
                       to="/contact"
-                      className="block py-2 px-3 hover:bg-gray-100 rounded-md"
+                      className="block py-2 px-3 hover:bg-gray-100 rounded-md cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t('view.header.contact')}
@@ -103,14 +103,14 @@ export function MobileMenu() {
                     <div className="space-y-3">
                       <Link
                         to="/account/login"
-                        className="block w-full bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center"
+                        className="block w-full bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-md text-center cursor-pointer"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {t('view.header.login')}
                       </Link>
                       <Link
                         to="/account/register"
-                        className="block w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-center"
+                        className="block w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded-md text-center cursor-pointer"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {t('view.header.signup')}
@@ -127,7 +127,7 @@ export function MobileMenu() {
       {isSearchOpen && (
         <div className="absolute top-16 left-0 right-0 bg-white p-4 border-b shadow-sm z-50">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer" />
             <input
               type="text"
               placeholder={t('view.header.searchPlaceholder')}

@@ -517,7 +517,7 @@ export default function Stores() {
                   </div>
                   <button
                     onClick={() => openRatingModal(store)}
-                    className="flex items-center gap-1 text-purple-600 hover:text-purple-800"
+                    className="flex items-center gap-1 text-purple-600 hover:text-purple-800 cursor-pointer"
                   >
                     <MessageSquare className="h-4 w-4" />
                     <span className="text-sm">{t('stores.rateStore')}</span>
@@ -550,7 +550,7 @@ export default function Stores() {
                     
                     navigate(`/view/${store.documentId}`)
                    }}
-                    className="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition-colors"
+                    className="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition-colors cursor-pointer"
                   >
                     {t('stores.visitStore')}
                     {lang === 'ar' ? <ArrowLeft className="mr-1 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> :  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" /> }

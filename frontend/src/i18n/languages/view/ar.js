@@ -45,7 +45,18 @@ export default {
     shareSuccess: "تمت نسخ رابط مشاركة المنتج بنجاح!",
     shareError: "خطأ في مشاركة المنتج",
     loading: "جاري التحميل...",
-
+    id: "المعرف",
+    dimensions: "الأبعاد",
+    selectRating: "الرجاء اختيار تقييم",
+    productNotFound: "المنتج غير موجود",
+    lowStock: "المخزون منخفض",
+    loginToFavorite : "يرجى تسجيل الدخول لإضافة المنتج إلى المفضلة",
+    favoriteError: "خطأ في إضافة المنتج إلى المفضلة",
+    loginRequired: "يرجى تسجيل الدخول لإضافة إلى السلة",
+    favoriteSuccess: "تمت إضافة المنتج إلى المفضلة بنجاح!",
+    favoriteRemoveSuccess: "تمت إزالة المنتج من المفضلة بنجاح!",
+    loginToReview: "يرجى تسجيل الدخول لكتابة مراجعة",
+    
     error: {
       loginRequired: "يرجى تسجيل الدخول لإضافة إلى السلة",
       stockExceeded: "عذراً، متبقي {{count}} وحدة فقط في المخزون",

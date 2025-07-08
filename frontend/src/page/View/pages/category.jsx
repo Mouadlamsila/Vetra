@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom"
 import { ChevronRight, Heart, ShoppingCart, Star, Filter, X } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from "react-i18next"
+import Swal from 'sweetalert2'
 
 export default function CategoryPage() {
   const { t } = useTranslation()
@@ -127,7 +128,7 @@ export default function CategoryPage() {
               </p>
             </div>
             <button
-              className="md:hidden bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-purple-800 transition-colors"
+              className="md:hidden bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-purple-800 transition-colors cursor-pointer"
               onClick={() => setMobileFilterOpen(true)}
             >
               <Filter className="h-4 w-4" />
@@ -278,7 +279,7 @@ export default function CategoryPage() {
                   {selectedRating > 0 && (
                     <button
                       onClick={() => setSelectedRating(0)}
-                      className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
+                      className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2 cursor-pointer"
                     >
                       {t("view.category.reset")}
                     </button>
@@ -293,7 +294,7 @@ export default function CategoryPage() {
                   setInStockOnly(false)
                   setSelectedRating(0)
                 }}
-                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-300"
+                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-300 cursor-pointer"
               >
                 {t("view.category.resetAll")}
               </button>
@@ -313,7 +314,7 @@ export default function CategoryPage() {
                   <h2 className="font-bold text-lg text-gray-900">{t("view.category.filters")}</h2>
                   <button
                     onClick={() => setMobileFilterOpen(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -453,7 +454,7 @@ export default function CategoryPage() {
                     {selectedRating > 0 && (
                       <button
                         onClick={() => setSelectedRating(0)}
-                        className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2"
+                        className="text-sm text-purple-700 hover:text-purple-800 hover:underline transition-colors mt-2 cursor-pointer"
                       >
                         {t("view.category.reset")}
                       </button>
@@ -465,7 +466,7 @@ export default function CategoryPage() {
                 <div className="flex gap-2 sticky bottom-0 bg-white pt-4 pb-2">
                   <button
                     onClick={() => setMobileFilterOpen(false)}
-                    className="flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                    className="flex-1 bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer"
                   >
                     {t("view.category.apply")}
                   </button>
@@ -475,7 +476,7 @@ export default function CategoryPage() {
                       setInStockOnly(false)
                       setSelectedRating(0)
                     }}
-                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-300"
+                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-300 cursor-pointer"
                   >
                     {t("view.category.reset")}
                   </button>
@@ -504,7 +505,7 @@ export default function CategoryPage() {
                     setInStockOnly(false)
                     setSelectedRating(0)
                   }}
-                  className="text-purple-700 hover:text-purple-800 font-medium hover:underline transition-colors"
+                  className="text-purple-700 hover:text-purple-800 font-medium hover:underline transition-colors cursor-pointer"
                 >
                   {t("view.category.resetFilters")}
                 </button>
@@ -520,6 +521,55 @@ export default function CategoryPage() {
 function ProductCard({ product }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const userId = localStorage.getItem("IDUser")
+      if (!userId || !product) return
+      try {
+        const response = await axios.get(
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
+        )
+        setIsFavorite(response.data.data.length > 0)
+      } catch (error) {
+        // ignore
+      }
+    }
+    checkFavorite()
+  }, [product])
+
+  const handleFavorite = async (e) => {
+    e.preventDefault()
+    const userId = localStorage.getItem("IDUser")
+    if (!userId) {
+      Swal.fire({ icon: 'warning', title: t("view.productDetails.loginToFavorite") })
+      return
+    }
+    try {
+      if (isFavorite) {
+        const response = await axios.get(
+          `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
+        )
+        if (response.data.data.length > 0) {
+          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
+          Swal.fire({ icon: 'success', title: t("view.productDetails.removedFromFavorites") })
+          setIsFavorite(false)
+        }
+      } else {
+        await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products", {
+          data: {
+            user: Number.parseInt(userId),
+            product: product.id,
+          },
+        })
+        Swal.fire({ icon: 'success', title: t("view.productDetails.addedToFavorites") })
+        setIsFavorite(true)
+      }
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: t("view.productDetails.favoriteError") })
+    }
+  }
 
   const averageRating = useMemo(() => {
     if (!product.rating_products || product.rating_products.length === 0) return 0
@@ -552,8 +602,8 @@ function ProductCard({ product }) {
           <div
             className={`absolute top-3 right-3 transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}
           >
-            <button className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-purple-700 hover:text-white transition-colors">
-              <Heart className="h-4 w-4" />
+            <button onClick={handleFavorite} className={`w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-purple-700 hover:text-white transition-colors cursor-pointer ${isFavorite ? 'text-red-500' : ''}`}>
+              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
           </div>
         </div>
@@ -587,7 +637,7 @@ function ProductCard({ product }) {
               <span className="text-sm text-gray-500 line-through">${product.comparePrice}</span>
             )}
           </div>
-          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-lg transition-colors shadow-sm">
+          <button className="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-lg transition-colors shadow-sm cursor-pointer">
             <ShoppingCart className="h-3.5 w-3.5" />
           </button>
         </div>
