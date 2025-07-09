@@ -46,15 +46,15 @@ export default function HomeView() {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
+        const boutiqueResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutique(boutiqueResponse.data.data)
 
         // Fetch products data
-        const productsResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${boutiqueResponse.data.data.documentId}&populate=*`)
+        const productsResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${boutiqueResponse.data.data.documentId}&populate=*`)
         setProducts(productsResponse.data.data)
 
         // Fetch categories data
-        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*')
+        const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories?populate=*')
         setCategories(categoriesResponse.data.data)
         
         setLoading(false)

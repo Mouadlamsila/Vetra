@@ -104,7 +104,7 @@ export default function AddStorePage() {
       }
 
       console.log("Récupération des informations utilisateur...")
-      const userResponse = await axios.get("https://stylish-basket-710b77de8f.strapiapp.com/api/users/me", {
+      const userResponse = await axios.get("https://useful-champion-e28be6d32c.strapiapp.com/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -131,7 +131,7 @@ export default function AddStorePage() {
 
       const response = await axios({
         method: "POST",
-        url: "https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques",
+        url: "https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -152,7 +152,7 @@ export default function AddStorePage() {
           logoFormData.append("field", "logo")
           logoFormData.append("files", logo)
 
-          const logoResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", logoFormData, {
+          const logoResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", logoFormData, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
@@ -169,7 +169,7 @@ export default function AddStorePage() {
           banniereFormData.append("field", "banniere")
           banniereFormData.append("files", banniere)
 
-          const banniereResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", banniereFormData, {
+          const banniereResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", banniereFormData, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",

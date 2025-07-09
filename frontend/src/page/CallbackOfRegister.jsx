@@ -39,7 +39,7 @@ export default function CallbackOfRegister() {
 
         // Check if user exists in Strapi
         const res = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/users?filters[email][$eq]=${userEmail}`
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/users?filters[email][$eq]=${userEmail}`
         );
         const userExists = res.data.data?.length > 0;
 
@@ -59,7 +59,7 @@ export default function CallbackOfRegister() {
             const uniqueUsername = `${baseUsername}_${Date.now()}_${Math.random().toString(36).slice(-5)}`;
             const securePassword = Math.random().toString(36).slice(-12) + '!A1a';
             const registerResponse = await axios.post(
-              'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+              'https://useful-champion-e28be6d32c.strapiapp.com/api/auth/local/register',
               {
                 username: uniqueUsername,
                 email: userEmail,

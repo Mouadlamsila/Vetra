@@ -58,7 +58,7 @@ export default function Header() {
     try {
       // Search stores
       const storesResponse = await axios.get(
-        `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
+        `https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
       );
 
       // First, try to find categories that match the search query
@@ -66,7 +66,7 @@ export default function Header() {
       try {
         // Get all categories first, then filter locally
         const categoriesResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/categories?populate=*`
         );
         const allCategories = categoriesResponse.data.data;
         const matchingCategories = allCategories.filter(cat => 
@@ -85,19 +85,19 @@ export default function Header() {
           // If we found matching categories, search for products in those categories
           const categoryFilters = matchingCategoryIds.map(id => `filters[category][id][$eq]=${id}`).join('&');
           productsResponse = await axios.get(
-            `https://stylish-basket-710b77de8f.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+            `https://useful-champion-e28be6d32c.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
           );
         } else {
           // Fallback to basic search
           productsResponse = await axios.get(
-            `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+            `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
           );
         }
       } catch (productError) {
         console.log('Product search failed, trying basic search:', productError);
         // Final fallback to basic search
         productsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
         );
       }
 
@@ -151,12 +151,12 @@ export default function Header() {
     const fetchData = async () => {
       try {
         // Fetch boutique data
-        const boutiqueResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
+        const boutiqueResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${idOwner}&populate=*`)
         setBoutiques(boutiqueResponse.data.data)
 
         // Fetch products with populated categories
         const productsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[boutique][documentId][$eq]=${id}&populate=*`
         )
 
         // Extract unique categories from products
@@ -185,7 +185,7 @@ export default function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=*`);
+        const res = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${IDUser}?populate=*`);
         setUser(res.data); // Assure-toi d'utiliser res.data, pas res
       } catch (error) {
         console.error("Erreur lors de la récupération de l'utilisateur :", error);
@@ -202,7 +202,7 @@ export default function Header() {
       if (!IDUser) return;
 
       try {
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/carts?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
         setCartItems(response.data.data);
         setCartLoading(false);
 
@@ -220,7 +220,7 @@ export default function Header() {
       if (!IDUser) return;
 
       try {
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${IDUser}&populate[product][populate]=*`);
         setFavorites(response.data.data);
         setFavoritesLoading(false);
       } catch (error) {
@@ -234,7 +234,7 @@ export default function Header() {
 
   const handleRemoveFromCart = async (cartItemId) => {
     try {
-      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts/${cartItemId}`);
+      await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/carts/${cartItemId}`);
       // Update cart items immediately
       setCartItems(prevItems => prevItems.filter(item => item.documentId !== cartItemId));
       toast.success("Produit retiré du panier", {
@@ -280,7 +280,7 @@ export default function Header() {
         return;
       }
 
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/carts/${cartItemId}`, {
+      await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/carts/${cartItemId}`, {
         data: {
           qte: newQuantity
         }
@@ -326,7 +326,7 @@ export default function Header() {
 
   const handleRemoveFromFavorites = async (favoriteId) => {
     try {
-      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${favoriteId}`);
+      await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products/${favoriteId}`);
       setFavorites(prevFavorites => prevFavorites.filter(item => item.documentId !== favoriteId));
       toast.success(t('header.removedFromFavorites'), {
         position: "top-right",
@@ -400,7 +400,7 @@ export default function Header() {
       };
 
       // Create the order
-      const orderResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/orders', orderData, {
+      const orderResponse = await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/orders', orderData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`

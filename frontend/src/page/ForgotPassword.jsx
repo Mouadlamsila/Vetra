@@ -35,7 +35,7 @@ export default function ForgotPassword() {
 
       // Send password reset request to Strapi
       const response = await axios.post(
-        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/forgot-password',
+        'https://useful-champion-e28be6d32c.strapiapp.com/api/auth/forgot-password',
         {
           email: email
         }

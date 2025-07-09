@@ -107,7 +107,7 @@ export default function SetupPassword() {
                 // Create new user
                 const username = userEmail.split('@')[0]
                 const registerResponse = await axios.post(
-                    'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                    'https://useful-champion-e28be6d32c.strapiapp.com/api/auth/local/register',
                     {
                         username,
                         email: userEmail,
@@ -126,7 +126,7 @@ export default function SetupPassword() {
 
             // Update user password
             const response = await axios.put(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
+                `https://useful-champion-e28be6d32c.strapiapp.com/api/users/${userId}`,
                 {
                     password: formData.password
                 },

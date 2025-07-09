@@ -62,7 +62,7 @@ export default function EditStore() {
     const fetchStoreData = async () => {
       try {
         setPageLoading(true)
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?populate=*`, {
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${id}?populate=*`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -148,7 +148,7 @@ console.log(formData)
     formData.append("files", file)
 
     try {
-      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
+      const uploadResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", formData, {
           headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -191,7 +191,7 @@ console.log(formData)
     formData.append("files", file)
 
     try {
-      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
+      const uploadResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", formData, {
           headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -250,7 +250,7 @@ console.log(formData)
 
       console.log("Submitting Store Data:", JSON.stringify(storeData, null, 2))
 
-      const response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}`, storeData, {
+      const response = await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${id}`, storeData, {
           headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

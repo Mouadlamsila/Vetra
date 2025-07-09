@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         const userId = localStorage.getItem("IDUser");
         if (!userId) return;
 
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate=*`);
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${userId}?populate=*`);
         setUserData(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <img src="/img/logo/logo.png" alt="logo" className="w-[80%] h-[80%] " />
         </div>
         <div className="flex   sm:hidden  items-center justify-start space-x-2">
-          <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="logo" className="w-[50%] h-[50%] " />
+          <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/v_98c7dd1d8e.png" alt="logo" className="w-[50%] h-[50%] " />
         </div>
       </Link>
         <button className="md:hidden text-white" onClick={onClose}>

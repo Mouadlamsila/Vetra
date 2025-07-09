@@ -130,7 +130,7 @@ export default function MobileNavigation() {
             >
               <div className={`p-1.5 rounded-full ${isActive ? "bg-[#c8c2fd]" : ""}`}>
                 {item.icon === "logo" ?
-                <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="logo" className="w-6 h-6" />
+                <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/v_98c7dd1d8e.png" alt="logo" className="w-6 h-6" />
                 : 
                 <item.icon size={20} />}
               </div>

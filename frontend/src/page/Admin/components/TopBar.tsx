@@ -53,7 +53,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=pending&populate=*');
+      const response = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=pending&populate=*');
       const pendingStores = response.data.data;
 
       const storeNotifications: Notification[] = pendingStores.map((store: any) => ({

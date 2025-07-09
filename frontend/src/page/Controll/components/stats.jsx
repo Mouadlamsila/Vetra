@@ -48,12 +48,12 @@ export default function StatsPage() {
         if (!userId) return
 
         // Fetch categories
-        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products')
+        const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories')
         const categories = categoriesResponse.data.data
 
         // Fetch products with categories for the logged-in user
         const productsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][owner][id][$eq]=${userId}&populate=category`
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[boutique][owner][id][$eq]=${userId}&populate=category`
         )
         const products = productsResponse.data.data
 
@@ -74,7 +74,7 @@ export default function StatsPage() {
 
         // Fetch orders for the selected period
         const ordersResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${userId}&populate=*`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/orders?filters[user][id][$eq]=${userId}&populate=*`,
         )
         const orders = ordersResponse.data.data
 

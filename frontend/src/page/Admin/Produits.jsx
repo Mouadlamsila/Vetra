@@ -25,11 +25,11 @@ export default function Products() {
     const fetchData = async () => {
       try {
         // Fetch categories
-        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products')
+        const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories')
         setCategories(categoriesResponse.data.data)
 
         // Fetch products
-        const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/products?populate=*')
+        const response = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/products?populate=*')
         setProducts(response.data.data)
         setIsLoading(false)
       } catch (err) {
@@ -58,7 +58,7 @@ export default function Products() {
     setIsSubmitting(true)
 
     try {
-      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${selectedProduct.documentId}`)
+      await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/products/${selectedProduct.documentId}`)
       
       // Update local state
       const updatedProducts = products.filter((p) => p.id !== selectedProduct.id)

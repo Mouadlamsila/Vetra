@@ -26,17 +26,17 @@ export default function CategoryPage() {
     const fetchData = async () => {
       try {
         // First fetch the category to get its name
-        const categoryResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products/${category}`)
+        const categoryResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/categories/${category}`)
         setCategoryName(categoryResponse.data.data.name)
 
         // Fetch products with ratings
         const productsWithRatingsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate[rating_products][populate]=user`,
         )
 
         // Fetch products with all other relations
         const productsWithRelationsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[category][documentId][$eq]=${category}&filters[boutique][documentId][$eq]=${id}&populate=*`,
         )
 
         // Merge the results
@@ -529,7 +529,7 @@ function ProductCard({ product }) {
       if (!userId || !product) return
       try {
         const response = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
         )
         setIsFavorite(response.data.data.length > 0)
       } catch (error) {
@@ -549,15 +549,15 @@ function ProductCard({ product }) {
     try {
       if (isFavorite) {
         const response = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products?filters[user][id][$eq]=${userId}&filters[product][id][$eq]=${product.id}`,
         )
         if (response.data.data.length > 0) {
-          await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
+          await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products/${response.data.data[0].documentId}`)
           Swal.fire({ icon: 'success', title: t("view.productDetails.removedFromFavorites") })
           setIsFavorite(false)
         }
       } else {
-        await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/favorite-products", {
+        await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/favorite-products", {
           data: {
             user: Number.parseInt(userId),
             product: product.id,

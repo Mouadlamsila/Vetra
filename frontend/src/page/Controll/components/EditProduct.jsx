@@ -82,7 +82,7 @@ export default function EditProduct() {
         }
 
         // Fetch categories
-        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
+        const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +90,7 @@ export default function EditProduct() {
         setCategories(categoriesResponse.data.data)
 
         // Fetch stores
-        const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
+        const storesResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -98,7 +98,7 @@ export default function EditProduct() {
         setStores(storesResponse.data.boutiques || [])
 
         // Fetch product data
-        const productResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${id}?populate=*`, {
+        const productResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/products/${id}?populate=*`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -205,7 +205,7 @@ export default function EditProduct() {
         setAdditionalImageLoading(true)
       }
 
-      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
+      const uploadResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -316,7 +316,7 @@ export default function EditProduct() {
         },
       }
 
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${id}`, productData, {
+      await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/products/${id}`, productData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

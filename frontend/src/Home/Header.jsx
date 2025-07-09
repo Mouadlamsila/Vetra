@@ -105,7 +105,7 @@ export default function Header() {
         try {
             // Search stores
             const storesResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
+                `https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&filters[$or][2][category][$containsi]=${searchQuery}&populate=*`
             );
 
             // First, try to find categories that match the search query
@@ -113,7 +113,7 @@ export default function Header() {
             try {
                 // Get all categories first, then filter locally
                 const categoriesResponse = await axios.get(
-                    `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+                    `https://useful-champion-e28be6d32c.strapiapp.com/api/categories?populate=*`
                 );
                 const allCategories = categoriesResponse.data.data;
                 const matchingCategories = allCategories.filter(cat => 
@@ -132,19 +132,19 @@ export default function Header() {
                     // If we found matching categories, search for products in those categories
                     const categoryFilters = matchingCategoryIds.map(id => `filters[category][id][$eq]=${id}`).join('&');
                     productsResponse = await axios.get(
-                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                        `https://useful-champion-e28be6d32c.strapiapp.com/api/products?${categoryFilters}&filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
                     );
                 } else {
                     // Fallback to basic search
                     productsResponse = await axios.get(
-                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                        `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
                     );
                 }
             } catch (productError) {
                 console.log('Product search failed, trying basic search:', productError);
                 // Final fallback to basic search
                 productsResponse = await axios.get(
-                    `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
+                    `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${searchQuery}&filters[$or][1][description][$containsi]=${searchQuery}&populate=*`
                 );
             }
 
@@ -226,20 +226,20 @@ export default function Header() {
             <div className={`flex ${menu ? "flex justify-between w-full" : ""}  items-center w-full gap-16`}>
                 {location.pathname === '/' ? (
                     <ScrollLink to="home" spy={true} smooth={true} offset={-100} className="sm:block hidden">
-                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/logo_2d36844e55.png" alt="" className="h-12 sm:block hidden" />
+                        <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/logo_82b964b857.png" alt="" className="h-12 sm:block hidden" />
                     </ScrollLink>
                 ) : (
                     <LinkDom to="/" className="sm:block hidden">
-                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/logo_2d36844e55.png" alt="" className="h-12 sm:block hidden" />
+                        <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/logo_82b964b857.png" alt="" className="h-12 sm:block hidden" />
                     </LinkDom>
                 )}
                 {location.pathname === '/' ? (
                     <ScrollLink to="home2" spy={true} smooth={true} offset={-100} className="block sm:hidden" onClick={() => setMenu(false)}>
-                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="" className="h-12 block sm:hidden" />
+                        <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/v_98c7dd1d8e.png" alt="" className="h-12 block sm:hidden" />
                     </ScrollLink>
                 ) : (
                     <LinkDom to="/" className="block sm:hidden" onClick={() => setMenu(false)}>
-                        <img src="https://stylish-basket-710b77de8f.media.strapiapp.com/v_90885fa956.png" alt="" className="h-12 block sm:hidden" />
+                        <img src="https://useful-champion-e28be6d32c.media.strapiapp.com/v_98c7dd1d8e.png" alt="" className="h-12 block sm:hidden" />
                     </LinkDom>
                 )}
                 <X className={`${menu ? "" : "hidden"}  sm:hidden bg-[#c8c2fd] p-2 h-[80%] text-[#6D28D9] w-10 rounded-xl  cursor-pointer transition-all transform hover:scale-110 hover:shadow-lg`} onClick={() => setMenu(!menu)} />

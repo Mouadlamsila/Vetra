@@ -41,7 +41,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${id}?populate=*`)
         const userData = response.data
         setUser(userData)
         setFormData({
@@ -124,7 +124,7 @@ export default function Profile() {
 
       // Only send the fields that are present
       if (Object.keys(userUpdateData).length > 0) {
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, userUpdateData)
+        await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${id}`, userUpdateData)
       }
 
       // 2. Handle address update or creation only if at least one address field is filled
@@ -132,7 +132,7 @@ export default function Profile() {
       if (hasAddressFields) {
         if (user.adress && user.adress.documentId) {
           // Update existing address
-          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.adress.documentId}`, {
+          await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/adresses/${user.adress.documentId}`, {
             data: {
               addressLine1: formData.addressLine1,
               addressLine2: formData.addressLine2,
@@ -143,7 +143,7 @@ export default function Profile() {
           })
         } else {
           // Create new address and associate with user
-          await axios.post(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses`, {
+          await axios.post(`https://useful-champion-e28be6d32c.strapiapp.com/api/adresses`, {
             data: {
               addressLine1: formData.addressLine1,
               addressLine2: formData.addressLine2,
@@ -160,16 +160,16 @@ export default function Profile() {
       if (selectedFile) {
         const formDataImg = new FormData()
         formDataImg.append("files", selectedFile)
-        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formDataImg)
+        const uploadResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", formDataImg)
         if (uploadResponse.data[0]) {
-          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+          await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${id}`, {
             photo: uploadResponse.data[0].id
           })
         }
       }
 
       // 4. Refresh user data
-      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
+      const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${id}?populate=*`)
       setUser(response.data)
       setEditMode(false)
       showSuccessMessage(t('profileAdmin.messages.updateSuccess'))
@@ -207,7 +207,7 @@ export default function Profile() {
     }
 
     try {
-      const verifyResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local", {
+      const verifyResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/auth/local", {
         identifier: user.email,
         password: passwordData.currentPassword,
       })
@@ -218,7 +218,7 @@ export default function Profile() {
         return
       }
 
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+      await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${id}`, {
         password: passwordData.newPassword,
       })
 

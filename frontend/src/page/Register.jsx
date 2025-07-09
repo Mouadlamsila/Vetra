@@ -72,7 +72,7 @@ export default function Register() {
             setIsLoading(true);
             localStorage.setItem('auth_intent', 'register');
             // Redirect to Google auth with register callback
-            const redirectUrl = `https://stylish-basket-710b77de8f.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
+            const redirectUrl = `https://useful-champion-e28be6d32c.strapiapp.com/api/connect/google?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}`;
             window.location.href = redirectUrl;
         } catch (error) {
             setError(t('googleRegisterError'));
@@ -108,7 +108,7 @@ export default function Register() {
             });
 
             // Register the user
-            const registerResponse = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register', {
+            const registerResponse = await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/auth/local/register', {
                 username: formData.username,
                 email: formData.email,
                 password: formData.password

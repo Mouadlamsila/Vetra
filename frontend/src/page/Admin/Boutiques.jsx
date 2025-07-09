@@ -25,8 +25,8 @@ export default function Stores() {
     const fetchData = async () => {
       try {
         const [storesResponse, usersResponse] = await Promise.all([
-          axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?populate=*'),
-          axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users?populate=*')
+          axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?populate=*'),
+          axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*')
         ])
         setStores(storesResponse.data.data)
         setUsers(usersResponse.data)
@@ -82,14 +82,14 @@ export default function Stores() {
     try {
       if (confirmAction === "delete") {
         // Delete the store from the API
-        await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${selectedStore.documentId}`)
+        await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${selectedStore.documentId}`)
         
         // Update local state by removing the deleted store
         const updatedStores = stores.filter(store => store.id !== selectedStore.id)
         setStores(updatedStores)
       } else {
         // Update store status in the API
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${selectedStore.documentId}`, {
+        await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${selectedStore.documentId}`, {
           data: {
             statusBoutique: confirmAction === "approve" || confirmAction === "enable" ? "active" : "suspended"
           }

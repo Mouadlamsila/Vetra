@@ -95,7 +95,7 @@ export default function ResetPassword() {
 
       // Send password reset request to Strapi
       const response = await axios.post(
-        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/reset-password',
+        'https://useful-champion-e28be6d32c.strapiapp.com/api/auth/reset-password',
         {
           code: resetCode,
           password: password,

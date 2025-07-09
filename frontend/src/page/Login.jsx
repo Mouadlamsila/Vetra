@@ -60,13 +60,13 @@ export default function Login() {
       }
 
       const response = await axios.post(
-        'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local',
+        'https://useful-champion-e28be6d32c.strapiapp.com/api/auth/local',
         {
           identifier: formData.identifier,
           password: formData.password
         }
       )
-      const user = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${response.data.user.id}?populate=*`)
+      const user = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${response.data.user.id}?populate=*`)
 
 
       // Store authentication data

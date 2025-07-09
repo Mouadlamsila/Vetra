@@ -217,7 +217,7 @@ export default function OwnerForm() {
       // First create or update address
       try {
         const addressResponse = await axios.post(
-          'https://stylish-basket-710b77de8f.strapiapp.com/api/adresses',
+          'https://useful-champion-e28be6d32c.strapiapp.com/api/adresses',
           { 
             data: {...formData.address, user : userId}
           },
@@ -237,7 +237,7 @@ export default function OwnerForm() {
       // Update user with phone number
       try {
         const userResponse = await axios.put(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/users/${userId}`,
           { 
             phone: parseInt(formData.phone.replace(/[^0-9]/g, '')), 
             role: 1 
@@ -268,7 +268,7 @@ export default function OwnerForm() {
         })
 
         const surveyResponse = await axios.post(
-          'https://stylish-basket-710b77de8f.strapiapp.com/api/business-surveis',
+          'https://useful-champion-e28be6d32c.strapiapp.com/api/business-surveis',
           {
             data: {
               has_previous_store: formData.has_previous_store,

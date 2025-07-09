@@ -48,7 +48,7 @@ export default function Users() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users?populate=*')
+        const response = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*')
         setUsers(response.data)
         setIsLoading(false)
       } catch (err) {
@@ -136,7 +136,7 @@ export default function Users() {
       }
 
       // Update user basic info
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${selectedUser.id}`, {
+      await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${selectedUser.id}`, {
         username: formData.username,
         email: formData.email,
         role: formData.role
@@ -144,7 +144,7 @@ export default function Users() {
 
       // Handle address update
       if (selectedUser.adress) {
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${selectedUser.adress.id}`, {
+        await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/adresses/${selectedUser.adress.id}`, {
           data: {
             addressLine1: formData.addressLine1,
             addressLine2: formData.addressLine2,
@@ -155,7 +155,7 @@ export default function Users() {
         })
       } else if (formData.role === "1" && formData.addressLine1) {
         // Create new address if it doesn't exist and role is Owner
-        await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/adresses', {
+        await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/adresses', {
           data: {
             addressLine1: formData.addressLine1,
             addressLine2: formData.addressLine2,
@@ -170,7 +170,7 @@ export default function Users() {
       // Handle business survey update for owners
       if (formData.role === "1") {
         if (selectedUser.business_survey) {
-          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/business-surveis/${selectedUser.business_survey.id}`, {
+          await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/business-surveis/${selectedUser.business_survey.id}`, {
             data: {
               has_previous_store: formData.has_previous_store,
               delivery_required: formData.delivery_required,
@@ -180,7 +180,7 @@ export default function Users() {
             }
           })
         } else {
-          await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/business-surveis', {
+          await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/business-surveis', {
             data: {
               has_previous_store: formData.has_previous_store,
               delivery_required: formData.delivery_required,
@@ -195,13 +195,13 @@ export default function Users() {
 
       // Update phone number if role is Owner
       if (formData.role === "1") {
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${selectedUser.id}`, {
+        await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${selectedUser.id}`, {
           phone: formData.phone
         })
       }
 
       // Refresh user data
-      const response = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users?populate=*')
+      const response = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*')
       setUsers(response.data)
       setEditModalOpen(false)
       
@@ -237,7 +237,7 @@ export default function Users() {
 
     try {
       // Update user status in the API
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${selectedUser.id}`, {
+      await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${selectedUser.id}`, {
         blocked: confirmAction === "block"
       })
 
@@ -262,7 +262,7 @@ export default function Users() {
     setIsSubmitting(true)
 
     try {
-      await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${selectedUser.id}`)
+      await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${selectedUser.id}`)
 
       // Update local state
       const updatedUsers = users.filter((user) => user.id !== selectedUser.id)
@@ -323,7 +323,7 @@ export default function Users() {
         role: newUserData.role,
       }
 
-      const response = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/users', userData)
+      const response = await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/users', userData)
       const userId = response.data.id
 
       // If address fields are filled, create address
@@ -338,7 +338,7 @@ export default function Users() {
             user: userId
           }
         }
-        await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/adresses', addressData)
+        await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/adresses', addressData)
       }
 
       // If role is Owner, create business survey
@@ -353,11 +353,11 @@ export default function Users() {
             user: userId
           }
         }
-        await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/business-surveis', businessData)
+        await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/business-surveis', businessData)
       }
 
       // Refresh users list
-      const updatedResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/users?populate=*')
+      const updatedResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*')
       setUsers(updatedResponse.data)
 
       setAddUserModalOpen(false)

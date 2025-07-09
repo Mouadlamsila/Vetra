@@ -39,7 +39,7 @@ export default function Step2() {
                 }
         
                 // Fetch user's stores
-                const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${userId}?populate=boutiques`, {
+                const storesResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${userId}?populate=boutiques`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -52,7 +52,7 @@ export default function Step2() {
                 const allProducts = [];
                 for (const store of userStores) {
                     const productsResponse = await axios.get(
-                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
+                        `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`,

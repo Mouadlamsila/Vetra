@@ -83,14 +83,14 @@ export default function AddProductPage() {
         }
 
         // Fetch categories
-        const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
+        const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         setCategories(categoriesResponse.data.data)
 
-        const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
+        const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -126,7 +126,7 @@ export default function AddProductPage() {
         throw new Error("Token non trouvé. Veuillez vous connecter.")
       }
 
-      const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${productId}?populate=*`, {
+      const response = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/products/${productId}?populate=*`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -239,7 +239,7 @@ export default function AddProductPage() {
         setLoadingImgsAdditional(true)
       }
 
-      const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData, {
+      const uploadResponse = await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -326,7 +326,7 @@ export default function AddProductPage() {
         },
       }
 
-      await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/products", productData, {
+      await axios.post("https://useful-champion-e28be6d32c.strapiapp.com/api/products", productData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

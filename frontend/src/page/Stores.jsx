@@ -59,10 +59,10 @@ export default function Stores() {
     const fetchStores = async () => {
       try {
         // Fetch stores with ratings
-        const ratingResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&populate[rating_boutiques][populate]=user');
+        const ratingResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&populate[rating_boutiques][populate]=user');
         
         // Fetch complete store data
-        const completeResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&populate=*');
+        const completeResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&populate=*');
         
         // Merge the data
         const mergedStores = completeResponse.data.data.map(store => {
@@ -142,7 +142,7 @@ export default function Stores() {
       let response
       if (existingRating) {
         // Update existing rating
-        response = await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/rating-boutiques/${existingRating.documentId}`, {
+        response = await axios.put(`https://useful-champion-e28be6d32c.strapiapp.com/api/rating-boutiques/${existingRating.documentId}`, {
           data: {
             stars: parseInt(rating),
             opinion: opinion,
@@ -152,7 +152,7 @@ export default function Stores() {
         })
       } else {
         // Create new rating
-        response = await axios.post('https://stylish-basket-710b77de8f.strapiapp.com/api/rating-boutiques', {
+        response = await axios.post('https://useful-champion-e28be6d32c.strapiapp.com/api/rating-boutiques', {
           data: {
             stars: parseInt(rating),
             opinion: opinion,

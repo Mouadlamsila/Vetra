@@ -43,7 +43,7 @@ export default function PaymentsPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/checkout-sessions?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -42,7 +42,7 @@ export default function SearchResults() {
         try {
             // Search stores
             const storesResponse = await axios.get(
-                `https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&filters[$or][2][category][$containsi]=${query}&populate=*`
+                `https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?filters[statusBoutique][$eq]=active&filters[$or][0][nom][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&filters[$or][2][category][$containsi]=${query}&populate=*`
             )
 
             // First, try to find categories that match the search query
@@ -50,7 +50,7 @@ export default function SearchResults() {
             try {
                 // Get all categories first, then filter locally
                 const categoriesResponse = await axios.get(
-                    `https://stylish-basket-710b77de8f.strapiapp.com/api/Categorie-products?populate=*`
+                    `https://useful-champion-e28be6d32c.strapiapp.com/api/categories?populate=*`
                 );
                 const allCategories = categoriesResponse.data.data;
                 const matchingCategories = allCategories.filter(cat => 
@@ -74,12 +74,12 @@ export default function SearchResults() {
                     
                     // Search for products in each category and combine results
                     const productPromises = matchingCategoryIds.map(categoryId => 
-                        axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[category][id][$eq]=${categoryId}&populate=*`)
+                        axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[category][id][$eq]=${categoryId}&populate=*`)
                     );
                     
                     // Also search for products with matching name/description
                     productPromises.push(
-                        axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`)
+                        axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`)
                     );
                     
                     const responses = await Promise.all(productPromises);
@@ -96,14 +96,14 @@ export default function SearchResults() {
                     // Fallback to basic search
                     console.log('No matching categories, using basic search');
                     productsResponse = await axios.get(
-                        `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+                        `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
                     );
                 }
             } catch (productError) {
                 console.log('Product search failed, trying basic search:', productError);
                 // Final fallback to basic search
                 productsResponse = await axios.get(
-                    `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+                    `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[$or][0][name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
                 );
             }
 

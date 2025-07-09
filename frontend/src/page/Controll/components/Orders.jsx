@@ -58,7 +58,7 @@ export default function OrdersPage() {
       try {
         setLoading(true)
         const response = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/orders?filters[user][id][$eq]=${IDUser}&populate[products][populate]=imgMain&populate[user][populate]=*`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -173,7 +173,7 @@ export default function OrdersPage() {
       
       // Refresh orders list
       const response = await axios.get(
-        `https://stylish-basket-710b77de8f.strapiapp.com/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
+        `https://useful-champion-e28be6d32c.strapiapp.com/api/orders?populate=*&filters[user][id][$eq]=${IDUser}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

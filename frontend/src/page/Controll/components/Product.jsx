@@ -73,7 +73,7 @@ export default function ProductsPage() {
       }
 
       // Fetch categories
-      const categoriesResponse = await axios.get('https://stylish-basket-710b77de8f.strapiapp.com/api/categorie-products', {
+      const categoriesResponse = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ export default function ProductsPage() {
       setCategories(categoriesResponse.data.data)
 
       // Fetch user's stores
-      const storesResponse = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
+      const storesResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +94,7 @@ export default function ProductsPage() {
       const allProducts = []
       for (const store of userStores) {
         const productsResponse = await axios.get(
-          `https://stylish-basket-710b77de8f.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
+          `https://useful-champion-e28be6d32c.strapiapp.com/api/products?filters[boutique][id][$eq]=${store.id}&populate=*`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -144,7 +144,7 @@ export default function ProductsPage() {
           return
         }
 
-        await axios.delete(`https://stylish-basket-710b77de8f.strapiapp.com/api/products/${productId}`, {
+        await axios.delete(`https://useful-champion-e28be6d32c.strapiapp.com/api/products/${productId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

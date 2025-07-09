@@ -19,7 +19,7 @@ const Contact = () => {
   const ownerId = localStorage.getItem("idOwner")
 
   useEffect(() => {
-    axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${ownerId}&populate=*`)
+    axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques/${id}?filters[owner][id][$eq]=${ownerId}&populate=*`)
       .then((res) => {
         setBoutique(res.data.data)
         setOwner(res.data.data.owner)

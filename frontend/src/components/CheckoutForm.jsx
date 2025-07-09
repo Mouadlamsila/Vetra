@@ -88,7 +88,7 @@ export default function CheckoutForm({
         }
       };
 
-      const response = await fetch('https://stylish-basket-710b77de8f.strapiapp.com/api/checkout-sessions', {
+      const response = await fetch('https://useful-champion-e28be6d32c.strapiapp.com/api/checkout-sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
