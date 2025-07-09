@@ -30,6 +30,8 @@ export default function Profile() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [passwordError, setPasswordError] = useState("")
+  const [passwordRequirements, setPasswordRequirements] = useState({})
+  const [passwordFocused, setPasswordFocused] = useState(false)
   const id = localStorage.getItem("IDUser")
   const language = localStorage.getItem("lang")
 
@@ -64,10 +66,34 @@ export default function Profile() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Password validation function (same as Register.jsx)
+  const validatePassword = (password) => {
+    const errors = {}
+    if (password.length < 8) {
+      errors.tooShort = true
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.noUpperCase = true
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.noLowerCase = true
+    }
+    if (!/\d/.test(password)) {
+      errors.noNumber = true
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.noSpecialChar = true
+    }
+    return errors
+  }
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target
     setPasswordData((prev) => ({ ...prev, [name]: value }))
     setPasswordError("")
+    if (name === "newPassword") {
+      setPasswordRequirements(validatePassword(value))
+    }
   }
 
   const handleFileChange = (e) => {
@@ -87,36 +113,59 @@ export default function Profile() {
     setIsSubmitting(true)
 
     try {
-      await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
-        username: formData.username,
-        email: formData.email,
-        phone: formData.phone,
-      })
+      // 1. Build user update data dynamically (no 'data' wrapper for Strapi users)
+      const userUpdateData = {}
+      if (formData.username) userUpdateData.username = formData.username
+      if (formData.email) userUpdateData.email = formData.email
+      if (formData.phone) userUpdateData.phone = formData.phone
 
-      if (user.adress) {
-        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.adress.documentId}`, {
-          data: {
-            addressLine1: formData.addressLine1,
-            addressLine2: formData.addressLine2,
-            city: formData.city,
-            country: formData.country,
-            postalCode: formData.postalCode,
-          }
-        })
+      // Only send the fields that are present
+      if (Object.keys(userUpdateData).length > 0) {
+        await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, userUpdateData)
       }
 
-      if (selectedFile) {
-        const formData = new FormData()
-        formData.append("files", selectedFile)
-        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formData)
-        
-        if (uploadResponse.data[0]) {
-          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
-            photo: uploadResponse.data[0].id,
+      // 2. Handle address update or creation only if at least one address field is filled
+      const hasAddressFields = formData.addressLine1 || formData.addressLine2 || formData.city || formData.country || formData.postalCode
+      if (hasAddressFields) {
+        if (user.adress && user.adress.documentId) {
+          // Update existing address
+          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses/${user.adress.documentId}`, {
+            data: {
+              addressLine1: formData.addressLine1,
+              addressLine2: formData.addressLine2,
+              city: formData.city,
+              country: formData.country,
+              postalCode: formData.postalCode,
+            }
+          })
+        } else {
+          // Create new address and associate with user
+          await axios.post(`https://stylish-basket-710b77de8f.strapiapp.com/api/adresses`, {
+            data: {
+              addressLine1: formData.addressLine1,
+              addressLine2: formData.addressLine2,
+              city: formData.city,
+              country: formData.country,
+              postalCode: formData.postalCode,
+              user: id,
+            }
           })
         }
       }
 
+      // 3. Handle photo upload if a new file is selected (no 'data' wrapper for Strapi users)
+      if (selectedFile) {
+        const formDataImg = new FormData()
+        formDataImg.append("files", selectedFile)
+        const uploadResponse = await axios.post("https://stylish-basket-710b77de8f.strapiapp.com/api/upload", formDataImg)
+        if (uploadResponse.data[0]) {
+          await axios.put(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}`, {
+            photo: uploadResponse.data[0].id
+          })
+        }
+      }
+
+      // 4. Refresh user data
       const response = await axios.get(`https://stylish-basket-710b77de8f.strapiapp.com/api/users/${id}?populate=*`)
       setUser(response.data)
       setEditMode(false)
@@ -133,6 +182,14 @@ export default function Profile() {
     e.preventDefault()
     setIsSubmitting(true)
     setPasswordError("")
+
+    // Validate new password requirements
+    const errors = validatePassword(passwordData.newPassword)
+    if (Object.keys(errors).length > 0) {
+      setPasswordError(t('profileAdmin.password.errors.requirements'))
+      setIsSubmitting(false)
+      return
+    }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setPasswordError(t('profileAdmin.password.errors.mismatch'))
@@ -509,9 +566,38 @@ export default function Profile() {
                           type="password"
                           value={passwordData.newPassword}
                           onChange={handlePasswordChange}
+                          onFocus={() => setPasswordFocused(true)}
+                          onBlur={() => setPasswordFocused(false)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
                           required
                         />
+                        {/* Password Requirements Tooltip */}
+                        {passwordFocused && passwordData.newPassword && (
+                          <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs mt-2">
+                            <div className="text-xs space-y-2">
+                              <div className={`flex items-center space-x-2 ${passwordRequirements.tooShort ? 'text-red-400' : 'text-green-400'}`}>
+                                {passwordRequirements.tooShort ? <span>✗</span> : <span>✓</span>}
+                                <span>{t('passwordMinLength')}</span>
+                              </div>
+                              <div className={`flex items-center space-x-2 ${passwordRequirements.noUpperCase ? 'text-red-400' : 'text-green-400'}`}>
+                                {passwordRequirements.noUpperCase ? <span>✗</span> : <span>✓</span>}
+                                <span>{t('passwordUppercase')}</span>
+                              </div>
+                              <div className={`flex items-center space-x-2 ${passwordRequirements.noLowerCase ? 'text-red-400' : 'text-green-400'}`}>
+                                {passwordRequirements.noLowerCase ? <span>✗</span> : <span>✓</span>}
+                                <span>{t('passwordLowercase')}</span>
+                              </div>
+                              <div className={`flex items-center space-x-2 ${passwordRequirements.noNumber ? 'text-red-400' : 'text-green-400'}`}>
+                                {passwordRequirements.noNumber ? <span>✗</span> : <span>✓</span>}
+                                <span>{t('passwordNumber')}</span>
+                              </div>
+                              <div className={`flex items-center space-x-2 ${passwordRequirements.noSpecialChar ? 'text-red-400' : 'text-green-400'}`}>
+                                {passwordRequirements.noSpecialChar ? <span>✗</span> : <span>✓</span>}
+                                <span>{t('passwordSpecial')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">

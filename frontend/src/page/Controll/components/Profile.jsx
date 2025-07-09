@@ -54,6 +54,7 @@ export default function Profile() {
   const [previewUrl, setPreviewUrl] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [passwordFocused, setPasswordFocused] = useState(false)
 
   useEffect(() => {
     fetchUserData()
@@ -121,6 +122,7 @@ export default function Profile() {
 
     if (name === "password") {
       checkPasswordRequirements(value)
+      setPasswordFocused(true)
     }
   }
 
@@ -436,6 +438,8 @@ export default function Profile() {
                   disabled={isEditing}
                   value={formData.password}
                   onChange={handleInputChange}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
                   className={`w-full py-2 px-3 rounded-md outline-none transition-all duration-200 ${
                     !isEditing
                       ? "border-2 border-[#c8c2fd] focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
@@ -455,6 +459,33 @@ export default function Profile() {
                   </button>
                 )}
                 {isEditing && <div className="absolute inset-0 bg-gray-100 opacity-50 rounded-md"></div>}
+                {/* Password Requirements Tooltip */}
+                {!isEditing && passwordFocused && formData.password && (
+                  <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs mt-2">
+                    <div className="text-xs space-y-2">
+                      <div className={`flex items-center space-x-2 ${passwordRequirements.length ? 'text-green-400' : 'text-red-400'}`}>
+                        {passwordRequirements.length ? <span>✓</span> : <span>✗</span>}
+                        <span>{t('passwordMinLength')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordRequirements.uppercase ? 'text-green-400' : 'text-red-400'}`}>
+                        {passwordRequirements.uppercase ? <span>✓</span> : <span>✗</span>}
+                        <span>{t('passwordUppercase')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordRequirements.lowercase ? 'text-green-400' : 'text-red-400'}`}>
+                        {passwordRequirements.lowercase ? <span>✓</span> : <span>✗</span>}
+                        <span>{t('passwordLowercase')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordRequirements.number ? 'text-green-400' : 'text-red-400'}`}>
+                        {passwordRequirements.number ? <span>✓</span> : <span>✗</span>}
+                        <span>{t('passwordNumber')}</span>
+                      </div>
+                      <div className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-400' : 'text-red-400'}`}>
+                        {passwordRequirements.special ? <span>✓</span> : <span>✗</span>}
+                        <span>{t('passwordSpecial')}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -493,58 +524,6 @@ export default function Profile() {
             </div>
           </div>
         </div>
-
-        {!isEditing && formData.password && (
-          <div className="mt-4 p-4 bg-[#c8c2fd]/5 rounded-lg border border-[#c8c2fd]/30">
-            <h3 className="text-sm font-semibold mb-2 text-[#1e3a8a]">{t("profile.passwordRequirements")}:</h3>
-            <ul className="space-y-1 text-sm grid grid-cols-1 md:grid-cols-2 gap-x-4">
-              <li className={`flex items-center ${passwordRequirements.length ? "text-green-600" : "text-gray-500"}`}>
-                {passwordRequirements.length ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <div className="w-4 h-4 mr-2 rounded-full border border-gray-300"></div>
-                )}
-                {t("profile.minLength")}
-              </li>
-              <li
-                className={`flex items-center ${passwordRequirements.uppercase ? "text-green-600" : "text-gray-500"}`}
-              >
-                {passwordRequirements.uppercase ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <div className="w-4 h-4 mr-2 rounded-full border border-gray-300"></div>
-                )}
-                {t("profile.uppercase")}
-              </li>
-              <li
-                className={`flex items-center ${passwordRequirements.lowercase ? "text-green-600" : "text-gray-500"}`}
-              >
-                {passwordRequirements.lowercase ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <div className="w-4 h-4 mr-2 rounded-full border border-gray-300"></div>
-                )}
-                {t("profile.lowercase")}
-              </li>
-              <li className={`flex items-center ${passwordRequirements.number ? "text-green-600" : "text-gray-500"}`}>
-                {passwordRequirements.number ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <div className="w-4 h-4 mr-2 rounded-full border border-gray-300"></div>
-                )}
-                {t("profile.number")}
-              </li>
-              <li className={`flex items-center ${passwordRequirements.special ? "text-green-600" : "text-gray-500"}`}>
-                {passwordRequirements.special ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <div className="w-4 h-4 mr-2 rounded-full border border-gray-300"></div>
-                )}
-                {t("profile.special")}
-              </li>
-            </ul>
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-[#c8c2fd]/20 w-full">
           {isEditing ? (
