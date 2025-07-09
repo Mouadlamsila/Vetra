@@ -11,6 +11,7 @@ export default function SearchResults() {
     const [searchParams] = useSearchParams()
     const query = searchParams.get('q') || ''
     const navigate = useNavigate()
+    const lang = localStorage.getItem('lang');
     
     const [results, setResults] = useState({ stores: [], products: [] })
     const [loading, setLoading] = useState(true)
@@ -419,7 +420,7 @@ export default function SearchResults() {
                     {(activeTab === 'all' || activeTab === 'stores') && sortedStores.length > 0 && (
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                                <Store className="h-6 w-6 mr-2 text-purple-600" />
+                                <Store className={`h-6 w-6 ${lang === 'ar' ? 'ml-2' : 'mr-2' }  text-purple-600`} />
                                 {t('search.stores')} ({sortedStores.length})
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -430,8 +431,12 @@ export default function SearchResults() {
                                         onClick={() => handleStoreClick(store)}
                                     >
                                         <div className="flex items-start space-x-4">
-                                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <Store className="h-6 w-6 text-purple-600" />
+                                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex shadow-sm border-1  border-purple-600  items-center justify-center flex-shrink-0 overflow-hidden">
+                                                {store.logo?.url ? (
+                                                    <img src={store.logo.url} alt={store.nom} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Store className="h-6 w-6 text-purple-600" />
+                                                )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
@@ -466,7 +471,7 @@ export default function SearchResults() {
                     {(activeTab === 'all' || activeTab === 'products') && sortedProducts.length > 0 && (
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                                <Package className="h-6 w-6 mr-2 text-purple-600" />
+                                <Package className={`h-6 w-6 ${lang === 'ar' ? 'ml-2' : 'mr-2' }  text-purple-600`} />
                                 {t('search.products')} ({sortedProducts.length})
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

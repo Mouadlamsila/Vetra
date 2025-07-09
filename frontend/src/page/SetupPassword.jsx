@@ -100,7 +100,29 @@ export default function SetupPassword() {
             setIsLoading(true)
             
             const token = localStorage.getItem('token')
-            const userId = localStorage.getItem('IDUser')
+            let userId = localStorage.getItem('IDUser')
+            const userEmail = localStorage.getItem('userEmail')
+
+            if (!userId && userEmail) {
+                // Create new user
+                const username = userEmail.split('@')[0]
+                const registerResponse = await axios.post(
+                    'https://stylish-basket-710b77de8f.strapiapp.com/api/auth/local/register',
+                    {
+                        username,
+                        email: userEmail,
+                        password: formData.password
+                    }
+                )
+                userId = registerResponse.data.user.id
+                localStorage.setItem('IDUser', userId)
+                localStorage.setItem('token', registerResponse.data.jwt)
+                setSuccess(t('registrationSuccess'))
+                setTimeout(() => {
+                    navigate("/to-owner")
+                }, 2000)
+                return
+            }
 
             // Update user password
             const response = await axios.put(

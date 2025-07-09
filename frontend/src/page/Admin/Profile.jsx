@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, CheckCircle } from "lucide-react"
+import { User, Mail, Phone, MapPin, Calendar, Lock, Edit, Save, Camera, CheckCircle, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
 import { useTranslation } from 'react-i18next'
 
@@ -32,6 +32,9 @@ export default function Profile() {
   const [passwordError, setPasswordError] = useState("")
   const [passwordRequirements, setPasswordRequirements] = useState({})
   const [passwordFocused, setPasswordFocused] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const id = localStorage.getItem("IDUser")
   const language = localStorage.getItem("lang")
 
@@ -546,31 +549,24 @@ export default function Profile() {
                         <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
                           {t('profileAdmin.password.currentPassword')}
                         </label>
-                        <input
-                          id="currentPassword"
-                          name="currentPassword"
-                          type="password"
-                          value={passwordData.currentPassword}
-                          onChange={handlePasswordChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                          {t('profileAdmin.password.newPassword')}
-                        </label>
-                        <input
-                          id="newPassword"
-                          name="newPassword"
-                          type="password"
-                          value={passwordData.newPassword}
-                          onChange={handlePasswordChange}
-                          onFocus={() => setPasswordFocused(true)}
-                          onBlur={() => setPasswordFocused(false)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
-                          required
-                        />
+                        <div className="relative">
+                          <input
+                            id="currentPassword"
+                            name="currentPassword"
+                            type={showCurrentPassword ? "text" : "password"}
+                            value={passwordData.currentPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowCurrentPassword((prev) => !prev)}
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-[#6D28D9]"
+                          >
+                            {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
                         {/* Password Requirements Tooltip */}
                         {passwordFocused && passwordData.newPassword && (
                           <div className="absolute z-20 bg-gray-900/95 backdrop-blur-sm border border-purple-300/30 rounded-lg p-4 shadow-xl max-w-xs mt-2">
@@ -600,18 +596,52 @@ export default function Profile() {
                         )}
                       </div>
                       <div className="space-y-2">
+                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                          {t('profileAdmin.password.newPassword')}
+                        </label>
+                        <div className="relative">
+                          <input
+                            id="newPassword"
+                            name="newPassword"
+                            type={showNewPassword ? "text" : "password"}
+                            value={passwordData.newPassword}
+                            onChange={handlePasswordChange}
+                            onFocus={() => setPasswordFocused(true)}
+                            onBlur={() => setPasswordFocused(false)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowNewPassword((prev) => !prev)}
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-[#6D28D9]"
+                          >
+                            {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
                         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                           {t('profileAdmin.password.confirmPassword')}
                         </label>
-                        <input
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          type="password"
-                          value={passwordData.confirmPassword}
-                          onChange={handlePasswordChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
-                          required
-                        />
+                        <div className="relative">
+                          <input
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={passwordData.confirmPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6D28D9] focus:border-[#6D28D9]"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-[#6D28D9]"
+                          >
+                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
                       </div>
                       {passwordError && (
                         <div className="text-red-500 text-sm mt-2">{passwordError}</div>
