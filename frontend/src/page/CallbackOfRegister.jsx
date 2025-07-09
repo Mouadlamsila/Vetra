@@ -68,7 +68,7 @@ export default function CallbackOfRegister() {
             );
             const userData = registerResponse.data.user;
             // Store user info and Google access token
-            localStorage.setItem("token", accessToken); // Google access_token
+            localStorage.setItem("token", registerResponse.data.jwt); // Google access_token
             localStorage.setItem("user", JSON.stringify(userData.id));
             localStorage.setItem("IDUser", userData.id);
             localStorage.setItem("role", "user");
