@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Store,
   Upload,
@@ -49,6 +49,20 @@ export default function AddStorePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const lang = localStorage.getItem("lang")
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem("token")
+        const res = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', token ? { headers: { Authorization: `Bearer ${token}` } } : {})
+        setCategories(res.data.data.map(cat => ({ id: cat.id, name: cat.name || cat.attributes?.name || '' })))
+      } catch (err) {
+        setCategories([])
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -285,12 +299,9 @@ export default function AddStorePage() {
                     required
                   >
                     <option value="">{t("store.createStore.selectCategory")}</option>
-                    <option value="fashion">{t("store.createStore.categories.fashion")}</option>
-                    <option value="electronics">{t("store.createStore.categories.electronics")}</option>
-                    <option value="home">{t("store.createStore.categories.home")}</option>
-                    <option value="beauty">{t("store.createStore.categories.beauty")}</option>
-                    <option value="food">{t("store.createStore.categories.food")}</option>
-                    <option value="other">{t("store.createStore.categories.other")}</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
                   </select>
                   <div className={`absolute inset-y-0 ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center  pointer-events-none `}>
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -54,6 +54,7 @@ export default function EditStore() {
   const [logoLoading, setLogoLoading] = useState(false)
   const [banniereLoading, setBanniereLoading] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
+  const [categories, setCategories] = useState([])
   const navigate = useNavigate()
   const { id } = useParams()
   const token = localStorage.getItem("token")
@@ -70,13 +71,12 @@ export default function EditStore() {
 
 
         const store = response.data.data
-        console.log(store)
 
         setFormData({
           nom: store.nom || "",
           description: store.description || "",
           emplacement: store.emplacement || "",
-          category: store.category || "other",
+          category: (store.category && store.category.id) ? store.category.id : "",
           statusBoutique: store.statusBoutique || "pending",
           location: [
             {
@@ -116,7 +116,20 @@ export default function EditStore() {
 
     fetchStoreData()
   }, [id, token])
-console.log(formData)
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem("token")
+        const res = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', token ? { headers: { Authorization: `Bearer ${token}` } } : {})
+        setCategories(res.data.data.map(cat => ({ id: cat.id, name: cat.name || cat.attributes?.name || '' })))
+      } catch (err) {
+        setCategories([])
+      }
+    }
+    fetchCategories()
+  }, [])
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -395,12 +408,10 @@ console.log(formData)
                   className={`block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#6D28D9] appearance-none focus:border-[#6D28D9] sm:text-sm ${lang === "ar" ? "" : ""}`}
                 required
               >
-                  <option value="fashion">{t("store.createStore.categories.fashion")}</option>
-                  <option value="electronics">{t("store.createStore.categories.electronics")}</option>
-                  <option value="home">{t("store.createStore.categories.home")}</option>
-                  <option value="beauty">{t("store.createStore.categories.beauty")}</option>
-                  <option value="food">{t("store.createStore.categories.food")}</option>
-                  <option value="other">{t("store.createStore.categories.other")}</option>
+                <option value="">{t("store.createStore.selectCategory")}</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
               </select>
                 <div className={`absolute inset-y-0  flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} `}>
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

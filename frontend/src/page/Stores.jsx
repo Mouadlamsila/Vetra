@@ -21,22 +21,14 @@ import { toast } from "react-toastify"
 import RatingForm from "../components/RatingForm"
 import { useTranslation } from "react-i18next"
 
-const categories = [
-  "fashion",
-  "electronics",
-  "home",
-  "beauty",
-  "food",
-  "other"
-]
-
-// Function to capitalize first letter of each word
+// Categories will be fetched from API
 
 
 export default function Stores() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategories, setSelectedCategories] = useState(["All"])
+  const [categories, setCategories] = useState([])
   const [sortBy, setSortBy] = useState("popular")
   const [currentPage, setCurrentPage] = useState(1)
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
@@ -85,6 +77,20 @@ export default function Stores() {
     fetchStores();
   }, []);
 
+  // Fetch categories from Strapi
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories');
+        // Strapi v4: categories in res.data.data, each with attributes.name
+        setCategories(res.data.data.map(cat => cat?.name || cat.name || ''));
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -102,20 +108,19 @@ export default function Stores() {
     }
   }, [])
 
-  const handleCategoryChange = (category) => {
-    console.log(category)
-    if (category === "All") {
+  const handleCategoryChange = (categoryName) => {
+    if (categoryName === "All") {
       setSelectedCategories(["All"])
     } else {
       setSelectedCategories((prev) => {
-        const isSelected = prev.includes(category)
+        const isSelected = prev.includes(categoryName)
         const newCategories = prev.filter((c) => c !== "All")
 
         if (isSelected) {
-          const filtered = newCategories.filter((c) => c !== category)
+          const filtered = newCategories.filter((c) => c !== categoryName)
           return filtered.length === 0 ? ["All"] : filtered
         } else {
-          return [...newCategories, category]
+          return [...newCategories, categoryName]
         }
       })
     }
@@ -243,7 +248,7 @@ export default function Stores() {
       </div>
     )
   }
-
+  
   const filteredAndSortedStores = useMemo(() => {
     const filtered = stores.filter((store) => {
       // Search term filtering
@@ -254,7 +259,7 @@ export default function Stores() {
         store.owner?.username?.toLowerCase().includes(searchLower)
 
       // Category filtering
-      const storeCategory = store.category?.toLowerCase()
+      const storeCategory = store?.category?.name?.toLowerCase()
       const matchesCategory = 
         selectedCategories.includes("All") || 
         selectedCategories.some(cat => cat.toLowerCase() === storeCategory)
@@ -377,7 +382,7 @@ export default function Stores() {
                       <div className="w-5 h-5 mr-3 flex items-center justify-center">
                         {selectedCategories.includes(category) && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
-                      <span>{t(`stores.categoryLabels.${category}`)}</span>
+                      <span>{category}</span>
                     </div>
                   ))}
                 </div>
@@ -432,14 +437,14 @@ export default function Stores() {
 
           {selectedCategories.length > 0 && !selectedCategories.includes("All") && (
             <div className="flex flex-wrap gap-2">
-              {selectedCategories.map((category) => (
+              {selectedCategories.map((categoryName) => (
                 <span
-                  key={category}
+                  key={categoryName}
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
                 >
-                  {t(`stores.categoryLabels.${category}`)}
+                  {categoryName}
                   <button
-                    onClick={() => handleCategoryChange(category)}
+                    onClick={() => handleCategoryChange(categoryName)}
                     className="ml-1 hover:bg-purple-200 rounded-full w-5 h-5 flex items-center justify-center"
                   >
                     <X className="h-3 w-3" />
@@ -540,7 +545,7 @@ export default function Stores() {
 
                 <div className="flex items-center justify-between">
                   <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
-                    {t(`stores.categoryLabels.${store.category}`)}
+                    {store.category?.name}
                   </span>
 
                   <button
