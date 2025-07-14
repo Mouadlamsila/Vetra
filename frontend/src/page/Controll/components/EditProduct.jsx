@@ -87,7 +87,33 @@ export default function EditProduct() {
             Authorization: `Bearer ${token}`,
           },
         })
-        setCategories(categoriesResponse.data.data)
+        const rawCategories = categoriesResponse.data.data.map(cat => ({ id: cat.id, name: cat.name || cat.attributes?.name || '' }))
+        let cachedTranslations = {};
+        try {
+          cachedTranslations = JSON.parse(localStorage.getItem('categoryTranslations')) || {};
+        } catch (e) { cachedTranslations = {}; }
+        const categoriesWithTranslations = await Promise.all(
+          rawCategories.map(async (cat) => {
+            if (!cat.name) return { ...cat, ar: cat.name, fr: cat.name };
+            if (cachedTranslations[cat.name]) {
+              return { ...cat, ...cachedTranslations[cat.name] };
+            }
+            const [ar, fr] = await Promise.all([
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/ar/${encodeURIComponent(cat.name)}`)
+                .then(res => res.json())
+                .then(data => data.translation && data.translation !== cat.name ? data.translation : '')
+                .catch(() => ''),
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/fr/${encodeURIComponent(cat.name)}`)
+                .then(res => res.json())
+                .then(data => data.translation && data.translation !== cat.name ? data.translation : '')
+                .catch(() => ''),
+            ]);
+            cachedTranslations[cat.name] = { ar: ar || cat.name, fr: fr || cat.name };
+            return { ...cat, ar: ar || cat.name, fr: fr || cat.name };
+          })
+        );
+        localStorage.setItem('categoryTranslations', JSON.stringify(cachedTranslations));
+        setCategories(categoriesWithTranslations);
 
         // Fetch stores
         const storesResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/users/${IDUser}?populate=boutiques`, {
@@ -510,7 +536,7 @@ export default function EditProduct() {
                       <option value="">{t("product.editProduct.selectCategory")}</option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.id}>
-                          {category.name}
+                          {category[lang] || category.name}
                         </option>
                       ))}
                     </select>

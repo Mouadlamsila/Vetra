@@ -99,7 +99,7 @@ export default function Stores() {
             }
             // Otherwise, fetch translations from Lingva Translate
             const [ar, fr] = await Promise.all([
-              fetch(`https://lingva.ml/api/v1/en/ar/${encodeURIComponent(name)}`)
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/ar/${encodeURIComponent(name)}`)
                 .then(res => res.json())
                 .then(data => {
                   console.log('AR translation:', data);
@@ -109,7 +109,7 @@ export default function Stores() {
                   console.error('AR translation error:', e);
                   return '';
                 }),
-              fetch(`https://lingva.ml/api/v1/en/fr/${encodeURIComponent(name)}`)
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/fr/${encodeURIComponent(name)}`)
                 .then(res => res.json())
                 .then(data => {
                   console.log('FR translation:', data);
@@ -412,7 +412,7 @@ export default function Stores() {
                     onClick={() => handleCategoryChange("All")}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   >
-                    <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
+                    <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr-3' }  flex items-center justify-center`}>
                       {selectedCategories.includes("All") && <Check className="h-4 w-4 text-purple-600" />}
                     </div>
                     <span>{t('stores.allCategories')}</span>
@@ -423,7 +423,7 @@ export default function Stores() {
                       onClick={() => handleCategoryChange(categoryObj.name)}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
-                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
+                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr-3' }  flex items-center justify-center`}>
                         {selectedCategories.includes(categoryObj.name) && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
                       <span>{categoryObj[lang] || categoryObj.name}</span>
@@ -459,7 +459,7 @@ export default function Stores() {
                       }}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
-                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
+                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr-3' }  flex items-center justify-center`}>
                         {sortBy === option.value && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
                       <span>{option.label}</span>

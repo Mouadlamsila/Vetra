@@ -122,7 +122,33 @@ export default function EditStore() {
       try {
         const token = localStorage.getItem("token")
         const res = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories', token ? { headers: { Authorization: `Bearer ${token}` } } : {})
-        setCategories(res.data.data.map(cat => ({ id: cat.id, name: cat.name || cat.attributes?.name || '' })))
+        const rawCategories = res.data.data.map(cat => ({ id: cat.id, name: cat.name || cat.attributes?.name || '' }))
+        let cachedTranslations = {};
+        try {
+          cachedTranslations = JSON.parse(localStorage.getItem('categoryTranslations')) || {};
+        } catch (e) { cachedTranslations = {}; }
+        const categoriesWithTranslations = await Promise.all(
+          rawCategories.map(async (cat) => {
+            if (!cat.name) return { ...cat, ar: cat.name, fr: cat.name };
+            if (cachedTranslations[cat.name]) {
+              return { ...cat, ...cachedTranslations[cat.name] };
+            }
+            const [ar, fr] = await Promise.all([
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/ar/${encodeURIComponent(cat.name)}`)
+                .then(res => res.json())
+                .then(data => data.translation && data.translation !== cat.name ? data.translation : '')
+                .catch(() => ''),
+              fetch(`https://lingva-translate-pi-lovat.vercel.app/api/v1/en/fr/${encodeURIComponent(cat.name)}`)
+                .then(res => res.json())
+                .then(data => data.translation && data.translation !== cat.name ? data.translation : '')
+                .catch(() => ''),
+            ]);
+            cachedTranslations[cat.name] = { ar: ar || cat.name, fr: fr || cat.name };
+            return { ...cat, ar: ar || cat.name, fr: fr || cat.name };
+          })
+        );
+        localStorage.setItem('categoryTranslations', JSON.stringify(cachedTranslations));
+        setCategories(categoriesWithTranslations);
       } catch (err) {
         setCategories([])
       }
@@ -410,7 +436,7 @@ export default function EditStore() {
               >
                 <option value="">{t("store.createStore.selectCategory")}</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>{cat[lang] || cat.name}</option>
                 ))}
               </select>
                 <div className={`absolute inset-y-0  flex items-center  pointer-events-none ${lang === "ar" ? "left-0 pl-3" : "right-0 pr-3"} `}>
