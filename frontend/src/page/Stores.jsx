@@ -77,13 +77,57 @@ export default function Stores() {
     fetchStores();
   }, []);
 
-  // Fetch categories from Strapi
+  // Fetch categories from Strapi and translate
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories');
-        // Strapi v4: categories in res.data.data, each with attributes.name
-        setCategories(res.data.data.map(cat => cat?.name || cat.name || ''));
+        const rawCategories = res.data.data.map(cat => cat?.name || cat.name || '');
+        // Ensure cache exists
+        let cachedTranslations = {};
+        try {
+          cachedTranslations = JSON.parse(localStorage.getItem('categoryTranslations')) || {};
+        } catch (e) {
+          cachedTranslations = {};
+        }
+        const categoriesWithTranslations = await Promise.all(
+          rawCategories.map(async (name) => {
+            if (!name) return { name, ar: name, fr: name };
+            // If already cached, use it
+            if (cachedTranslations[name]) {
+              return { name, ...cachedTranslations[name] };
+            }
+            // Otherwise, fetch translations from Lingva Translate
+            const [ar, fr] = await Promise.all([
+              fetch(`https://lingva.ml/api/v1/en/ar/${encodeURIComponent(name)}`)
+                .then(res => res.json())
+                .then(data => {
+                  console.log('AR translation:', data);
+                  return data.translation && data.translation !== name ? data.translation : '';
+                })
+                .catch((e) => {
+                  console.error('AR translation error:', e);
+                  return '';
+                }),
+              fetch(`https://lingva.ml/api/v1/en/fr/${encodeURIComponent(name)}`)
+                .then(res => res.json())
+                .then(data => {
+                  console.log('FR translation:', data);
+                  return data.translation && data.translation !== name ? data.translation : '';
+                })
+                .catch((e) => {
+                  console.error('FR translation error:', e);
+                  return '';
+                }),
+            ]);
+            // Cache for future use
+            cachedTranslations[name] = { ar: ar || name, fr: fr || name };
+            return { name, ar: ar || name, fr: fr || name };
+          })
+        );
+        // Save to localStorage
+        localStorage.setItem('categoryTranslations', JSON.stringify(cachedTranslations));
+        setCategories(categoriesWithTranslations);
       } catch (err) {
         console.error('Error fetching categories:', err);
       }
@@ -368,21 +412,21 @@ export default function Stores() {
                     onClick={() => handleCategoryChange("All")}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   >
-                    <div className="w-5 h-5 mr-3 flex items-center justify-center">
+                    <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
                       {selectedCategories.includes("All") && <Check className="h-4 w-4 text-purple-600" />}
                     </div>
                     <span>{t('stores.allCategories')}</span>
                   </div>
-                  {categories.map((category) => (
+                  {categories.map((categoryObj) => (
                     <div
-                      key={category}
-                      onClick={() => handleCategoryChange(category)}
+                      key={categoryObj.name}
+                      onClick={() => handleCategoryChange(categoryObj.name)}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
-                      <div className="w-5 h-5 mr-3 flex items-center justify-center">
-                        {selectedCategories.includes(category) && <Check className="h-4 w-4 text-purple-600" />}
+                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
+                        {selectedCategories.includes(categoryObj.name) && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
-                      <span>{category}</span>
+                      <span>{categoryObj[lang] || categoryObj.name}</span>
                     </div>
                   ))}
                 </div>
@@ -415,7 +459,7 @@ export default function Stores() {
                       }}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
-                      <div className="w-5 h-5 mr-3 flex items-center justify-center">
+                      <div className={`w-5 h-5 ${lang === 'ar' ? 'ml-3' : 'mr3' }  flex items-center justify-center`}>
                         {sortBy === option.value && <Check className="h-4 w-4 text-purple-600" />}
                       </div>
                       <span>{option.label}</span>
@@ -437,20 +481,23 @@ export default function Stores() {
 
           {selectedCategories.length > 0 && !selectedCategories.includes("All") && (
             <div className="flex flex-wrap gap-2">
-              {selectedCategories.map((categoryName) => (
-                <span
-                  key={categoryName}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
-                >
-                  {categoryName}
-                  <button
-                    onClick={() => handleCategoryChange(categoryName)}
-                    className="ml-1 hover:bg-purple-200 rounded-full w-5 h-5 flex items-center justify-center"
+              {selectedCategories.map((categoryName) => {
+                const categoryObj = categories.find(c => c.name === categoryName);
+                return (
+                  <span
+                    key={categoryName}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
+                    {categoryObj ? (categoryObj[lang] || categoryObj.name) : categoryName}
+                    <button
+                      onClick={() => handleCategoryChange(categoryName)}
+                      className="ml-1 hover:bg-purple-200 rounded-full w-5 h-5 flex items-center justify-center"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                );
+              })}
             </div>
           )}
         </div>
@@ -545,7 +592,10 @@ export default function Stores() {
 
                 <div className="flex items-center justify-between">
                   <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
-                    {store.category?.name}
+                    {(() => {
+                      const categoryObj = categories.find(c => c.name === store.category?.name);
+                      return categoryObj ? (categoryObj[lang] || categoryObj.name) : store.category?.name;
+                    })()}
                   </span>
 
                   <button
