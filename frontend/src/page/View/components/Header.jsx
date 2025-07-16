@@ -509,6 +509,73 @@ export default function Header() {
     return true;
   };
 
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (category) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en') return category.name;
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cache[category.id]) cache[category.id] = {};
+    if (cache[category.id][lang]) {
+      return cache[category.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(category.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== category.name) {
+      cache[category.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return category.name;
+    }
+  };
+
+  // State for translated categories
+  const [translatedCategories, setTranslatedCategories] = useState([]);
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
+
   return (
     <header className="sticky top-0 z-50  bg-white border-b border-gray-200">
       <ToastContainer />
@@ -570,7 +637,7 @@ export default function Header() {
               </button>
 
               {languageMenuOpen && (
-                <div className={`${lang === 'ar' ? 'left-0' : 'right-0'} absolute  mt-2 w-32 bg-white rounded-md shadow-lg border overflow-hidden z-20`}>
+                <div className={`${lang === 'ar' ? 'left-0 ' : 'right-0'} absolute  mt-2 w-32 bg-white rounded-md shadow-lg border overflow-hidden z-20`}>
                   <div className="p-1">
                     <button
                       onClick={() => handleLanguageChange('en')}
@@ -934,13 +1001,13 @@ export default function Header() {
             </button>
 
             {categoryMenuOpen && (
-              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20">
+              <div className={`absolute top-full ${lang  === 'ar' ? 'right-0' : 'left-0' } mt-2 w-56 bg-white rounded-md shadow-lg border overflow-hidden z-20`}>
                 <div className="p-1">
-                  {getCategoriesWithProducts().map((category) => (
+                  {(translatedCategories.length > 0 ? translatedCategories : getCategoriesWithProducts()).map((category) => (
                     <Link
                       key={category.id}
                       to={`/view/categories/${category.documentId}`}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left cursor-pointer"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-start cursor-pointer"
                       onClick={() => setCategoryMenuOpen(false)}
                     >
                       {category.name}
@@ -1017,7 +1084,7 @@ export default function Header() {
                             to={`/view/categories/${category.documentId}`}
                             className="cursor-pointer"
                           >
-                            {category.name}
+                            {translatedCategories.find(c => c.id === category.id)?.name || category.name}
                           </Link>
                         ))}
                       </div>

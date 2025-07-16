@@ -15,6 +15,7 @@ export default function CategoryPage() {
   const [loading, setLoading] = useState(true)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const [categoryName, setCategoryName] = useState("")
+  const [translatedCategoryName, setTranslatedCategoryName] = useState("") // <-- new state
   const id = localStorage.getItem("IDBoutique")
 
   // Filter states
@@ -22,12 +23,61 @@ export default function CategoryPage() {
   const [inStockOnly, setInStockOnly] = useState(false)
   const [selectedRating, setSelectedRating] = useState(0)
 
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (name) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en') return name;
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    // Use category as key (could be id or documentId)
+    if (!cache[category]) cache[category] = {};
+    if (cache[category][lang]) {
+      return cache[category][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== name) {
+      cache[category][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return name;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // First fetch the category to get its name
         const categoryResponse = await axios.get(`https://useful-champion-e28be6d32c.strapiapp.com/api/categories/${category}`)
         setCategoryName(categoryResponse.data.data.name)
+        // Translate category name
+        const translated = await getTranslatedCategoryName(categoryResponse.data.data.name)
+        setTranslatedCategoryName(translated)
 
         // Fetch products with ratings
         const productsWithRatingsResponse = await axios.get(
@@ -112,7 +162,7 @@ export default function CategoryPage() {
               {t("view.category.home")}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-            <span className="text-gray-900 font-medium">{categoryName}</span>
+            <span className="text-gray-900 font-medium">{translatedCategoryName || categoryName}</span>
           </div>
         </div>
       </div>
@@ -122,7 +172,7 @@ export default function CategoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{categoryName}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{translatedCategoryName || categoryName}</h1>
               <p className="text-gray-500">
                 {filteredProducts.length} {t("view.category.products")}
               </p>
@@ -522,6 +572,7 @@ function ProductCard({ product }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [translatedCategoryName, setTranslatedCategoryName] = useState("")
 
   useEffect(() => {
     const checkFavorite = async () => {
@@ -538,6 +589,44 @@ function ProductCard({ product }) {
     }
     checkFavorite()
   }, [product])
+
+  // Translate product category name
+  useEffect(() => {
+    const translate = async () => {
+      const lang = localStorage.getItem('lang') || 'en';
+      if (!product.category?.name || lang === 'en') {
+        setTranslatedCategoryName(product.category?.name || "");
+        return;
+      }
+      // Use localStorage cache
+      let cache = {};
+      try {
+        cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+      } catch (e) {
+        cache = {};
+      }
+      if (!cache[product.category.id]) cache[product.category.id] = {};
+      if (cache[product.category.id][lang]) {
+        setTranslatedCategoryName(cache[product.category.id][lang]);
+        return;
+      }
+      // Not cached, fetch translation
+      try {
+        const response = await axios.get(
+          `https://lingva.ml/api/v1/en/${lang}/${encodeURIComponent(product.category.name)}`
+        );
+        const translated = response.data && response.data.translation ? response.data.translation : product.category.name;
+        if (translated && translated !== product.category.name) {
+          cache[product.category.id][lang] = translated;
+          localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+        }
+        setTranslatedCategoryName(translated);
+      } catch (error) {
+        setTranslatedCategoryName(product.category.name);
+      }
+    };
+    translate();
+  }, [product.category]);
 
   const handleFavorite = async (e) => {
     e.preventDefault()
@@ -614,7 +703,7 @@ function ProductCard({ product }) {
             {product.name}
           </h3>
           <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">
-            {product.category?.name || t("view.category.uncategorized")}
+            {translatedCategoryName || product.category?.name || t("view.category.uncategorized")}
           </span>
         </div>
         <div className="flex items-center mb-3">

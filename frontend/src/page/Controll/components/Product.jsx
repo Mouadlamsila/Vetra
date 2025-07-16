@@ -37,6 +37,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isFiltersVisible, setIsFiltersVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [translatedCategories, setTranslatedCategories] = useState([])
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
   const IDUser = localStorage.getItem("IDUser")
@@ -220,6 +221,71 @@ export default function ProductsPage() {
     return categories.filter(category => categoryIds.has(category.id))
   }
 
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
+
   // Mobile product card component
   const ProductCard = ({ product }) => (
     <div className="bg-white rounded-lg shadow-sm border border-[#c8c2fd]/30 p-4 mb-3">
@@ -267,7 +333,7 @@ export default function ProductsPage() {
         <div>
           <p className="text-gray-500">{t("product.products.table.category")}</p>
           <p className="font-medium">
-            {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t("product.products.uncategorized")}
+            {product.category ? (translatedCategories.find(cat => cat.id === product.category.id)?.name || categories.find(cat => cat.id === product.category.id)?.name) : t("product.products.uncategorized")}
           </p>
         </div>
         <div>
@@ -454,7 +520,7 @@ export default function ProductsPage() {
               <option value="all">{t("product.products.allCategories")}</option>
               {getCategoriesWithProducts().map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {translatedCategories.find(c => c.id === category.id)?.name || category.name}
                 </option>
               ))}
             </select>
@@ -588,7 +654,7 @@ export default function ProductsPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-center">
-                        {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t("product.products.uncategorized")}
+                        {product.category ? (translatedCategories.find(cat => cat.id === product.category.id)?.name || categories.find(cat => cat.id === product.category.id)?.name) : t("product.products.uncategorized")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         {product?.boutique?.nom || t("product.products.unassigned")}

@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [weeklyData, setWeeklyData] = useState([])
   const [dailyData, setDailyData] = useState([])
   const [productDistributionData, setProductDistributionData] = useState([])
+  const [translatedCategories, setTranslatedCategories] = useState([])
   const [recentOrders, setRecentOrders] = useState([])
   const [userPhotos, setUserPhotos] = useState({})
   const [isLoading, setIsLoading] = useState(true)
@@ -37,6 +38,71 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("monthly")
   const [selectedTimeRange, setSelectedTimeRange] = useState("30")
   const language = localStorage.getItem('lang');
+
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (catName) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!catName || lang === 'en') return catName || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    // Use name as key for dashboard (since we don't have id)
+    if (!cache[catName]) cache[catName] = {};
+    if (cache[catName][lang]) {
+      return cache[catName][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(catName, lang);
+    // Only cache if translation is different
+    if (translated && translated !== catName) {
+      cache[catName][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return catName;
+    }
+  };
+
+  // Effect to translate productDistributionData when it changes or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || productDistributionData.length === 0) {
+      setTranslatedCategories(productDistributionData);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      productDistributionData.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat.name),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [productDistributionData, localStorage.getItem('lang')]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -347,9 +413,8 @@ const ProductDistributionChart = () => {
   const { t } = useTranslation()
 
   // Translate category names
-  const translatedData = productDistributionData.map(item => ({
+  const translatedData = (translatedCategories.length > 0 ? translatedCategories : productDistributionData).map(item => ({
     ...item,
-    // Use the category name directly since it's already a string
     name: item.name || t('storesAdmin.allStores.table.categories.other'),
     value: item.value,
     color: item.color

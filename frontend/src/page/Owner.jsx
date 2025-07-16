@@ -356,7 +356,7 @@ export default function OwnerForm() {
   ]
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-b from-purple-50 to-purple-100 py-10 px-4">
+    <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-b from-purple-50 to-purple-100 pt-32 2lg:pt-10 sm:pt-36 pb-10 px-4">
       <div className="w-full max-w-[700px]">
         {/* Stepper */}
         <div className="w-full mb-8">

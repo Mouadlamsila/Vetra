@@ -18,6 +18,7 @@ export default function Products() {
   const [error, setError] = useState(null)
   const [viewModalOpen, setViewModalOpen] = useState(false)
   const [categories, setCategories] = useState([])
+  const [translatedCategories, setTranslatedCategories] = useState([])
   const language = localStorage.getItem("lang")
 
   // Fetch products and categories from API
@@ -106,6 +107,84 @@ export default function Products() {
     return categories.filter(category => categoryIds.has(category.id))
   }
 
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
+
+  // Helper to get translated category name by id or object
+  const getProductCategoryName = (productCategory) => {
+    let catId = typeof productCategory === 'object' && productCategory !== null ? productCategory.id : undefined;
+    let catName = typeof productCategory === 'object' && productCategory !== null ? productCategory.name : productCategory;
+    let foundCat = categories.find(c => c.id === catId || c.name === catName);
+    let foundTranslatedCat = translatedCategories.find(c => c.id === catId || c.name === catName);
+    return (
+      (foundTranslatedCat && typeof foundTranslatedCat.name === 'string' && foundTranslatedCat.name) ||
+      (foundCat && typeof foundCat.name === 'string' && foundCat.name) ||
+      (typeof catName === 'string' ? catName : '-')
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -156,7 +235,7 @@ export default function Products() {
               <option value="">{t('productsAdmin.search.filters.category.label')}</option>
               {getCategoriesWithProducts().map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {translatedCategories.find(c => c.id === category.id)?.name || category.name}
                 </option>
               ))}
             </select>
@@ -252,7 +331,7 @@ export default function Products() {
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
                     <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : '-'}
+                      {product.category ? getProductCategoryName(product.category) : '-'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
@@ -363,7 +442,7 @@ export default function Products() {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center">
-                    <div className="h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                    <div className={`h-16 w-16 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 ${language === 'ar' ? 'ml-4' : 'mr-4'}`}>
                       {selectedProduct.imgMain?.formats?.thumbnail?.url ? (
                         <img
                           src={`${selectedProduct.imgMain.formats.thumbnail.url}`}
@@ -377,7 +456,7 @@ export default function Products() {
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">{selectedProduct.name}</h3>
                       <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                        {selectedProduct.category ? categories.find(cat => cat.id === selectedProduct.category.id)?.name : '-'}
+                        {selectedProduct.category ? getProductCategoryName(selectedProduct.category) : '-'}
                       </span>
                     </div>
                   </div>
@@ -401,16 +480,16 @@ export default function Products() {
                       <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.priceAndStock')}</h4>
                       <div className="space-y-2">
                         <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 text-gray-400 mr-2" />
+                          <DollarSign className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className="text-gray-900 font-medium">{formatCurrency(selectedProduct.prix)}</span>
                           {selectedProduct.comparePrice && (
-                            <span className="ml-2 text-sm text-gray-500 line-through">
+                            <span className={`${language === 'ar' ? 'mr-2' : 'ml-2'} text-sm text-gray-500 line-through`}>
                               {formatCurrency(selectedProduct.comparePrice)}
                             </span>
                           )}
                         </div>
                         <div className="flex items-center">
-                          <Box className="h-4 w-4 text-gray-400 mr-2" />
+                          <Box className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className={`text-sm ${
                             selectedProduct.stock <= selectedProduct.lowStockAlert
                               ? "text-red-600"
@@ -420,7 +499,7 @@ export default function Products() {
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <AlertCircle className="h-4 w-4 text-gray-400 mr-2" />
+                          <AlertCircle className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className="text-sm text-gray-600">
                             {t('productsAdmin.modals.view.lowStockAlert')}: {selectedProduct.lowStockAlert}
                           </span>
@@ -433,14 +512,14 @@ export default function Products() {
                       <div className="space-y-2">
                         {selectedProduct.dimensions && selectedProduct.dimensions[0] && (
                           <div className="flex items-center">
-                            <Ruler className="h-4 w-4 text-gray-400 mr-2" />
+                            <Ruler className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                             <span className="text-sm text-gray-600">
                               {selectedProduct.dimensions[0].length} x {selectedProduct.dimensions[0].width} x {selectedProduct.dimensions[0].height} {selectedProduct.dimensions[0].unit}
                             </span>
                           </div>
                         )}
                         <div className="flex items-center">
-                          <Package className="h-4 w-4 text-gray-400 mr-2" />
+                          <Package className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className="text-sm text-gray-600">
                             {t('productsAdmin.modals.view.weight')}: {selectedProduct.weight} kg
                           </span>
@@ -452,13 +531,13 @@ export default function Products() {
                       <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.additionalInfo')}</h4>
                       <div className="space-y-2">
                         <div className="flex items-center">
-                          <Tag className="h-4 w-4 text-gray-400 mr-2" />
+                          <Tag className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className="text-sm text-gray-600">
                             {t('productsAdmin.modals.view.sku')}: {selectedProduct.sku}
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <Truck className="h-4 w-4 text-gray-400 mr-2" />
+                          <Truck className={`h-4 w-4 text-gray-400 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
                           <span className="text-sm text-gray-600">
                             {t('productsAdmin.modals.view.shippingClass')}: {selectedProduct.shippingClass}
                           </span>
@@ -486,13 +565,15 @@ export default function Products() {
                         <h4 className="text-sm font-medium text-gray-500 mb-2">{t('productsAdmin.modals.view.additionalImages')}</h4>
                         <div className="grid grid-cols-2 gap-2">
                           {selectedProduct.imgsAdditional.map((img) => (
-                            <div key={img.id} className="relative aspect-square">
-                              <img
-                                src={`${img.formats.thumbnail.url}`}
-                                alt={img.name}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            </div>
+                            (img && img.formats && img.formats.thumbnail && img.formats.thumbnail.url) ? (
+                              <div key={img.id} className="relative aspect-square">
+                                <img
+                                  src={`${img.formats.thumbnail.url}`}
+                                  alt={img.name}
+                                  className="w-full h-full object-cover rounded-lg"
+                                />
+                              </div>
+                            ) : null
                           ))}
                         </div>
                       </div>

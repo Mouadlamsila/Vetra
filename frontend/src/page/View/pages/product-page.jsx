@@ -40,6 +40,7 @@ export default function ProductPage() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false)
   const [checkoutAmount, setCheckoutAmount] = useState(0)
   const [orderId, setOrderId] = useState(null)
+  const [translatedCategoryName, setTranslatedCategoryName] = useState("")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -622,6 +623,65 @@ export default function ProductPage() {
     return true
   }
 
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate product category name
+  useEffect(() => {
+    const translate = async () => {
+      if (!product?.category) {
+        setTranslatedCategoryName("");
+        return;
+      }
+      const translated = await getTranslatedCategoryName(product.category);
+      setTranslatedCategoryName(translated);
+    };
+    translate();
+  }, [product?.category, lang]);
+
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">{t("view.productDetails.loading")}</div>
   }
@@ -659,7 +719,7 @@ export default function ProductPage() {
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <Link to={`/view/categories/${product.category?.documentId}`} className="hover:text-purple-700">
-              {product.category?.name || t("view.category.uncategorized")}
+              {translatedCategoryName || product.category?.name || t("view.category.uncategorized")}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <span className="text-gray-900 font-medium truncate">{product.name}</span>
@@ -691,7 +751,7 @@ export default function ProductPage() {
                   <img
                     src={image ? `${image}` : "/placeholder.svg"}
                     alt={`${product.name} - Image ${index + 1}`}
-                    className="object-contain p-2 w-full h-full"
+                    className="object-contain cursor-pointer p-2 w-full h-full"
                   />
                 </button>
               ))}
@@ -703,7 +763,7 @@ export default function ProductPage() {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                  {product.category?.name || t("view.category.uncategorized")}
+                  {translatedCategoryName || product.category?.name || t("view.category.uncategorized")}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -1070,6 +1130,7 @@ function ProductCard({ product }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [translatedCategoryName, setTranslatedCategoryName] = useState("")
 
   const averageRating = useMemo(() => {
     if (!product?.rating_products || product.rating_products.length === 0) return 0
@@ -1133,6 +1194,44 @@ function ProductCard({ product }) {
     }
   }
 
+  // Translate product category name
+  useEffect(() => {
+    const translate = async () => {
+      const lang = localStorage.getItem('lang') || 'en';
+      if (!product.category?.name || lang === 'en') {
+        setTranslatedCategoryName(product.category?.name || "");
+        return;
+      }
+      // Use localStorage cache
+      let cache = {};
+      try {
+        cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+      } catch (e) {
+        cache = {};
+      }
+      if (!cache[product.category.id]) cache[product.category.id] = {};
+      if (cache[product.category.id][lang]) {
+        setTranslatedCategoryName(cache[product.category.id][lang]);
+        return;
+      }
+      // Not cached, fetch translation
+      try {
+        const response = await axios.get(
+          `https://lingva.ml/api/v1/en/${lang}/${encodeURIComponent(product.category.name)}`
+        );
+        const translated = response.data && response.data.translation ? response.data.translation : product.category.name;
+        if (translated && translated !== product.category.name) {
+          cache[product.category.id][lang] = translated;
+          localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+        }
+        setTranslatedCategoryName(translated);
+      } catch (error) {
+        setTranslatedCategoryName(product.category.name);
+      }
+    };
+    translate();
+  }, [product.category]);
+
   return (
     <div
       className="group overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-lg"
@@ -1180,7 +1279,7 @@ function ProductCard({ product }) {
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium line-clamp-1">{product?.name}</h3>
           <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-            {product?.category?.name || t("view.category.uncategorized")}
+            {translatedCategoryName || product?.category?.name || t("view.category.uncategorized")}
           </span>
         </div>
         <div className="flex items-center mb-3">

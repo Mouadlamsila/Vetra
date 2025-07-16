@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 export default function Categories() {
   const { t } = useTranslation()
   const [categories, setCategories] = useState([])
+  const [translatedCategories, setTranslatedCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -35,6 +36,71 @@ export default function Categories() {
 
     fetchCategories()
   }, [refresh])
+
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -217,7 +283,7 @@ export default function Categories() {
             </div>
             <div className="p-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold capitalize">{category.name}</h3>
+                <h3 className={`text-lg font-semibold capitalize ${language === 'ar' ? 'text-right' : ''}`}>{translatedCategories.find(c => c.id === category.id)?.name || category.name}</h3>
                 <span className="px-2 py-1 bg-[#c8c2fd] text-[#6D28D9] text-xs font-medium rounded-full">
                   {t('categoriesAdmin.table.id', { id: category.id })}
                 </span>
@@ -271,7 +337,7 @@ export default function Categories() {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-700 capitalize">{category.name}</p>
+                        <p className="font-medium text-gray-700 capitalize">{translatedCategories.find(c => c.id === category.id)?.name || category.name}</p>
                         <p className="text-gray-500 text-xs">{t('categoriesAdmin.table.documentId', {id :category.documentId})}</p>
                       </div>
                     </div>

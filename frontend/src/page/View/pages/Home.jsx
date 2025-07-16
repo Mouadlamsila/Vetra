@@ -36,11 +36,76 @@ export default function HomeView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("all")
+  const [translatedCategories, setTranslatedCategories] = useState([]); // <-- move to top
   const userId = localStorage.getItem("IDUser")
   const id = localStorage.getItem("IDBoutique")
   const idOwner = localStorage.getItem("idOwner");
   const lang = localStorage.getItem('lang');
-  
+
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (category) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en') return category.name;
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cache[category.id]) cache[category.id] = {};
+    if (cache[category.id][lang]) {
+      return cache[category.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(category.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== category.name) {
+      cache[category.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return category.name;
+    }
+  };
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
+
   useEffect(() => {
     setIsMounted(true)
     const fetchData = async () => {
@@ -88,7 +153,7 @@ export default function HomeView() {
     : products.filter(product => product.category?.id === Number.parseInt(activeTab))
 
   // Get categories that have products
-  const categoriesWithProducts = categories.filter(category => 
+  const categoriesWithProducts = (translatedCategories.length > 0 ? translatedCategories : categories).filter(category => 
     products.some(product => product.category?.id === category.id)
   )
 
@@ -303,7 +368,7 @@ export default function HomeView() {
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium line-clamp-1">{product.name}</h3>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full cursor-pointer">
-                      {product.category ? categories.find(cat => cat.id === product.category.id)?.name : t('view.category.uncategorized')}
+                      {product.category ? (translatedCategories.find(cat => cat.id === product.category.id)?.name || categories.find(cat => cat.id === product.category.id)?.name) : t('view.category.uncategorized')}
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>

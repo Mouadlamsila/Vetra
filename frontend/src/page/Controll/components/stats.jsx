@@ -40,6 +40,7 @@ export default function StatsPage() {
   const [productData, setProductData] = useState([])
   const [categoryData, setCategoryData] = useState([])
   const [customerData, setCustomerData] = useState([])
+  const [translatedCategoryData, setTranslatedCategoryData] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +65,7 @@ export default function StatsPage() {
           ).length
 
           return {
+            id: category.id, // Add id for translation
             categorie: category.name,
             valeur: productsInCategory,
             fill: getRandomColor(),
@@ -138,6 +140,74 @@ export default function StatsPage() {
 
     fetchData()
   }, [selectedPeriod])
+
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate categoryData when it changes or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categoryData.length === 0) {
+      setTranslatedCategoryData(categoryData);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categoryData.map(async (cat) => {
+        // Use cat.id for translation cache
+        return {
+          ...cat,
+          categorie: await getTranslatedCategoryName({ id: cat.id, name: cat.categorie }),
+        };
+      })
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategoryData(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categoryData, localStorage.getItem('lang')]);
 
   const getRandomColor = () => {
     const colors = ["#6D28D9", "#1e3a8a", "#c8c2fd", "#9061f9"]
@@ -335,7 +405,7 @@ export default function StatsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                   <Pie
-                    data={categoryData}
+                    data={translatedCategoryData.length > 0 ? translatedCategoryData : categoryData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}

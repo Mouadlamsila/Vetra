@@ -19,17 +19,21 @@ export default function Stores() {
   const [error, setError] = useState(null)
   const [users, setUsers] = useState([])
   const Languages = localStorage.getItem("lang")
+  const [categories, setCategories] = useState([])
+  const [translatedCategories, setTranslatedCategories] = useState([])
 
   // Fetch stores and users from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [storesResponse, usersResponse] = await Promise.all([
+        const [storesResponse, usersResponse, categoriesResponse] = await Promise.all([
           axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/boutiques?populate=*'),
-          axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*')
+          axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/users?populate=*'),
+          axios.get('https://useful-champion-e28be6d32c.strapiapp.com/api/categories?populate=*'),
         ])
         setStores(storesResponse.data.data)
         setUsers(usersResponse.data)
+        setCategories(categoriesResponse.data.data)
         setIsLoading(false)
       } catch (err) {
         setError('Failed to fetch data')
@@ -40,6 +44,87 @@ export default function Stores() {
 
     fetchData()
   }, [])
+
+  // --- CATEGORY TRANSLATION LOGIC ---
+  // Helper to get translation from Lingva Translate
+  const translateCategory = async (text, targetLang) => {
+    try {
+      const response = await axios.get(
+        `https://lingva.ml/api/v1/en/${targetLang}/${encodeURIComponent(text)}`
+      );
+      if (response.data && response.data.translation) {
+        return response.data.translation;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  };
+
+  // Get translated category name (with caching)
+  const getTranslatedCategoryName = async (cat) => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (!cat?.name || lang === 'en') return cat?.name || '';
+    // Use localStorage cache
+    let cache = {};
+    try {
+      cache = JSON.parse(localStorage.getItem('categoryTranslations') || '{}');
+    } catch (e) {
+      cache = {};
+    }
+    if (!cat.id) return cat.name;
+    if (!cache[cat.id]) cache[cat.id] = {};
+    if (cache[cat.id][lang]) {
+      return cache[cat.id][lang];
+    }
+    // Not cached, fetch translation
+    const translated = await translateCategory(cat.name, lang);
+    // Only cache if translation is different
+    if (translated && translated !== cat.name) {
+      cache[cat.id][lang] = translated;
+      localStorage.setItem('categoryTranslations', JSON.stringify(cache));
+      return translated;
+    } else {
+      // Fallback to original name
+      return cat.name;
+    }
+  };
+
+  // Effect to translate categories when they change or language changes
+  useEffect(() => {
+    const lang = localStorage.getItem('lang') || 'en';
+    if (lang === 'en' || categories.length === 0) {
+      setTranslatedCategories(categories);
+      return;
+    }
+    let isMounted = true;
+    Promise.all(
+      categories.map(async (cat) => ({
+        ...cat,
+        name: await getTranslatedCategoryName(cat),
+      }))
+    ).then((translated) => {
+      if (isMounted) setTranslatedCategories(translated);
+    });
+    return () => { isMounted = false; };
+  }, [categories, localStorage.getItem('lang')]);
+
+  // Helper to get translated category name by string or id
+  const getStoreCategoryName = (storeCategory) => {
+    // If storeCategory is an object (from Strapi populate), use its id or name
+    let catIdFinal = typeof storeCategory === 'object' && storeCategory !== null ? storeCategory.id : undefined;
+    let catNameFinal = typeof storeCategory === 'object' && storeCategory !== null ? storeCategory.name : storeCategory;
+    let foundCat = categories.find(c => c.id === catIdFinal || c.name === catNameFinal);
+    let foundTranslatedCat = translatedCategories.find(c => c.id === catIdFinal || c.name === catNameFinal);
+    // Always return a string
+    return (
+      (foundTranslatedCat && typeof foundTranslatedCat.name === 'string' && foundTranslatedCat.name) ||
+      (foundCat && typeof foundCat.name === 'string' && foundCat.name) ||
+      (typeof catNameFinal === 'string' ? catNameFinal : '') ||
+      t('storesAdmin.allStores.table.categories.other')
+    );
+  }
 
   // Get owner details
   const getOwnerDetails = (ownerId) => {
@@ -408,7 +493,7 @@ export default function Stores() {
                   </td>
                   <td className="px-6 text-center py-4 whitespace-nowrap">
                     <span className="text-sm capitalize">
-                      {t(`storesAdmin.allStores.table.categories.${store.category?.toLowerCase() || 'other'}`)}
+                      {getStoreCategoryName(store.category)}
                     </span>
                   </td>
                   <td className="px-6 text-center py-4 whitespace-nowrap">
@@ -593,7 +678,7 @@ export default function Stores() {
                       <h4 className="text-sm font-medium text-start text-gray-500 mb-2">{t('storesAdmin.modals.view.category')}</h4>
                       <div className="flex items-center">
                         <Tag className={`h-4 w-4 text-gray-400 ${Languages === "ar" ? "ml-2" : "mr-2"}`} />
-                        <span className="text-gray-900 capitalize">{selectedStore.category}</span>
+                        <span className="text-gray-900 capitalize">{getStoreCategoryName(selectedStore.category)}</span>
                       </div>
                     </div>
 
